@@ -335,16 +335,16 @@ class TTSThread(QThread):
 
 
 # ═══════════════════════════════════════════════════════════════
-# Main PyQt6 Desktop Application Window (0.8s Dwell + Spacebar Word Commit)
+# Main PyQt6 Desktop Application Window (UI/UX Redesigned)
 # ═══════════════════════════════════════════════════════════════
 class SignSpeakApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SignSpeak — Indian Sign Language Studio")
-        self.setMinimumSize(1150, 750)
+        self.setWindowTitle("SignSpeak Studio — Indian Sign Language Fingerspelling & Sentence Builder")
+        self.setMinimumSize(1220, 800)
         self.setStyleSheet(self._get_stylesheet())
 
-        # State
+        # State Variables (100% Preserved)
         self.is_running = False
         self.current_word_letters = []
         self.sentence_words = []
@@ -373,129 +373,208 @@ class SignSpeakApp(QMainWindow):
         QTimer.singleShot(500, self.start_pipeline)
 
     def _get_stylesheet(self):
-        """Warm soft 2D plushy design system (no glowing neon gradients)."""
+        """Warm Soft 2D Plushy Design System — Modern, Minimal, High-Contrast & Accessible."""
         return """
             QMainWindow {
-                background-color: #F8F3EE;
+                background-color: #F7F4EF;
             }
             QLabel {
-                color: #3D3530;
-                font-family: 'Segoe UI', sans-serif;
+                color: #2D2521;
+                font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
             }
             QGroupBox {
-                background-color: #FFFDFB;
-                border: 2px solid #EAE0D5;
+                background-color: #FFFFFF;
+                border: 1.5px solid #E8DFD5;
                 border-radius: 14px;
-                margin-top: 10px;
+                margin-top: 12px;
                 padding: 14px;
-                font-family: 'Segoe UI', sans-serif;
+                font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
                 color: #5C4D44;
-                font-weight: bold;
-                font-size: 13px;
+                font-weight: 700;
+                font-size: 12px;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
-                left: 16px;
+                left: 14px;
                 padding: 0 8px;
-                background-color: #FFFDFB;
-                color: #8C6D58;
+                background-color: #FFFFFF;
+                color: #75655B;
+                border-radius: 4px;
             }
             QPushButton {
                 background-color: #D96B43;
                 color: #FFFFFF;
                 border: none;
-                padding: 11px 20px;
+                padding: 10px 18px;
                 font-size: 13px;
-                font-weight: bold;
+                font-weight: 700;
                 border-radius: 10px;
-                font-family: 'Segoe UI', sans-serif;
+                font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             }
             QPushButton:hover {
                 background-color: #C55A32;
             }
             QPushButton:pressed {
-                background-color: #B04A25;
+                background-color: #A84521;
             }
-            QPushButton#recordBtn {
-                background-color: #D96B43;
-                color: #FFFFFF;
-                font-size: 14px;
-                padding: 12px 22px;
-            }
-            QPushButton#recordBtn:hover {
-                background-color: #C55A32;
+            QPushButton:disabled {
+                background-color: #D8CCC0;
+                color: #8C7F75;
             }
             QPushButton#secondaryBtn {
-                background-color: #E2B091;
-                color: #3D3530;
+                background-color: #EFE7DE;
+                color: #4A3E37;
+                border: 1.5px solid #D8C9B8;
             }
             QPushButton#secondaryBtn:hover {
-                background-color: #D49D7B;
+                background-color: #E5DACF;
+                border-color: #C9B8A5;
+            }
+            QPushButton#secondaryBtn:pressed {
+                background-color: #D8CCC0;
             }
             QPushButton#stopBtn {
-                background-color: #C85A5A;
+                background-color: #C45353;
                 color: #FFFFFF;
             }
             QPushButton#stopBtn:hover {
-                background-color: #B34848;
+                background-color: #AF4242;
+            }
+            QPushButton#stopBtn:pressed {
+                background-color: #933333;
             }
             QPushButton#commitBtn {
-                background-color: #5A8F76;
+                background-color: #3E8867;
                 color: #FFFFFF;
             }
             QPushButton#commitBtn:hover {
-                background-color: #487A62;
+                background-color: #337356;
+            }
+            QPushButton#commitBtn:pressed {
+                background-color: #275C44;
             }
             QProgressBar {
                 background-color: #EFE7DE;
+                border: 1px solid #DFD2C4;
                 border-radius: 8px;
                 text-align: center;
-                color: #4A3E37;
-                font-weight: bold;
-                height: 22px;
+                color: #2D2521;
+                font-weight: 700;
+                font-size: 11px;
+                font-family: 'Segoe UI', sans-serif;
             }
             QProgressBar::chunk {
-                background-color: #D96B43;
-                border-radius: 8px;
+                border-radius: 7px;
             }
             QTextEdit {
-                background-color: #FAF6F0;
-                color: #4A3E37;
-                border: 2px solid #E5D7C9;
+                background-color: #FAF7F2;
+                color: #3D3530;
+                border: 1.5px solid #EAE0D5;
                 border-radius: 10px;
-                font-family: 'Consolas', monospace;
-                font-size: 12px;
+                font-family: 'Consolas', 'Courier New', monospace;
+                font-size: 11px;
                 padding: 8px;
+                line-height: 1.4;
+            }
+            QScrollBar:vertical {
+                background: #FAF7F2;
+                width: 8px;
+                border-radius: 4px;
+            }
+            QScrollBar::handle:vertical {
+                background: #D8CCC0;
+                border-radius: 4px;
+                min-height: 20px;
+            }
+            QScrollBar::handle:vertical:hover {
+                background: #BFAF9E;
             }
         """
 
     def _build_ui(self):
         central = QWidget()
         self.setCentralWidget(central)
-        main_layout = QHBoxLayout(central)
-        main_layout.setSpacing(18)
-        main_layout.setContentsMargins(18, 18, 18, 18)
+        root_vbox = QVBoxLayout(central)
+        root_vbox.setSpacing(14)
+        root_vbox.setContentsMargins(20, 16, 20, 20)
 
-        # === LEFT COLUMN: Video Stream & Pipeline Controls ===
+        # ═══════════════════════════════════════════════════════════
+        # TOP HEADER APP BAR
+        # ═══════════════════════════════════════════════════════════
+        header_widget = QWidget()
+        header_layout = QHBoxLayout(header_widget)
+        header_layout.setContentsMargins(4, 2, 4, 2)
+
+        header_title_layout = QVBoxLayout()
+        header_title_layout.setSpacing(2)
+
+        app_title = QLabel("SignSpeak Studio")
+        app_title.setFont(QFont("Segoe UI", 20, QFont.Weight.Bold))
+        app_title.setStyleSheet("color: #2D2521; font-weight: 800;")
+        header_title_layout.addWidget(app_title)
+
+        app_subtitle = QLabel("Indian Sign Language Fingerspelling & Real-Time Sentence Builder")
+        app_subtitle.setFont(QFont("Segoe UI", 11))
+        app_subtitle.setStyleSheet("color: #75655B;")
+        header_title_layout.addWidget(app_subtitle)
+
+        header_layout.addLayout(header_title_layout)
+        header_layout.addStretch()
+
+        # Top Status Badges
+        badges_layout = QHBoxLayout()
+        badges_layout.setSpacing(10)
+
+        offline_badge = QLabel("🔊 Neural Piper Voice")
+        offline_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+        offline_badge.setStyleSheet(
+            "background-color: #EFE7DE; color: #5C4D44; border: 1px solid #D8C9B8; "
+            "border-radius: 8px; padding: 6px 12px;"
+        )
+        badges_layout.addWidget(offline_badge)
+
+        self.engine_status_badge = QLabel("● Engine Active")
+        self.engine_status_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+        self.engine_status_badge.setStyleSheet(
+            "background-color: #E3F1E9; color: #2D704F; border: 1px solid #B8DCBE; "
+            "border-radius: 8px; padding: 6px 12px;"
+        )
+        badges_layout.addWidget(self.engine_status_badge)
+
+        header_layout.addLayout(badges_layout)
+        root_vbox.addWidget(header_widget)
+
+        # ═══════════════════════════════════════════════════════════
+        # MAIN DUAL-COLUMN BODY
+        # ═══════════════════════════════════════════════════════════
+        body_layout = QHBoxLayout()
+        body_layout.setSpacing(18)
+
+        # ───────────────────────────────────────────────────────────
+        # LEFT COLUMN: Camera-First Viewport & Controls
+        # ───────────────────────────────────────────────────────────
         left_col = QVBoxLayout()
+        left_col.setSpacing(12)
 
-        header_title = QLabel("SignSpeak ISL Studio")
-        header_title.setFont(QFont("Segoe UI", 19, QFont.Weight.Bold))
-        header_title.setStyleSheet("color: #7A533D; padding: 2px;")
-        header_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        left_col.addWidget(header_title)
-
-        video_group = QGroupBox("Camera Stream & Hand Landmarks")
+        video_group = QGroupBox("Camera Viewport & Skeleton Tracking")
         video_layout = QVBoxLayout(video_group)
-        self.video_label = QLabel("Starting Video Stream...")
-        self.video_label.setFont(QFont("Segoe UI", 13))
+        video_layout.setContentsMargins(10, 14, 10, 10)
+
+        self.video_label = QLabel("Initializing Video Stream...")
+        self.video_label.setFont(QFont("Segoe UI", 12))
         self.video_label.setFixedSize(CAMERA_WIDTH, CAMERA_HEIGHT)
         self.video_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.video_label.setStyleSheet("background-color: #EFE7DE; color: #7A6F68; border-radius: 10px;")
+        self.video_label.setStyleSheet(
+            "background-color: #EBE3D8; color: #75655B; border-radius: 12px; "
+            "border: 1.5px solid #E2D7CB;"
+        )
         video_layout.addWidget(self.video_label)
         left_col.addWidget(video_group)
 
+        # Camera Controls Row
         controls_layout = QHBoxLayout()
+        controls_layout.setSpacing(12)
+
         self.start_btn = QPushButton("Start Camera")
         self.start_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.start_btn.clicked.connect(self.start_pipeline)
@@ -507,140 +586,210 @@ class SignSpeakApp(QMainWindow):
         self.stop_btn.clicked.connect(self.stop_pipeline)
         self.stop_btn.setEnabled(False)
         controls_layout.addWidget(self.stop_btn)
+
         left_col.addLayout(controls_layout)
 
-        main_layout.addLayout(left_col, stretch=3)
+        # Keyboard Cheat Sheet Reference Card
+        shortcut_box = QGroupBox("Keyboard Navigation Guide")
+        shortcut_layout = QVBoxLayout(shortcut_box)
+        shortcut_layout.setContentsMargins(12, 12, 12, 12)
+        shortcut_layout.setSpacing(6)
 
-        # === RIGHT COLUMN: Sign Recognition & Word Builder ===
+        shortcuts = [
+            ("Hold Sign (0.8s)", "Captures letter into active word"),
+            ("Spacebar", "Commits active word to sentence line"),
+            ("Backspace", "Deletes last letter (or restores last word)"),
+            ("Enter", "Synthesizes speech for full sentence"),
+            ("Escape", "Clears both word and sentence buffers")
+        ]
+
+        for key_text, desc_text in shortcuts:
+            row = QHBoxLayout()
+            row.setSpacing(8)
+            k_lbl = QLabel(key_text)
+            k_lbl.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+            k_lbl.setStyleSheet(
+                "background-color: #EFE7DE; color: #4A3E37; border: 1px solid #D8C9B8; "
+                "border-radius: 5px; padding: 2px 8px; min-width: 110px;"
+            )
+            d_lbl = QLabel(desc_text)
+            d_lbl.setFont(QFont("Segoe UI", 10))
+            d_lbl.setStyleSheet("color: #75655B;")
+            row.addWidget(k_lbl)
+            row.addWidget(d_lbl, stretch=1)
+            shortcut_layout.addLayout(row)
+
+        left_col.addWidget(shortcut_box)
+        body_layout.addLayout(left_col, stretch=3)
+
+        # ───────────────────────────────────────────────────────────
+        # RIGHT COLUMN: Recognition, Word & Sentence Cockpit
+        # ───────────────────────────────────────────────────────────
         right_col = QVBoxLayout()
+        right_col.setSpacing(12)
 
-        # Current Detected Letter Display + 0.8s Steady-Hold Progress
+        # ── Card 1: Live Detected Sign & 0.8s Steady Hold ──
         letter_group = QGroupBox("Live Detected Sign & 0.8s Hold Capture")
-        letter_layout = QVBoxLayout(letter_group)
-        
-        self.letter_label = QLabel("-")
-        self.letter_label.setFont(QFont("Segoe UI", 48, QFont.Weight.Bold))
-        self.letter_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.letter_label.setStyleSheet("color: #D96B43; padding: 2px;")
-        letter_layout.addWidget(self.letter_label)
+        letter_layout = QHBoxLayout(letter_group)
+        letter_layout.setContentsMargins(14, 14, 14, 14)
+        letter_layout.setSpacing(16)
 
-        # Confidence Bar
+        # Big Sign Letter Tile
+        letter_card = QFrame()
+        letter_card.setFixedSize(96, 96)
+        letter_card.setStyleSheet(
+            "background-color: #FDF9F5; border: 2px solid #E8DACB; border-radius: 14px;"
+        )
+        letter_card_layout = QVBoxLayout(letter_card)
+        letter_card_layout.setContentsMargins(0, 0, 0, 0)
+        self.letter_label = QLabel("-")
+        self.letter_label.setFont(QFont("Segoe UI", 52, QFont.Weight.Bold))
+        self.letter_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.letter_label.setStyleSheet("color: #D96B43; border: none; background: transparent;")
+        letter_card_layout.addWidget(self.letter_label)
+        letter_layout.addWidget(letter_card)
+
+        # Meters Stack
+        meters_vbox = QVBoxLayout()
+        meters_vbox.setSpacing(8)
+
+        # Model Confidence Progress Bar
         self.confidence_bar = QProgressBar()
         self.confidence_bar.setMaximum(100)
         self.confidence_bar.setValue(0)
         self.confidence_bar.setTextVisible(True)
-        self.confidence_bar.setFormat("Confidence: %p%")
+        self.confidence_bar.setFormat("Model Confidence: %p%")
+        self.confidence_bar.setFixedHeight(20)
         self.confidence_bar.setStyleSheet("""
             QProgressBar {
                 background-color: #EFE7DE;
-                border-radius: 8px;
+                border: 1px solid #DFD2C4;
+                border-radius: 6px;
                 text-align: center;
-                color: #4A3E37;
+                color: #2D2521;
                 font-weight: bold;
-                height: 20px;
+                font-size: 10px;
             }
             QProgressBar::chunk {
                 background-color: #E29578;
-                border-radius: 8px;
+                border-radius: 5px;
             }
         """)
-        letter_layout.addWidget(self.confidence_bar)
+        meters_vbox.addWidget(self.confidence_bar)
 
-        # 0.8s Steady-Hold Progress Bar
+        # 0.8s Steady-Hold Dwell Bar
         self.dwell_progress_bar = QProgressBar()
         self.dwell_progress_bar.setMaximum(100)
         self.dwell_progress_bar.setValue(0)
         self.dwell_progress_bar.setTextVisible(True)
         self.dwell_progress_bar.setFormat("Hold Steady for 0.8s to Capture")
+        self.dwell_progress_bar.setFixedHeight(24)
         self.dwell_progress_bar.setStyleSheet("""
             QProgressBar {
                 background-color: #EFE7DE;
-                border-radius: 8px;
+                border: 1px solid #DFD2C4;
+                border-radius: 6px;
                 text-align: center;
-                color: #4A3E37;
+                color: #2D2521;
                 font-weight: bold;
-                height: 24px;
+                font-size: 11px;
             }
             QProgressBar::chunk {
-                background-color: #5A8F76;
-                border-radius: 8px;
+                background-color: #3E8867;
+                border-radius: 5px;
             }
         """)
-        letter_layout.addWidget(self.dwell_progress_bar)
+        meters_vbox.addWidget(self.dwell_progress_bar)
 
+        letter_layout.addLayout(meters_vbox, stretch=1)
         right_col.addWidget(letter_group)
 
-        # Active Word Builder Box (Spacebar = Commit Word)
-        word_group = QGroupBox("Active Word Builder (Press Spacebar to Commit)")
+        # ── Card 2: Active Word Builder ──
+        word_group = QGroupBox("Active Word Builder")
         word_layout = QVBoxLayout(word_group)
-        
+        word_layout.setContentsMargins(14, 14, 14, 14)
+        word_layout.setSpacing(10)
+
         self.word_label = QLabel("")
         self.word_label.setFont(QFont("Segoe UI", 26, QFont.Weight.Bold))
         self.word_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.word_label.setFixedHeight(50)
         self.word_label.setStyleSheet(
-            "color: #4A3E37; background-color: #F4EAE1; border: 2px solid #E5D7C9; "
-            "border-radius: 10px; padding: 10px; min-height: 45px;"
+            "color: #2D2521; background-color: #FAF4EE; border: 1.5px solid #E2D7CB; "
+            "border-radius: 12px; padding: 4px 12px; letter-spacing: 2px;"
         )
         word_layout.addWidget(self.word_label)
 
         word_btn_layout = QHBoxLayout()
+        word_btn_layout.setSpacing(10)
 
-        self.commit_btn = QPushButton("Commit Word (Spacebar)")
+        self.commit_btn = QPushButton("Commit Word [ Space ]")
         self.commit_btn.setObjectName("commitBtn")
         self.commit_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.commit_btn.clicked.connect(self.commit_word)
-        word_btn_layout.addWidget(self.commit_btn)
+        word_btn_layout.addWidget(self.commit_btn, stretch=3)
 
-        del_btn = QPushButton("Delete Letter (Backspace)")
+        del_btn = QPushButton("Delete Letter [ ⌫ ]")
         del_btn.setObjectName("secondaryBtn")
         del_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         del_btn.clicked.connect(self.delete_last_letter)
-        word_btn_layout.addWidget(del_btn)
+        word_btn_layout.addWidget(del_btn, stretch=2)
 
         word_layout.addLayout(word_btn_layout)
         right_col.addWidget(word_group)
 
-        # Sentence Builder & Spoken Output Box
-        sentence_group = QGroupBox("Full Sentence Line (Press Enter to Speak)")
+        # ── Card 3: Full Sentence Builder ──
+        sentence_group = QGroupBox("Full Spoken Sentence Line")
         sentence_layout = QVBoxLayout(sentence_group)
+        sentence_layout.setContentsMargins(14, 14, 14, 14)
+        sentence_layout.setSpacing(10)
+
         self.sentence_label = QLabel("")
         self.sentence_label.setFont(QFont("Segoe UI", 16))
         self.sentence_label.setWordWrap(True)
+        self.sentence_label.setMinimumHeight(52)
         self.sentence_label.setStyleSheet(
-            "color: #3D3530; background-color: #FAF6F0; border: 1px solid #EAE0D5; "
-            "border-radius: 8px; padding: 10px; min-height: 50px;"
+            "color: #2D2521; background-color: #FFFFFF; border: 1.5px solid #E2D7CB; "
+            "border-radius: 12px; padding: 10px 14px;"
         )
         sentence_layout.addWidget(self.sentence_label)
 
         sent_btn_layout = QHBoxLayout()
-        speak_btn = QPushButton("Speak Full Sentence (Enter)")
+        sent_btn_layout.setSpacing(10)
+
+        speak_btn = QPushButton("Speak Full Sentence [ Enter ]")
         speak_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         speak_btn.clicked.connect(self.speak_full_sentence)
-        sent_btn_layout.addWidget(speak_btn)
+        sent_btn_layout.addWidget(speak_btn, stretch=3)
 
-        clear_btn = QPushButton("Clear All (Esc)")
+        clear_btn = QPushButton("Clear All [ Esc ]")
         clear_btn.setObjectName("secondaryBtn")
         clear_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         clear_btn.clicked.connect(self.clear_all)
-        sent_btn_layout.addWidget(clear_btn)
+        sent_btn_layout.addWidget(clear_btn, stretch=2)
 
         sentence_layout.addLayout(sent_btn_layout)
         right_col.addWidget(sentence_group)
 
-        # System Log Box
-        log_group = QGroupBox("Activity Log")
+        # ── Card 4: Activity Stream & Status ──
+        log_group = QGroupBox("Activity Stream")
         log_layout = QVBoxLayout(log_group)
+        log_layout.setContentsMargins(12, 12, 12, 12)
+        log_layout.setSpacing(8)
+
         self.log_text = QTextEdit()
         self.log_text.setReadOnly(True)
-        self.log_text.setMaximumHeight(120)
+        self.log_text.setFixedHeight(105)
         log_layout.addWidget(self.log_text)
-        right_col.addWidget(log_group)
 
         self.status_label = QLabel("Status: Ready — Hold sign steady for 0.8s to capture.")
-        self.status_label.setStyleSheet("color: #8C7C72; font-size: 12px; padding: 2px;")
-        right_col.addWidget(self.status_label)
+        self.status_label.setStyleSheet("color: #75655B; font-size: 11px; padding: 0 2px;")
+        log_layout.addWidget(self.status_label)
 
-        main_layout.addLayout(right_col, stretch=2)
+        right_col.addWidget(log_group)
+        body_layout.addLayout(right_col, stretch=2)
+
+        root_vbox.addLayout(body_layout)
 
     def _init_threads(self):
         self.capture_thread = CaptureThread()
@@ -662,6 +811,11 @@ class SignSpeakApp(QMainWindow):
         self.is_running = True
         self.start_btn.setEnabled(False)
         self.stop_btn.setEnabled(True)
+        self.engine_status_badge.setText("● Camera Active (30 FPS)")
+        self.engine_status_badge.setStyleSheet(
+            "background-color: #E3F1E9; color: #2D704F; border: 1px solid #B8DCBE; "
+            "border-radius: 8px; padding: 6px 12px;"
+        )
 
         self.log("Starting ISL Camera Pipeline...")
         self.capture_thread.start()
@@ -681,6 +835,11 @@ class SignSpeakApp(QMainWindow):
         self._init_threads()
         self.start_btn.setEnabled(True)
         self.stop_btn.setEnabled(False)
+        self.engine_status_badge.setText("○ Camera Stopped")
+        self.engine_status_badge.setStyleSheet(
+            "background-color: #F8E8E8; color: #8A3333; border: 1px solid #E0BDB8; "
+            "border-radius: 8px; padding: 6px 12px;"
+        )
         self.status_label.setText("Status: Stopped")
         self.log("Pipeline stopped.")
 
@@ -699,7 +858,7 @@ class SignSpeakApp(QMainWindow):
         self.inference_thread.enqueue_feature(feat_vec)
 
     # ═══════════════════════════════════════════════════════════
-    # 0.8s Steady-Hold Dwell Capture Engine
+    # 0.8s Steady-Hold Dwell Capture Engine (100% Preserved)
     # ═══════════════════════════════════════════════════════════
     def on_prediction(self, letter, confidence):
         now = time.time()
@@ -780,7 +939,7 @@ class SignSpeakApp(QMainWindow):
         play_feedback_tone(freq=1250, duration_ms=35)
 
     # ═══════════════════════════════════════════════════════════
-    # Word & Sentence Construction
+    # Word & Sentence Construction (100% Preserved)
     # ═══════════════════════════════════════════════════════════
     def commit_word(self):
         """Commits the active word to the sentence line (Spacebar)."""
@@ -831,7 +990,7 @@ class SignSpeakApp(QMainWindow):
         self.log("Cleared word and sentence buffers.")
 
     def keyPressEvent(self, event):
-        """Handle global keyboard shortcuts cleanly."""
+        """Handle global keyboard shortcuts cleanly (100% Preserved)."""
         if event.key() == Qt.Key.Key_Space:
             self.commit_word()
         elif event.key() == Qt.Key.Key_Backspace:
@@ -862,13 +1021,13 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
 
-    # Warm Soft 2D Plushy Palette
+    # Warm Soft 2D Plushy Palette (Global)
     palette = QPalette()
-    palette.setColor(QPalette.ColorRole.Window, QColor(248, 243, 238))
-    palette.setColor(QPalette.ColorRole.WindowText, QColor(61, 53, 48))
-    palette.setColor(QPalette.ColorRole.Base, QColor(250, 246, 240))
-    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(244, 234, 225))
-    palette.setColor(QPalette.ColorRole.Text, QColor(61, 53, 48))
+    palette.setColor(QPalette.ColorRole.Window, QColor(247, 244, 239))
+    palette.setColor(QPalette.ColorRole.WindowText, QColor(45, 37, 33))
+    palette.setColor(QPalette.ColorRole.Base, QColor(255, 255, 255))
+    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(245, 240, 234))
+    palette.setColor(QPalette.ColorRole.Text, QColor(45, 37, 33))
     palette.setColor(QPalette.ColorRole.Button, QColor(217, 107, 67))
     palette.setColor(QPalette.ColorRole.ButtonText, QColor(255, 255, 255))
     palette.setColor(QPalette.ColorRole.Highlight, QColor(226, 149, 120))
