@@ -595,7 +595,7 @@ class AIPredictionThread(QThread):
 class ShortcutsHelpDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("SignSpeak Studio — Controls & Shortcuts Guide")
+        self.setWindowTitle("SignSpeak Studio — Controls & Shortcuts Reference")
         self.setFixedSize(580, 520)
         self.setStyleSheet("""
             QDialog {
@@ -609,10 +609,11 @@ class ShortcutsHelpDialog(QDialog):
                 background-color: #D96B43;
                 color: #FFFFFF;
                 border: none;
-                padding: 9px 22px;
+                padding: 9px 24px;
                 font-size: 13px;
                 font-weight: 700;
                 border-radius: 9px;
+                font-family: 'Segoe UI', sans-serif;
             }
             QPushButton:hover {
                 background-color: #C55A32;
@@ -623,12 +624,12 @@ class ShortcutsHelpDialog(QDialog):
         layout.setContentsMargins(24, 20, 24, 20)
         layout.setSpacing(12)
 
-        title = QLabel("⌨️ SignSpeak Controls & Shortcuts Guide")
+        title = QLabel("Keyboard Shortcuts & System Controls")
         title.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
         title.setStyleSheet("color: #2D2521; font-weight: 800;")
         layout.addWidget(title)
 
-        subtitle = QLabel("Complete reference of all interactive gestures, keyboard triggers, and AI features.")
+        subtitle = QLabel("Complete reference of gestures, key bindings, and real-time interaction controls.")
         subtitle.setFont(QFont("Segoe UI", 10))
         subtitle.setStyleSheet("color: #75655B;")
         layout.addWidget(subtitle)
@@ -641,14 +642,14 @@ class ShortcutsHelpDialog(QDialog):
 
         shortcuts_list = [
             ("Hold Sign (0.8s)", "Auto-captures recognized letter into active word builder"),
-            ("Keys [ 1 / 2 / 3 ]", "Accepts AI Autocomplete word or Next-Word prediction"),
+            ("Keys [ 1 / 2 / 3 ]", "Selects autocomplete suggestion or next-word prediction"),
             ("Spacebar", "Commits active word into full spoken sentence line"),
             ("Backspace", "Deletes last letter (or restores previous word for editing)"),
-            ("Ctrl + P", "✨ 1-Click AI Grammar Polish (raw gloss ──► natural English)"),
-            ("Ctrl + Z", "↩️ Undo Grammar Polish (restores original signed words)"),
+            ("Ctrl + P", "Applies AI sentence grammar polish (raw gloss to fluent English)"),
+            ("Ctrl + Z", "Reverts grammar polish to original signed words"),
             ("Enter", "Vocalizes full sentence via offline Piper Neural Voice"),
             ("Escape", "Clears both word and sentence buffers instantly"),
-            ("F1 / Help Button", "Opens this shortcuts & controls guide")
+            ("F1", "Opens this shortcuts and controls guide")
         ]
 
         for key_text, desc_text in shortcuts_list:
@@ -672,7 +673,7 @@ class ShortcutsHelpDialog(QDialog):
 
         btn_box = QHBoxLayout()
         btn_box.addStretch()
-        close_btn = QPushButton("Got It!")
+        close_btn = QPushButton("Close")
         close_btn.clicked.connect(self.accept)
         btn_box.addWidget(close_btn)
         layout.addLayout(btn_box)
@@ -684,7 +685,7 @@ class ShortcutsHelpDialog(QDialog):
 class SignSpeakApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SignSpeak Studio — Indian Sign Language Fingerspelling & Sentence Builder")
+        self.setWindowTitle("SignSpeak Studio — Indian Sign Language Recognition & Sentence Builder")
         self.setMinimumSize(1220, 800)
         self.setStyleSheet(self._get_stylesheet())
 
@@ -861,7 +862,7 @@ class SignSpeakApp(QMainWindow):
         app_title.setStyleSheet("color: #2D2521; font-weight: 800;")
         header_title_layout.addWidget(app_title)
 
-        app_subtitle = QLabel("Indian Sign Language Fingerspelling & Real-Time Sentence Builder")
+        app_subtitle = QLabel("Indian Sign Language Recognition & Real-Time Sentence Builder")
         app_subtitle.setFont(QFont("Segoe UI", 11))
         app_subtitle.setStyleSheet("color: #75655B;")
         header_title_layout.addWidget(app_subtitle)
@@ -873,13 +874,13 @@ class SignSpeakApp(QMainWindow):
         badges_layout = QHBoxLayout()
         badges_layout.setSpacing(10)
 
-        self.help_btn = QPushButton("⌨️ Shortcuts Guide (F1)")
+        self.help_btn = QPushButton("Keyboard Shortcuts (F1)")
         self.help_btn.setObjectName("secondaryBtn")
         self.help_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.help_btn.clicked.connect(self.show_shortcuts_guide)
         badges_layout.addWidget(self.help_btn)
 
-        ai_badge = QLabel("⚡ AI Autocomplete")
+        ai_badge = QLabel("AI Autocomplete: Active")
         ai_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
         ai_badge.setStyleSheet(
             "background-color: #EFE7DE; color: #5C4D44; border: 1px solid #D8C9B8; "
@@ -887,7 +888,7 @@ class SignSpeakApp(QMainWindow):
         )
         badges_layout.addWidget(ai_badge)
 
-        offline_badge = QLabel("🔊 Neural Piper Voice")
+        offline_badge = QLabel("Neural Voice: Piper Lessac")
         offline_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
         offline_badge.setStyleSheet(
             "background-color: #EFE7DE; color: #5C4D44; border: 1px solid #D8C9B8; "
@@ -895,7 +896,7 @@ class SignSpeakApp(QMainWindow):
         )
         badges_layout.addWidget(offline_badge)
 
-        self.engine_status_badge = QLabel("● Engine Active")
+        self.engine_status_badge = QLabel("Camera: 30 FPS Active")
         self.engine_status_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
         self.engine_status_badge.setStyleSheet(
             "background-color: #E3F1E9; color: #2D704F; border: 1px solid #B8DCBE; "
@@ -918,7 +919,7 @@ class SignSpeakApp(QMainWindow):
         left_col = QVBoxLayout()
         left_col.setSpacing(12)
 
-        video_group = QGroupBox("Camera Viewport & Skeleton Tracking")
+        video_group = QGroupBox("Camera Feed & Skeleton Tracking")
         video_layout = QVBoxLayout(video_group)
         video_layout.setContentsMargins(10, 14, 10, 10)
 
@@ -959,13 +960,13 @@ class SignSpeakApp(QMainWindow):
 
         shortcuts = [
             ("Hold Sign (0.8s)", "Captures letter into active word"),
-            ("Keys [ 1 / 2 / 3 ]", "Accepts AI Autocomplete suggestion"),
+            ("Keys [ 1 / 2 / 3 ]", "Accepts autocomplete suggestion"),
             ("Spacebar", "Commits active word to sentence line"),
             ("Backspace", "Deletes last letter (or restores last word)"),
-            ("Ctrl + P", "✨ 1-Click AI Sign Grammar Polish"),
-            ("Ctrl + Z", "↩️ Undo Polish (restores raw signs)"),
+            ("Ctrl + P", "Applies AI sentence grammar polish"),
+            ("Ctrl + Z", "Reverts to original signed sequence"),
             ("Enter", "Synthesizes speech for full sentence"),
-            ("Escape", "Clears both word and sentence buffers")
+            ("Escape", "Clears active word and sentence line")
         ]
 
         for key_text, desc_text in shortcuts:
@@ -993,8 +994,8 @@ class SignSpeakApp(QMainWindow):
         right_col = QVBoxLayout()
         right_col.setSpacing(12)
 
-        # ── Card 1: Live Detected Sign & 0.8s Steady Hold ──
-        letter_group = QGroupBox("Live Detected Sign & 0.8s Hold Capture")
+        # ── Card 1: Live Detected Gesture & 0.8s Steady Hold ──
+        letter_group = QGroupBox("Real-Time Gesture Recognition & Hold Capture")
         letter_layout = QHBoxLayout(letter_group)
         letter_layout.setContentsMargins(14, 14, 14, 14)
         letter_layout.setSpacing(16)
@@ -1023,7 +1024,7 @@ class SignSpeakApp(QMainWindow):
         self.confidence_bar.setMaximum(100)
         self.confidence_bar.setValue(0)
         self.confidence_bar.setTextVisible(True)
-        self.confidence_bar.setFormat("Model Confidence: %p%")
+        self.confidence_bar.setFormat("Confidence: %p%")
         self.confidence_bar.setFixedHeight(20)
         self.confidence_bar.setStyleSheet("""
             QProgressBar {
@@ -1070,18 +1071,18 @@ class SignSpeakApp(QMainWindow):
         right_col.addWidget(letter_group)
 
         # ── Card 2: Active Word Builder + AI Autocomplete Strip ──
-        word_group = QGroupBox("Active Word Builder")
+        word_group = QGroupBox("Active Word Construction")
         word_layout = QVBoxLayout(word_group)
         word_layout.setContentsMargins(14, 14, 14, 14)
         word_layout.setSpacing(8)
 
-        # 💡 Gboard-Style 3 Suggestion Pills Strip (Permanently Visible)
+        # Gboard-Style 3 Suggestion Pills Strip (Permanently Visible)
         self.suggestions_container = QWidget()
         self.suggestions_layout = QHBoxLayout(self.suggestions_container)
         self.suggestions_layout.setContentsMargins(0, 0, 0, 2)
         self.suggestions_layout.setSpacing(8)
 
-        self.sug_title_lbl = QLabel("💡 AI Suggestions:")
+        self.sug_title_lbl = QLabel("Suggestions:")
         self.sug_title_lbl.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
         self.sug_title_lbl.setStyleSheet("color: #8C6D58;")
         self.suggestions_layout.addWidget(self.sug_title_lbl)
@@ -1137,7 +1138,7 @@ class SignSpeakApp(QMainWindow):
         self.commit_btn.clicked.connect(self.commit_word)
         word_btn_layout.addWidget(self.commit_btn, stretch=3)
 
-        del_btn = QPushButton("Delete Letter [ ⌫ ]")
+        del_btn = QPushButton("Delete Letter [ Backspace ]")
         del_btn.setObjectName("secondaryBtn")
         del_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         del_btn.clicked.connect(self.delete_last_letter)
@@ -1147,7 +1148,7 @@ class SignSpeakApp(QMainWindow):
         right_col.addWidget(word_group)
 
         # ── Card 3: Full Sentence Builder + AI Sign Grammar Polish ──
-        sentence_group = QGroupBox("Full Spoken Sentence Line")
+        sentence_group = QGroupBox("Spoken Sentence Builder")
         sentence_layout = QVBoxLayout(sentence_group)
         sentence_layout.setContentsMargins(14, 14, 14, 14)
         sentence_layout.setSpacing(10)
@@ -1166,13 +1167,13 @@ class SignSpeakApp(QMainWindow):
         polish_row = QHBoxLayout()
         polish_row.setSpacing(10)
 
-        self.polish_btn = QPushButton("✨ AI Polish Grammar [ Ctrl+P ]")
+        self.polish_btn = QPushButton("Grammar Polish [ Ctrl+P ]")
         self.polish_btn.setObjectName("secondaryBtn")
         self.polish_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.polish_btn.clicked.connect(self.toggle_ai_polish)
         polish_row.addWidget(self.polish_btn, stretch=3)
 
-        self.auto_polish_checkbox = QCheckBox("Auto-Polish on Speak")
+        self.auto_polish_checkbox = QCheckBox("Auto-polish before speaking")
         self.auto_polish_checkbox.setChecked(True)
         self.auto_polish_checkbox.setStyleSheet("color: #5C4D44; font-weight: 700; font-size: 11px;")
         polish_row.addWidget(self.auto_polish_checkbox, stretch=2)
@@ -1182,7 +1183,7 @@ class SignSpeakApp(QMainWindow):
         sent_btn_layout = QHBoxLayout()
         sent_btn_layout.setSpacing(10)
 
-        speak_btn = QPushButton("Speak Full Sentence [ Enter ]")
+        speak_btn = QPushButton("Synthesize Speech [ Enter ]")
         speak_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         speak_btn.clicked.connect(self.speak_full_sentence)
         sent_btn_layout.addWidget(speak_btn, stretch=3)
@@ -1207,7 +1208,7 @@ class SignSpeakApp(QMainWindow):
         self.log_text.setFixedHeight(105)
         log_layout.addWidget(self.log_text)
 
-        self.status_label = QLabel("Status: Ready — Hold sign steady for 0.8s to capture | Keys [1/2/3] for AI Autocomplete | F1 for Help.")
+        self.status_label = QLabel("System Status: Ready — Hold sign steady for 0.8s to capture | Keys [1/2/3] for Autocomplete | F1 for Shortcuts.")
         self.status_label.setStyleSheet("color: #75655B; font-size: 11px; padding: 0 2px;")
         log_layout.addWidget(self.status_label)
 
@@ -1245,7 +1246,7 @@ class SignSpeakApp(QMainWindow):
         self.is_running = True
         self.start_btn.setEnabled(False)
         self.stop_btn.setEnabled(True)
-        self.engine_status_badge.setText("● Camera Active (30 FPS)")
+        self.engine_status_badge.setText("Camera: 30 FPS Active")
         self.engine_status_badge.setStyleSheet(
             "background-color: #E3F1E9; color: #2D704F; border: 1px solid #B8DCBE; "
             "border-radius: 8px; padding: 6px 12px;"
@@ -1272,12 +1273,12 @@ class SignSpeakApp(QMainWindow):
         self._init_threads()
         self.start_btn.setEnabled(True)
         self.stop_btn.setEnabled(False)
-        self.engine_status_badge.setText("○ Camera Stopped")
+        self.engine_status_badge.setText("Camera: Disconnected")
         self.engine_status_badge.setStyleSheet(
             "background-color: #F8E8E8; color: #8A3333; border: 1px solid #E0BDB8; "
             "border-radius: 8px; padding: 6px 12px;"
         )
-        self.status_label.setText("Status: Stopped")
+        self.status_label.setText("System Status: Stopped")
         self.log("Pipeline stopped.")
 
     def update_video(self, frame):
@@ -1378,7 +1379,7 @@ class SignSpeakApp(QMainWindow):
         self._trigger_ai_prediction()
 
     # ═══════════════════════════════════════════════════════════
-    # AI Autocomplete & Gboard Suggestion Handlers
+    # AI Autocomplete & Suggestion Handlers
     # ═══════════════════════════════════════════════════════════
     def _update_suggestions_instant(self):
         """Instantly updates suggestion pills (<0.1ms) using local lexicon."""
@@ -1386,18 +1387,18 @@ class SignSpeakApp(QMainWindow):
         context = " ".join(self.sentence_words).strip()
 
         if prefix:
-            self.sug_title_lbl.setText("💡 Autocomplete:")
+            self.sug_title_lbl.setText("Suggestions:")
             matches = [w for w in self.ai_thread.offline_dict if w.startswith(prefix) and w != prefix][:3]
             if not matches:
                 matches = [prefix]
             self.on_suggestions_ready(matches)
         elif context:
-            self.sug_title_lbl.setText("💡 Next Word:")
+            self.sug_title_lbl.setText("Next Word:")
             last_word = self.sentence_words[-1].upper() if self.sentence_words else ""
             matches = self.ai_thread.next_word_map.get(last_word, ["PLEASE", "THANK YOU", "HELP"])[:3]
             self.on_suggestions_ready(matches)
         else:
-            self.sug_title_lbl.setText("💡 Quick Starters:")
+            self.sug_title_lbl.setText("Quick Starters:")
             self.on_suggestions_ready(["HELLO", "PLEASE", "THANK YOU"])
 
     def _trigger_ai_prediction(self):
@@ -1407,7 +1408,7 @@ class SignSpeakApp(QMainWindow):
         self.ai_thread.enqueue_prediction(prefix, context)
 
     def on_suggestions_ready(self, suggestions):
-        """Updates the 3 Gboard suggestion pills smoothly."""
+        """Updates the 3 suggestion pills smoothly."""
         if not suggestions:
             return
         self.current_suggestions = suggestions
@@ -1433,7 +1434,7 @@ class SignSpeakApp(QMainWindow):
         self.current_word_letters.clear()
         self.word_label.setText("")
         self.is_polished = False
-        self.polish_btn.setText("✨ AI Polish Grammar [ Ctrl+P ]")
+        self.polish_btn.setText("Grammar Polish [ Ctrl+P ]")
         self.log(f"AI Autocomplete: \"{word}\" committed to sentence.")
         play_feedback_tone(freq=1100, duration_ms=40)
         self._update_suggestions_instant()
@@ -1449,8 +1450,8 @@ class SignSpeakApp(QMainWindow):
             self.sentence_words = list(self.raw_sentence_words)
             self.sentence_label.setText(" ".join(self.sentence_words))
             self.is_polished = False
-            self.polish_btn.setText("✨ AI Polish Grammar [ Ctrl+P ]")
-            self.log(f"Restored Raw Sign Gloss: \"{' '.join(self.sentence_words)}\"")
+            self.polish_btn.setText("Grammar Polish [ Ctrl+P ]")
+            self.log(f"Restored Raw Sign Sequence: \"{' '.join(self.sentence_words)}\"")
             play_feedback_tone(freq=950, duration_ms=30)
         else:
             # Trigger AI Polish
@@ -1459,8 +1460,8 @@ class SignSpeakApp(QMainWindow):
                 return
             self.raw_sentence_words = list(self.sentence_words)
             self.polish_btn.setEnabled(False)
-            self.polish_btn.setText("✨ Polishing Grammar...")
-            self.log(f"AI Polishing Sign Gloss: \"{full_text}\"...")
+            self.polish_btn.setText("Polishing Grammar...")
+            self.log(f"Applying AI Grammar Polish: \"{full_text}\"...")
             self.ai_thread.enqueue_polish(full_text)
 
     def on_sentence_polished(self, polished_text):
@@ -1469,7 +1470,7 @@ class SignSpeakApp(QMainWindow):
         if polished_text:
             self.sentence_label.setText(polished_text)
             self.is_polished = True
-            self.polish_btn.setText("↩️ Undo Polish [ Ctrl+Z ]")
+            self.polish_btn.setText("Revert to Raw [ Ctrl+Z ]")
             self.log(f"AI Polished Sentence: \"{polished_text}\"")
             play_feedback_tone(freq=1350, duration_ms=45)
 
@@ -1492,7 +1493,7 @@ class SignSpeakApp(QMainWindow):
             self.current_word_letters.clear()
             self.word_label.setText("")
             self.is_polished = False
-            self.polish_btn.setText("✨ AI Polish Grammar [ Ctrl+P ]")
+            self.polish_btn.setText("Grammar Polish [ Ctrl+P ]")
             play_feedback_tone(freq=900, duration_ms=25)
             self._update_suggestions_instant()
             self._trigger_ai_prediction()
@@ -1511,7 +1512,7 @@ class SignSpeakApp(QMainWindow):
             self.current_word_letters = list(last_word)
             self.word_label.setText(last_word)
             self.is_polished = False
-            self.polish_btn.setText("✨ AI Polish Grammar [ Ctrl+P ]")
+            self.polish_btn.setText("Grammar Polish [ Ctrl+P ]")
             self.log(f"Restored Word for Editing: \"{last_word}\"")
             self._update_suggestions_instant()
             self._trigger_ai_prediction()
@@ -1530,7 +1531,7 @@ class SignSpeakApp(QMainWindow):
             self.raw_sentence_words = list(self.sentence_words)
             self._speak_after_polish = True
             self.polish_btn.setEnabled(False)
-            self.polish_btn.setText("✨ Polishing Grammar...")
+            self.polish_btn.setText("Polishing Grammar...")
             self.log(f"Auto-Polishing before Speech: \"{full_text}\"...")
             self.ai_thread.enqueue_polish(full_text)
         else:
@@ -1544,7 +1545,7 @@ class SignSpeakApp(QMainWindow):
         self.raw_sentence_words.clear()
         self.is_polished = False
         self._speak_after_polish = False
-        self.polish_btn.setText("✨ AI Polish Grammar [ Ctrl+P ]")
+        self.polish_btn.setText("Grammar Polish [ Ctrl+P ]")
         self.word_label.setText("")
         self.sentence_label.setText("")
         self.held_candidate = None
