@@ -27,7 +27,8 @@ from one_euro_filter import LandmarkStreamSmoother
 
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QTextEdit, QFrame, QGroupBox, QProgressBar
+    QLabel, QPushButton, QTextEdit, QFrame, QGroupBox, QProgressBar,
+    QDialog, QCheckBox
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QThread
 from PyQt6.QtGui import QImage, QPixmap, QFont, QColor, QPalette
@@ -338,16 +339,17 @@ class TTSThread(QThread):
 # Thread 4: Non-Blocking AI Autocomplete Worker (Groq Cloud / Offline Fallback)
 # ═══════════════════════════════════════════════════════════════
 # ═══════════════════════════════════════════════════════════════
-# Thread 4: Non-Blocking AI Autocomplete Worker (Groq Cloud / Offline Fallback)
+# Thread 4: Non-Blocking AI Autocomplete & Grammar Polish Worker (Groq Cloud / Offline Fallback)
 # ═══════════════════════════════════════════════════════════════
 class AIPredictionThread(QThread):
     suggestions_ready = pyqtSignal(list)
+    polish_ready = pyqtSignal(str)
     status_update = pyqtSignal(str)
 
     def __init__(self, config_path=None):
         super().__init__()
         self.config_path = config_path or (BASE_DIR / "ai_config.json")
-        self.request_queue = queue.Queue(maxsize=4)
+        self.request_queue = queue.Queue(maxsize=8)
         self.running = True
         self.api_key = None
         self._load_config()
@@ -446,34 +448,49 @@ class AIPredictionThread(QThread):
     def enqueue_prediction(self, prefix, sentence_context=""):
         while not self.request_queue.empty():
             try:
-                self.request_queue.get_nowait()
+                item = self.request_queue.get_nowait()
+                if item[0] == "polish":
+                    # Re-queue polish requests so we don't drop them
+                    self.request_queue.put(item)
+                    break
             except queue.Empty:
                 break
-        self.request_queue.put((prefix.upper().strip(), sentence_context.strip()))
+        self.request_queue.put(("autocomplete", prefix.upper().strip(), sentence_context.strip()))
+
+    def enqueue_polish(self, raw_sentence):
+        self.request_queue.put(("polish", raw_sentence.strip(), ""))
 
     def run(self):
         self.running = True
         while self.running:
             try:
-                item = self.request_queue.get(timeout=0.5)
+                task_type, arg1, arg2 = self.request_queue.get(timeout=0.5)
             except queue.Empty:
                 continue
 
-            prefix, context = item
+            if task_type == "autocomplete":
+                prefix, context = arg1, arg2
+                suggestions = self._query_groq(prefix, context)
 
-            # 1. Query Groq Cloud API
-            suggestions = self._query_groq(prefix, context)
+                if not suggestions:
+                    if prefix:
+                        suggestions = [w for w in self.offline_dict if w.startswith(prefix) and w != prefix][:3]
+                    elif context:
+                        last_word = context.split()[-1].upper() if context.split() else ""
+                        suggestions = self.next_word_map.get(last_word, ["PLEASE", "THANK YOU", "HELP"])[:3]
 
-            # 2. Fallback if API is unavailable
-            if not suggestions:
-                if prefix:
-                    suggestions = [w for w in self.offline_dict if w.startswith(prefix) and w != prefix][:3]
-                elif context:
-                    last_word = context.split()[-1].upper() if context.split() else ""
-                    suggestions = self.next_word_map.get(last_word, ["PLEASE", "THANK YOU", "HELP"])[:3]
+                if suggestions:
+                    self.suggestions_ready.emit(suggestions)
 
-            if suggestions:
-                self.suggestions_ready.emit(suggestions)
+            elif task_type == "polish":
+                raw_text = arg1
+                polished = self._polish_groq(raw_text)
+                if not polished:
+                    # Offline fallback: capitalize and punctuate
+                    polished = raw_text.strip().capitalize()
+                    if not polished.endswith((".", "!", "?")):
+                        polished += "."
+                self.polish_ready.emit(polished)
 
     def _query_groq(self, prefix, context):
         if not self.api_key:
@@ -529,12 +546,140 @@ class AIPredictionThread(QThread):
             pass
         return None
 
+    def _polish_groq(self, raw_text):
+        if not self.api_key or not raw_text:
+            return None
+
+        url = "https://api.groq.com/openai/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        }
+        prompt = (
+            f"You are an expert Indian Sign Language translator. "
+            f"Translate this sign gloss: '{raw_text}' into a single natural, fluent English sentence. "
+            f"Output ONLY the sentence. No explanations, no quotes, no markdown."
+        )
+
+        payload = {
+            "model": "groq/compound-mini",
+            "messages": [
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.1,
+            "max_tokens": 35
+        }
+
+        try:
+            import urllib.request
+            import re
+            req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
+            with urllib.request.urlopen(req, timeout=2.5) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                content = data["choices"][0]["message"]["content"].strip()
+                content = re.sub(r'^["\']|["\']$', '', content).strip()
+                if content:
+                    return content
+        except Exception:
+            pass
+        return None
+
     def stop(self):
         self.running = False
 
 
 # ═══════════════════════════════════════════════════════════════
-# Main PyQt6 Desktop Application Window (UI/UX Redesigned + AI Autocomplete)
+# Shortcuts & Controls Quick Help Popup Dialog
+# ═══════════════════════════════════════════════════════════════
+class ShortcutsHelpDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("SignSpeak Studio — Controls & Shortcuts Guide")
+        self.setFixedSize(580, 520)
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #F7F4EF;
+            }
+            QLabel {
+                color: #2D2521;
+                font-family: 'Segoe UI', -apple-system, sans-serif;
+            }
+            QPushButton {
+                background-color: #D96B43;
+                color: #FFFFFF;
+                border: none;
+                padding: 9px 22px;
+                font-size: 13px;
+                font-weight: 700;
+                border-radius: 9px;
+            }
+            QPushButton:hover {
+                background-color: #C55A32;
+            }
+        """)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 20, 24, 20)
+        layout.setSpacing(12)
+
+        title = QLabel("⌨️ SignSpeak Controls & Shortcuts Guide")
+        title.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
+        title.setStyleSheet("color: #2D2521; font-weight: 800;")
+        layout.addWidget(title)
+
+        subtitle = QLabel("Complete reference of all interactive gestures, keyboard triggers, and AI features.")
+        subtitle.setFont(QFont("Segoe UI", 10))
+        subtitle.setStyleSheet("color: #75655B;")
+        layout.addWidget(subtitle)
+
+        # Card container with rows
+        card = QFrame()
+        card.setStyleSheet("background-color: #FFFFFF; border: 1.5px solid #E8DFD5; border-radius: 12px; padding: 12px;")
+        card_layout = QVBoxLayout(card)
+        card_layout.setSpacing(7)
+
+        shortcuts_list = [
+            ("Hold Sign (0.8s)", "Auto-captures recognized letter into active word builder"),
+            ("Keys [ 1 / 2 / 3 ]", "Accepts AI Autocomplete word or Next-Word prediction"),
+            ("Spacebar", "Commits active word into full spoken sentence line"),
+            ("Backspace", "Deletes last letter (or restores previous word for editing)"),
+            ("Ctrl + P", "✨ 1-Click AI Grammar Polish (raw gloss ──► natural English)"),
+            ("Ctrl + Z", "↩️ Undo Grammar Polish (restores original signed words)"),
+            ("Enter", "Vocalizes full sentence via offline Piper Neural Voice"),
+            ("Escape", "Clears both word and sentence buffers instantly"),
+            ("F1 / Help Button", "Opens this shortcuts & controls guide")
+        ]
+
+        for key_text, desc_text in shortcuts_list:
+            row = QHBoxLayout()
+            row.setSpacing(10)
+            k_lbl = QLabel(key_text)
+            k_lbl.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+            k_lbl.setStyleSheet(
+                "background-color: #EFE7DE; color: #4A3E37; border: 1px solid #D8C9B8; "
+                "border-radius: 6px; padding: 3px 8px; min-width: 130px;"
+            )
+            d_lbl = QLabel(desc_text)
+            d_lbl.setFont(QFont("Segoe UI", 10))
+            d_lbl.setStyleSheet("color: #5C4D44;")
+            d_lbl.setWordWrap(True)
+            row.addWidget(k_lbl)
+            row.addWidget(d_lbl, stretch=1)
+            card_layout.addLayout(row)
+
+        layout.addWidget(card)
+
+        btn_box = QHBoxLayout()
+        btn_box.addStretch()
+        close_btn = QPushButton("Got It!")
+        close_btn.clicked.connect(self.accept)
+        btn_box.addWidget(close_btn)
+        layout.addLayout(btn_box)
+
+
+# ═══════════════════════════════════════════════════════════════
+# Main PyQt6 Desktop Application Window (UI/UX Redesigned + AI Autocomplete + Grammar Polish)
 # ═══════════════════════════════════════════════════════════════
 class SignSpeakApp(QMainWindow):
     def __init__(self):
@@ -543,10 +688,13 @@ class SignSpeakApp(QMainWindow):
         self.setMinimumSize(1220, 800)
         self.setStyleSheet(self._get_stylesheet())
 
-        # State Variables (100% Preserved)
+        # State Variables (100% Preserved + AI Polish)
         self.is_running = False
         self.current_word_letters = []
         self.sentence_words = []
+        self.raw_sentence_words = []
+        self.is_polished = False
+        self._speak_after_polish = False
         self.current_suggestions = ["HELLO", "PLEASE", "THANK YOU"]
 
         self.live_letter = None
@@ -721,9 +869,15 @@ class SignSpeakApp(QMainWindow):
         header_layout.addLayout(header_title_layout)
         header_layout.addStretch()
 
-        # Top Status Badges
+        # Top Status Badges & Quick Help Button
         badges_layout = QHBoxLayout()
         badges_layout.setSpacing(10)
+
+        self.help_btn = QPushButton("⌨️ Shortcuts Guide (F1)")
+        self.help_btn.setObjectName("secondaryBtn")
+        self.help_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.help_btn.clicked.connect(self.show_shortcuts_guide)
+        badges_layout.addWidget(self.help_btn)
 
         ai_badge = QLabel("⚡ AI Autocomplete")
         ai_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
@@ -808,6 +962,8 @@ class SignSpeakApp(QMainWindow):
             ("Keys [ 1 / 2 / 3 ]", "Accepts AI Autocomplete suggestion"),
             ("Spacebar", "Commits active word to sentence line"),
             ("Backspace", "Deletes last letter (or restores last word)"),
+            ("Ctrl + P", "✨ 1-Click AI Sign Grammar Polish"),
+            ("Ctrl + Z", "↩️ Undo Polish (restores raw signs)"),
             ("Enter", "Synthesizes speech for full sentence"),
             ("Escape", "Clears both word and sentence buffers")
         ]
@@ -990,7 +1146,7 @@ class SignSpeakApp(QMainWindow):
         word_layout.addLayout(word_btn_layout)
         right_col.addWidget(word_group)
 
-        # ── Card 3: Full Sentence Builder ──
+        # ── Card 3: Full Sentence Builder + AI Sign Grammar Polish ──
         sentence_group = QGroupBox("Full Spoken Sentence Line")
         sentence_layout = QVBoxLayout(sentence_group)
         sentence_layout.setContentsMargins(14, 14, 14, 14)
@@ -1005,6 +1161,23 @@ class SignSpeakApp(QMainWindow):
             "border-radius: 12px; padding: 10px 14px;"
         )
         sentence_layout.addWidget(self.sentence_label)
+
+        # AI Polish Controls Row
+        polish_row = QHBoxLayout()
+        polish_row.setSpacing(10)
+
+        self.polish_btn = QPushButton("✨ AI Polish Grammar [ Ctrl+P ]")
+        self.polish_btn.setObjectName("secondaryBtn")
+        self.polish_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.polish_btn.clicked.connect(self.toggle_ai_polish)
+        polish_row.addWidget(self.polish_btn, stretch=3)
+
+        self.auto_polish_checkbox = QCheckBox("Auto-Polish on Speak")
+        self.auto_polish_checkbox.setChecked(True)
+        self.auto_polish_checkbox.setStyleSheet("color: #5C4D44; font-weight: 700; font-size: 11px;")
+        polish_row.addWidget(self.auto_polish_checkbox, stretch=2)
+
+        sentence_layout.addLayout(polish_row)
 
         sent_btn_layout = QHBoxLayout()
         sent_btn_layout.setSpacing(10)
@@ -1034,7 +1207,7 @@ class SignSpeakApp(QMainWindow):
         self.log_text.setFixedHeight(105)
         log_layout.addWidget(self.log_text)
 
-        self.status_label = QLabel("Status: Ready — Hold sign steady for 0.8s to capture | Keys [1/2/3] for AI Autocomplete.")
+        self.status_label = QLabel("Status: Ready — Hold sign steady for 0.8s to capture | Keys [1/2/3] for AI Autocomplete | F1 for Help.")
         self.status_label.setStyleSheet("color: #75655B; font-size: 11px; padding: 0 2px;")
         log_layout.addWidget(self.status_label)
 
@@ -1059,6 +1232,12 @@ class SignSpeakApp(QMainWindow):
 
         self.ai_thread = AIPredictionThread(BASE_DIR / "ai_config.json")
         self.ai_thread.suggestions_ready.connect(self.on_suggestions_ready)
+        self.ai_thread.polish_ready.connect(self.on_sentence_polished)
+
+    def show_shortcuts_guide(self):
+        """Displays the interactive Keyboard & Controls guide modal."""
+        dialog = ShortcutsHelpDialog(self)
+        dialog.exec()
 
     def start_pipeline(self):
         if self.is_running:
@@ -1253,10 +1432,52 @@ class SignSpeakApp(QMainWindow):
         self.sentence_label.setText(" ".join(self.sentence_words))
         self.current_word_letters.clear()
         self.word_label.setText("")
+        self.is_polished = False
+        self.polish_btn.setText("✨ AI Polish Grammar [ Ctrl+P ]")
         self.log(f"AI Autocomplete: \"{word}\" committed to sentence.")
         play_feedback_tone(freq=1100, duration_ms=40)
         self._update_suggestions_instant()
         self._trigger_ai_prediction()
+
+    # ═══════════════════════════════════════════════════════════
+    # 1-Click AI Sign Grammar Polish Engine
+    # ═══════════════════════════════════════════════════════════
+    def toggle_ai_polish(self):
+        """Toggles AI grammar polish between polished natural sentence and raw sign gloss."""
+        if self.is_polished and self.raw_sentence_words:
+            # Revert to raw sign gloss
+            self.sentence_words = list(self.raw_sentence_words)
+            self.sentence_label.setText(" ".join(self.sentence_words))
+            self.is_polished = False
+            self.polish_btn.setText("✨ AI Polish Grammar [ Ctrl+P ]")
+            self.log(f"Restored Raw Sign Gloss: \"{' '.join(self.sentence_words)}\"")
+            play_feedback_tone(freq=950, duration_ms=30)
+        else:
+            # Trigger AI Polish
+            full_text = self.sentence_label.text().strip()
+            if not full_text:
+                return
+            self.raw_sentence_words = list(self.sentence_words)
+            self.polish_btn.setEnabled(False)
+            self.polish_btn.setText("✨ Polishing Grammar...")
+            self.log(f"AI Polishing Sign Gloss: \"{full_text}\"...")
+            self.ai_thread.enqueue_polish(full_text)
+
+    def on_sentence_polished(self, polished_text):
+        """Callback when AI Grammar Polish completes."""
+        self.polish_btn.setEnabled(True)
+        if polished_text:
+            self.sentence_label.setText(polished_text)
+            self.is_polished = True
+            self.polish_btn.setText("↩️ Undo Polish [ Ctrl+Z ]")
+            self.log(f"AI Polished Sentence: \"{polished_text}\"")
+            play_feedback_tone(freq=1350, duration_ms=45)
+
+            # If user triggered speak with auto-polish on:
+            if self._speak_after_polish:
+                self._speak_after_polish = False
+                self.tts_thread.enqueue_text(polished_text)
+                self.log(f"Speaking Polished Sentence: \"{polished_text}\"")
 
     # ═══════════════════════════════════════════════════════════
     # Word & Sentence Construction (100% Preserved)
@@ -1270,6 +1491,8 @@ class SignSpeakApp(QMainWindow):
             self.log(f"Committed Word: \"{word}\" (Spacebar)")
             self.current_word_letters.clear()
             self.word_label.setText("")
+            self.is_polished = False
+            self.polish_btn.setText("✨ AI Polish Grammar [ Ctrl+P ]")
             play_feedback_tone(freq=900, duration_ms=25)
             self._update_suggestions_instant()
             self._trigger_ai_prediction()
@@ -1287,6 +1510,8 @@ class SignSpeakApp(QMainWindow):
             self.sentence_label.setText(" ".join(self.sentence_words))
             self.current_word_letters = list(last_word)
             self.word_label.setText(last_word)
+            self.is_polished = False
+            self.polish_btn.setText("✨ AI Polish Grammar [ Ctrl+P ]")
             self.log(f"Restored Word for Editing: \"{last_word}\"")
             self._update_suggestions_instant()
             self._trigger_ai_prediction()
@@ -1297,7 +1522,18 @@ class SignSpeakApp(QMainWindow):
             self.commit_word()
 
         full_text = self.sentence_label.text().strip()
-        if full_text:
+        if not full_text:
+            return
+
+        # Check if Auto-Polish is requested before speaking
+        if self.auto_polish_checkbox.isChecked() and not self.is_polished:
+            self.raw_sentence_words = list(self.sentence_words)
+            self._speak_after_polish = True
+            self.polish_btn.setEnabled(False)
+            self.polish_btn.setText("✨ Polishing Grammar...")
+            self.log(f"Auto-Polishing before Speech: \"{full_text}\"...")
+            self.ai_thread.enqueue_polish(full_text)
+        else:
             self.tts_thread.enqueue_text(full_text)
             self.log(f"Speaking Full Sentence: \"{full_text}\"")
 
@@ -1305,6 +1541,10 @@ class SignSpeakApp(QMainWindow):
         """Clears word and sentence buffers."""
         self.current_word_letters.clear()
         self.sentence_words.clear()
+        self.raw_sentence_words.clear()
+        self.is_polished = False
+        self._speak_after_polish = False
+        self.polish_btn.setText("✨ AI Polish Grammar [ Ctrl+P ]")
         self.word_label.setText("")
         self.sentence_label.setText("")
         self.held_candidate = None
@@ -1317,8 +1557,15 @@ class SignSpeakApp(QMainWindow):
         self.log("Cleared word and sentence buffers.")
 
     def keyPressEvent(self, event):
-        """Handle global keyboard shortcuts cleanly (100% Preserved + Keys 1/2/3)."""
-        if event.key() == Qt.Key.Key_1 and self.current_suggestions and len(self.current_suggestions) >= 1:
+        """Handle global keyboard shortcuts cleanly (100% Preserved + F1/Ctrl+P/Ctrl+Z/Keys 1,2,3)."""
+        if event.key() == Qt.Key.Key_F1:
+            self.show_shortcuts_guide()
+        elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and event.key() == Qt.Key.Key_P:
+            self.toggle_ai_polish()
+        elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and event.key() == Qt.Key.Key_Z:
+            if self.is_polished:
+                self.toggle_ai_polish()
+        elif event.key() == Qt.Key.Key_1 and self.current_suggestions and len(self.current_suggestions) >= 1:
             self._accept_autocomplete(self.current_suggestions[0])
         elif event.key() == Qt.Key.Key_2 and self.current_suggestions and len(self.current_suggestions) >= 2:
             self._accept_autocomplete(self.current_suggestions[1])
