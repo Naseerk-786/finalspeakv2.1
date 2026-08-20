@@ -337,6 +337,9 @@ class TTSThread(QThread):
 # ═══════════════════════════════════════════════════════════════
 # Thread 4: Non-Blocking AI Autocomplete Worker (Groq Cloud / Offline Fallback)
 # ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════
+# Thread 4: Non-Blocking AI Autocomplete Worker (Groq Cloud / Offline Fallback)
+# ═══════════════════════════════════════════════════════════════
 class AIPredictionThread(QThread):
     suggestions_ready = pyqtSignal(list)
     status_update = pyqtSignal(str)
@@ -349,23 +352,87 @@ class AIPredictionThread(QThread):
         self.api_key = None
         self._load_config()
 
-        # Offline common frequency dictionary for zero-delay instant fallback
+        # Offline common frequency dictionary for instant <0.1ms fallback
         self.offline_dict = [
-            "ABOUT", "AFTER", "AGAIN", "ALL", "ALWAYS", "AND", "ANY", "ASK", "BAD", "BEAUTIFUL",
-            "BECAUSE", "BEFORE", "BEST", "BETTER", "BIG", "BOOK", "BOY", "CALL", "CAN", "CAR",
-            "CHANGE", "CHILD", "COME", "COOK", "DAY", "DOCTOR", "DO", "DOG", "DRINK", "DRIVE",
-            "EAT", "FAMILY", "FATHER", "FEEL", "FIND", "FOOD", "FOR", "FRIEND", "GIVE", "GO",
-            "GOOD", "HAPPY", "HAVE", "HEAR", "HELLO", "HELP", "HERE", "HOME", "HOSPITAL", "HOUSE",
-            "HOW", "HURT", "IMPORTANT", "IS", "KNOW", "LANGUAGE", "LEARN", "LIKE", "LISTEN", "LIVE",
-            "LOOK", "LOVE", "MAKE", "MAN", "ME", "MEET", "MONEY", "MORE", "MORNING", "MOTHER",
-            "NAME", "NEED", "NEW", "NIGHT", "NO", "NOW", "OF", "OFFICE", "OLD", "OPEN",
-            "PEOPLE", "PLEASE", "READ", "RIGHT", "ROOM", "SAD", "SAY", "SCHOOL", "SEE", "SIGN",
-            "SIT", "SLEEP", "SLOW", "SMALL", "SORRY", "SPEAK", "STAND", "STOP", "STUDY", "TALK",
-            "TEACHER", "TELL", "THANK", "THAT", "THE", "THEIR", "THEM", "THINK", "TIME", "TODAY",
-            "TOMORROW", "UNDERSTAND", "USE", "WAIT", "WALK", "WANT", "WARM", "WATCH", "WATER",
-            "WAY", "WE", "WELCOME", "WHAT", "WHEN", "WHERE", "WHICH", "WHO", "WHY", "WILL",
-            "WITH", "WOMAN", "WORD", "WORK", "WORLD", "WRITE", "WRONG", "YES", "YOU", "YOUR"
+            "ABOUT", "ABOVE", "ACTION", "AFTER", "AGAIN", "ALL", "ALWAYS", "AND", "ANIMAL", "ANSWER",
+            "ANY", "APPLE", "APPOINTMENT", "ASK", "BABY", "BACK", "BAD", "BAG", "BALL", "BALLOON",
+            "BANANA", "BEAUTIFUL", "BECAUSE", "BED", "BEFORE", "BEGIN", "BEHIND", "BELIEVE", "BEST", "BETTER",
+            "BICYCLE", "BIG", "BIRD", "BIRTHDAY", "BLACK", "BLANKET", "BLUE", "BOARD", "BOOK", "BOTTLE",
+            "BOX", "BOY", "BREAD", "BREAK", "BRIDGE", "BRIGHT", "BROTHER", "BROWN", "BUILD", "BUS",
+            "CALL", "CAN", "CAR", "CAT", "CHAIR", "CHANGE", "CHILD", "CHILDREN", "CITY", "CLEAN",
+            "CLOSE", "CLOTHES", "COLD", "COLOR", "COME", "COMPUTER", "COOK", "COUNTRY", "CRY", "CUT",
+            "DANCE", "DARK", "DAUGHTER", "DAY", "DEAD", "DEAR", "DEAF", "DECIDE", "DELICIOUS", "DOCTOR",
+            "DO", "DOG", "DOOR", "DRAW", "DREAM", "DRESS", "DRINK", "DRIVE", "EAR", "EARLY",
+            "EAT", "EDUCATION", "EGG", "EIGHT", "ELEPHANT", "EMERGENCY", "EMPTY", "END", "ENGINE", "ENJOY",
+            "ENOUGH", "ENTER", "EVENING", "EVERY", "EVERYONE", "EVERYTHING", "EYE", "FACE", "FALL", "FAMILY",
+            "FAR", "FAST", "FATHER", "FEEL", "FEW", "FIND", "FINE", "FINGER", "FINISH", "FIRE",
+            "FIRST", "FISH", "FIVE", "FLOWER", "FLY", "FOOD", "FOOT", "FOR", "FOREST", "FORGET",
+            "FOUR", "FREE", "FRESH", "FRIEND", "FROM", "FRONT", "FRUIT", "FULL", "FUNNY", "GAME",
+            "GARDEN", "GIRL", "GIVE", "GIVEN", "GIVING", "GLASS", "GO", "GOOD", "GOODBYE", "GRASS",
+            "GREAT", "GREEN", "GROUND", "GROUP", "GROW", "HAND", "HAPPY", "HARD", "HAT", "HAVE",
+            "HE", "HEAD", "HEAR", "HEART", "HEAVY", "HELLO", "HELP", "HERE", "HIGH", "HILL",
+            "HISTORY", "HOLD", "HOME", "HOPE", "HORSE", "HOSPITAL", "HOT", "HOTEL", "HOUR", "HOUSE",
+            "HOW", "HUNDRED", "HUNGRY", "HURT", "ICE", "IDEA", "IMPORTANT", "IN", "INSIDE", "INTERNET",
+            "IS", "ISLAND", "JOB", "JOIN", "JUMP", "JUST", "KEEP", "KEY", "KICK", "KID",
+            "KIND", "KING", "KITCHEN", "KNOW", "LAND", "LANGUAGE", "LARGE", "LAST", "LATE", "LAUGH",
+            "LEARN", "LEAVE", "LEFT", "LEG", "LESSON", "LETTER", "LIGHT", "LIKE", "LINE", "LIP",
+            "LISTEN", "LITTLE", "LIVE", "LONG", "LOOK", "LOVE", "LUNCH", "MAKE", "MAN", "MANY",
+            "MARKET", "MATCH", "ME", "MEAL", "MEDICINE", "MEET", "MEMBER", "MESSAGE", "MIDDLE", "MILK",
+            "MIND", "MINUTE", "MISS", "MOMENT", "MONEY", "MONTH", "MOON", "MORE", "MORNING", "MOTHER",
+            "MOUTH", "MOVE", "MOVIE", "MUSIC", "MUST", "NAME", "NEAR", "NEED", "NEIGHBOR", "NEVER",
+            "NEW", "NEWS", "NEXT", "NICE", "NIGHT", "NINE", "NO", "NOISE", "NOON", "NORTH",
+            "NOSE", "NOT", "NOTE", "NOW", "NUMBER", "NURSE", "OFFICE", "OFTEN", "OLD", "ONCE",
+            "ONE", "ONLY", "OPEN", "ORANGE", "ORDER", "OTHER", "OUR", "OUT", "OUTSIDE", "PAGE",
+            "PAIN", "PAINT", "PAPER", "PARENT", "PARK", "PART", "PASS", "PAST", "PATH", "PAY",
+            "PEACE", "PEN", "PEOPLE", "PERSON", "PHONE", "PHOTO", "PICTURE", "PIECE", "PLACE", "PLAN",
+            "PLANE", "PLANT", "PLAY", "PLEASE", "POINT", "POLICE", "POOR", "POSSIBLE", "POWER", "PRACTICE",
+            "PRESENT", "PRETTY", "PRICE", "PROBLEM", "PROMISE", "PUPIL", "PUSH", "PUT", "QUEEN", "QUESTION",
+            "QUICK", "QUIET", "RADIO", "RAIN", "READ", "READY", "REAL", "REASON", "RED", "REMEMBER",
+            "REST", "RICE", "RICH", "RIDE", "RIGHT", "RING", "RIVER", "ROAD", "ROOM", "ROUND",
+            "RUN", "SAD", "SAFE", "SAME", "SAVE", "SAY", "SCHOOL", "SCIENCE", "SEA", "SEASON",
+            "SEAT", "SECOND", "SECRET", "SEE", "SEED", "SEEM", "SEND", "SENTENCE", "SEVEN", "SEVERAL",
+            "SHARE", "SHOE", "SHOP", "SHORT", "SHOULD", "SHOW", "SHUT", "SICK", "SIDE", "SIGN",
+            "SILENT", "SIMPLE", "SING", "SISTER", "SIT", "SIX", "SKIN", "SKY", "SLEEP", "SLOW",
+            "SMALL", "SMILE", "SMOKE", "SNOW", "SO", "SOFT", "SOME", "SOMEONE", "SOMETHING", "SOMETIMES",
+            "SON", "SONG", "SOON", "SORRY", "SOUND", "SOUTH", "SPACE", "SPEAK", "SPECIAL", "SPEED",
+            "SPELL", "SPEND", "SPORT", "SPRING", "STAND", "STAR", "START", "STATION", "STAY", "STEP",
+            "STICK", "STILL", "STOP", "STORE", "STORY", "STREET", "STRONG", "STUDENT", "STUDY", "SUCH",
+            "SUDDEN", "SUGAR", "SUMMER", "SUN", "SUNDAY", "SURE", "SWEET", "SWIM", "TABLE", "TAKE",
+            "TALK", "TALL", "TASTE", "TEA", "TEACH", "TEACHER", "TEAM", "TELL", "TEN", "TEST",
+            "THANK", "THANKS", "THAT", "THE", "THEIR", "THEM", "THEN", "THERE", "THESE", "THEY",
+            "THICK", "THIN", "THING", "THINK", "THIRD", "THIS", "THOSE", "THOUGH", "THOUGHT", "THREE",
+            "THROUGH", "THROW", "TIME", "TIRED", "TO", "TODAY", "TOGETHER", "TOMORROW", "TONIGHT", "TOO",
+            "TOOTH", "TOP", "TOUCH", "TOWN", "TRAIN", "TRAVEL", "TREE", "TRIP", "TRUE", "TRUST",
+            "TRY", "TURN", "TWO", "UNCLE", "UNDER", "UNDERSTAND", "UNTIL", "UP", "UPON", "US",
+            "USE", "USEFUL", "VACATION", "VERY", "VILLAGE", "VISIT", "VOICE", "WAIT", "WAKE", "WALK",
+            "WALL", "WANT", "WAR", "WARM", "WASH", "WATCH", "WATER", "WAVE", "WAY", "WE",
+            "WEAK", "WEAR", "WEATHER", "WEEK", "WELCOME", "WELL", "WEST", "WET", "WHAT", "WHEAT",
+            "WHEEL", "WHEN", "WHERE", "WHICH", "WHILE", "WHITE", "WHO", "WHOLE", "WHOM", "WHOSE",
+            "WHY", "WIDE", "WIFE", "WILD", "WILL", "WIN", "WIND", "WINDOW", "WINTER", "WISH",
+            "WITH", "WITHOUT", "WOMAN", "WOMEN", "WONDER", "WOOD", "WORD", "WORK", "WORKER", "WORLD",
+            "WORRY", "WRITE", "WRONG", "YARD", "YEAR", "YELLOW", "YES", "YESTERDAY", "YET", "YOU",
+            "YOUNG", "YOUR", "ZERO", "ZOO"
         ]
+
+        # Context bigram transition suggestions for next words
+        self.next_word_map = {
+            "BALL": ["GIVE", "PLAY", "THROW", "CATCH"],
+            "GIVE": ["ME", "TO", "PLEASE", "HIM", "HER"],
+            "WANT": ["WATER", "FOOD", "HELP", "TO GO", "TO EAT"],
+            "I": ["WANT", "NEED", "AM", "LIKE", "FEEL"],
+            "ME": ["PLEASE", "HELP", "WATER", "NOW"],
+            "YOU": ["ARE", "WANT", "NEED", "CAN", "HELP"],
+            "PLEASE": ["HELP", "GIVE", "COME", "WAIT", "SIT"],
+            "THANK": ["YOU", "VERY MUCH", "AGAIN", "ALL"],
+            "HELLO": ["HOW ARE YOU", "MY FRIEND", "GOOD MORNING", "EVERYONE"],
+            "GOOD": ["MORNING", "EVENING", "NIGHT", "JOB", "DAY"],
+            "HELP": ["ME", "PLEASE", "NOW", "HIM"],
+            "WHERE": ["IS", "ARE", "HOSPITAL", "DOCTOR", "BATHROOM"],
+            "HOW": ["ARE YOU", "MUCH", "MANY", "IS IT"],
+            "DOCTOR": ["APPOINTMENT", "HELP", "HOSPITAL", "MEDICINE"],
+            "WATER": ["DRINK", "PLEASE", "BOTTLE", "COLD"],
+            "FOOD": ["EAT", "DELICIOUS", "PLEASE", "HUNGRY"]
+        }
 
     def _load_config(self):
         if os.path.exists(self.config_path):
@@ -393,18 +460,20 @@ class AIPredictionThread(QThread):
                 continue
 
             prefix, context = item
-            if not prefix:
-                self.suggestions_ready.emit([])
-                continue
 
             # 1. Query Groq Cloud API
             suggestions = self._query_groq(prefix, context)
 
-            # 2. Fallback to offline dictionary if offline or timed out
+            # 2. Fallback if API is unavailable
             if not suggestions:
-                suggestions = [w for w in self.offline_dict if w.startswith(prefix) and w != prefix][:3]
+                if prefix:
+                    suggestions = [w for w in self.offline_dict if w.startswith(prefix) and w != prefix][:3]
+                elif context:
+                    last_word = context.split()[-1].upper() if context.split() else ""
+                    suggestions = self.next_word_map.get(last_word, ["PLEASE", "THANK YOU", "HELP"])[:3]
 
-            self.suggestions_ready.emit(suggestions)
+            if suggestions:
+                self.suggestions_ready.emit(suggestions)
 
     def _query_groq(self, prefix, context):
         if not self.api_key:
@@ -416,9 +485,14 @@ class AIPredictionThread(QThread):
             "Content-Type": "application/json",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         }
-        prompt = f"Suggest up to 3 uppercase English words starting with '{prefix}'."
-        if context:
-            prompt += f" Previous sentence context: '{context}'."
+
+        if prefix:
+            prompt = f"Suggest up to 3 uppercase English words starting with '{prefix}'."
+            if context:
+                prompt += f" Previous sentence words: '{context}'."
+        else:
+            prompt = f"Given sign sentence '{context}', suggest the 3 most likely NEXT words to follow."
+
         prompt += " Return ONLY a JSON list of uppercase strings, e.g. [\"WATER\", \"WATCH\", \"WAIT\"]."
 
         payload = {
@@ -442,10 +516,15 @@ class AIPredictionThread(QThread):
                     words = json.loads(match.group(0))
                     valid = []
                     for w in words:
-                        clean = re.sub(r"[^A-Z]", "", str(w).upper())
-                        if clean and clean.startswith(prefix) and clean not in valid:
-                            valid.append(clean)
-                    return valid[:3]
+                        clean = re.sub(r"[^A-Z ]", "", str(w).upper()).strip()
+                        if clean and clean not in valid:
+                            if prefix:
+                                if clean.startswith(prefix):
+                                    valid.append(clean)
+                            else:
+                                valid.append(clean)
+                    if valid:
+                        return valid[:3]
         except Exception:
             pass
         return None
@@ -468,7 +547,7 @@ class SignSpeakApp(QMainWindow):
         self.is_running = False
         self.current_word_letters = []
         self.sentence_words = []
-        self.current_suggestions = []
+        self.current_suggestions = ["HELLO", "PLEASE", "THANK YOU"]
 
         self.live_letter = None
         self.live_confidence = 0.0
@@ -840,7 +919,7 @@ class SignSpeakApp(QMainWindow):
         word_layout.setContentsMargins(14, 14, 14, 14)
         word_layout.setSpacing(8)
 
-        # 💡 Gboard-Style 3 Suggestion Pills Strip
+        # 💡 Gboard-Style 3 Suggestion Pills Strip (Permanently Visible)
         self.suggestions_container = QWidget()
         self.suggestions_layout = QHBoxLayout(self.suggestions_container)
         self.suggestions_layout.setContentsMargins(0, 0, 0, 2)
@@ -852,18 +931,19 @@ class SignSpeakApp(QMainWindow):
         self.suggestions_layout.addWidget(self.sug_title_lbl)
 
         self.pill_buttons = []
+        initial_pills = ["HELLO", "PLEASE", "THANK YOU"]
         for i in range(3):
-            btn = QPushButton(f"[{i+1}] -")
+            btn = QPushButton(f"[{i+1}] {initial_pills[i]}")
             btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             btn.setStyleSheet("""
                 QPushButton {
                     background-color: #EFE7DE;
-                    color: #4A3E37;
+                    color: #3D3530;
                     border: 1.5px solid #D8C9B8;
                     border-radius: 8px;
                     padding: 5px 12px;
                     font-size: 11px;
-                    font-weight: bold;
+                    font-weight: 700;
                     font-family: 'Segoe UI', sans-serif;
                 }
                 QPushButton:hover {
@@ -876,12 +956,10 @@ class SignSpeakApp(QMainWindow):
                 }
             """)
             btn.clicked.connect(lambda checked, idx=i: self._on_suggestion_clicked(idx))
-            btn.setVisible(False)
             self.suggestions_layout.addWidget(btn)
             self.pill_buttons.append(btn)
 
         self.suggestions_layout.addStretch()
-        self.suggestions_container.setVisible(False)
         word_layout.addWidget(self.suggestions_container)
 
         self.word_label = QLabel("")
@@ -1117,36 +1195,50 @@ class SignSpeakApp(QMainWindow):
         self.word_label.setText(word_str)
         self.log(f"Captured Letter: '{letter}' ({confidence:.1%}) ──► Word: \"{word_str}\"")
         play_feedback_tone(freq=1250, duration_ms=35)
+        self._update_suggestions_instant()
         self._trigger_ai_prediction()
 
     # ═══════════════════════════════════════════════════════════
     # AI Autocomplete & Gboard Suggestion Handlers
     # ═══════════════════════════════════════════════════════════
-    def _trigger_ai_prediction(self):
-        """Dispatches non-blocking suggestion lookup for active prefix."""
+    def _update_suggestions_instant(self):
+        """Instantly updates suggestion pills (<0.1ms) using local lexicon."""
         prefix = "".join(self.current_word_letters).strip()
         context = " ".join(self.sentence_words).strip()
+
         if prefix:
-            self.ai_thread.enqueue_prediction(prefix, context)
+            self.sug_title_lbl.setText("💡 Autocomplete:")
+            matches = [w for w in self.ai_thread.offline_dict if w.startswith(prefix) and w != prefix][:3]
+            if not matches:
+                matches = [prefix]
+            self.on_suggestions_ready(matches)
+        elif context:
+            self.sug_title_lbl.setText("💡 Next Word:")
+            last_word = self.sentence_words[-1].upper() if self.sentence_words else ""
+            matches = self.ai_thread.next_word_map.get(last_word, ["PLEASE", "THANK YOU", "HELP"])[:3]
+            self.on_suggestions_ready(matches)
         else:
-            self.on_suggestions_ready([])
+            self.sug_title_lbl.setText("💡 Quick Starters:")
+            self.on_suggestions_ready(["HELLO", "PLEASE", "THANK YOU"])
+
+    def _trigger_ai_prediction(self):
+        """Dispatches non-blocking suggestion lookup to Groq Cloud in background."""
+        prefix = "".join(self.current_word_letters).strip()
+        context = " ".join(self.sentence_words).strip()
+        self.ai_thread.enqueue_prediction(prefix, context)
 
     def on_suggestions_ready(self, suggestions):
         """Updates the 3 Gboard suggestion pills smoothly."""
+        if not suggestions:
+            return
         self.current_suggestions = suggestions
-        prefix = "".join(self.current_word_letters).strip()
-        if suggestions and prefix:
-            self.suggestions_container.setVisible(True)
-            for i in range(3):
-                if i < len(suggestions):
-                    self.pill_buttons[i].setText(f"[{i+1}] {suggestions[i]}")
-                    self.pill_buttons[i].setVisible(True)
-                else:
-                    self.pill_buttons[i].setVisible(False)
-        else:
-            for btn in self.pill_buttons:
-                btn.setVisible(False)
-            self.suggestions_container.setVisible(False)
+        for i in range(3):
+            if i < len(suggestions):
+                self.pill_buttons[i].setText(f"[{i+1}] {suggestions[i]}")
+                self.pill_buttons[i].setEnabled(True)
+            else:
+                self.pill_buttons[i].setText(f"[{i+1}] -")
+                self.pill_buttons[i].setEnabled(False)
 
     def _on_suggestion_clicked(self, idx):
         """Triggered when clicking a suggestion pill."""
@@ -1155,13 +1247,16 @@ class SignSpeakApp(QMainWindow):
 
     def _accept_autocomplete(self, word):
         """Commits chosen autocomplete suggestion directly into the sentence line."""
+        if not word or word == "-":
+            return
         self.sentence_words.append(word)
         self.sentence_label.setText(" ".join(self.sentence_words))
         self.current_word_letters.clear()
         self.word_label.setText("")
-        self.on_suggestions_ready([])
         self.log(f"AI Autocomplete: \"{word}\" committed to sentence.")
         play_feedback_tone(freq=1100, duration_ms=40)
+        self._update_suggestions_instant()
+        self._trigger_ai_prediction()
 
     # ═══════════════════════════════════════════════════════════
     # Word & Sentence Construction (100% Preserved)
@@ -1175,8 +1270,9 @@ class SignSpeakApp(QMainWindow):
             self.log(f"Committed Word: \"{word}\" (Spacebar)")
             self.current_word_letters.clear()
             self.word_label.setText("")
-            self.on_suggestions_ready([])
             play_feedback_tone(freq=900, duration_ms=25)
+            self._update_suggestions_instant()
+            self._trigger_ai_prediction()
 
     def delete_last_letter(self):
         """Deletes last letter, or pulls back last committed word if active word is empty."""
@@ -1184,6 +1280,7 @@ class SignSpeakApp(QMainWindow):
             popped = self.current_word_letters.pop()
             self.word_label.setText("".join(self.current_word_letters))
             self.log(f"Deleted Letter: '{popped}'")
+            self._update_suggestions_instant()
             self._trigger_ai_prediction()
         elif self.sentence_words:
             last_word = self.sentence_words.pop()
@@ -1191,6 +1288,7 @@ class SignSpeakApp(QMainWindow):
             self.current_word_letters = list(last_word)
             self.word_label.setText(last_word)
             self.log(f"Restored Word for Editing: \"{last_word}\"")
+            self._update_suggestions_instant()
             self._trigger_ai_prediction()
 
     def speak_full_sentence(self):
@@ -1215,7 +1313,7 @@ class SignSpeakApp(QMainWindow):
         self.locked_letter = None
         self.dwell_progress_bar.setValue(0)
         self.dwell_progress_bar.setFormat("Hold Steady for 0.8s to Capture")
-        self.on_suggestions_ready([])
+        self._update_suggestions_instant()
         self.log("Cleared word and sentence buffers.")
 
     def keyPressEvent(self, event):
