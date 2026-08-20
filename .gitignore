@@ -13,12 +13,14 @@ data/processed/
 *.mp4
 *.avi
 
-# Environments
+# Environments & Secrets
 .env
 .venv
 env/
 venv/
 ENV/
+ai_config.json
+*.key
 
 # IDE & OS
 .vscode/

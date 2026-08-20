@@ -135,6 +135,15 @@
   * **Enter Spoken Output:** Pressing `Enter` commits any active letters and speaks the complete multi-word sentence line via offline Piper Neural TTS.
   * **Escape Clear All:** Clears both word and sentence buffers instantly.
 
+### 2.9 Version 2.3 AI-Powered 3-Suggestion Autocomplete Bar (Gboard Style)
+* **File:** [`prototype/part_3_letters.py`](file:///d:/finalspeak/prototype/part_3_letters.py)
+* **Design Philosophy:** Integrated Gboard-style 3-suggestion pill strip above the Word Builder powered by asynchronous Groq Cloud AI inference with local offline dictionary fallback.
+* **Core Interaction Mechanics:**
+  * **Non-Blocking Background AI Worker (`AIPredictionThread`):** Sends current letter prefix + sentence context to Groq Cloud endpoint in background without dropping camera frames or freezing UI.
+  * **3 Clickable Suggestion Pills:** Displays top 3 context-aware word completions (e.g. `[ 1: WATER ]`, `[ 2: WATCH ]`, `[ 3: WAIT ]`).
+  * **One-Touch Keyboard Selection (`1`, `2`, `3`):** Pressing `1`, `2`, or `3` instantly autocompletes and commits the word into the full sentence line.
+  * **Zero-Failure Offline Safety:** Automatically falls back to offline frequency dictionary if internet or API connection drops.
+
 ---
 
 ## 📝 3. Progressive Changelog & Work Log
@@ -151,15 +160,17 @@
 | **Phase 8 (Recent)** | Sign Recorder Studio | Built interactive 3s preparation $\to$ 3s recording studio with live test mode. | 33 user sign classes captured |
 | **Phase 9 (Recent)** | Master Co-Training & Augmentation | Merged user recordings with 107k baseline, added 3D rotations/jitter (246k samples), trained on GPU. | **99.84%–99.96% Accuracy** |
 | **Phase 10 (Recent)** | Evolution Tracker | Created living tracking master document (`PROTOTYPE_EVOLUTION_TRACKER.md`). | Complete ongoing roadmap & sync |
-| **Phase 11 (Current)** | Version 2.2 Release | Integrated 0.8s Steady-Hold letter capture with hysteresis lock, Spacebar word commit, smart Backspace, and Piper TTS full-sentence voice. | **Natural Keyboard Workflow with Zero Fatigue** |
+| **Phase 11 (Recent)** | Version 2.2 Release | Integrated 0.8s Steady-Hold letter capture with hysteresis lock, Spacebar word commit, smart Backspace, and Piper TTS full-sentence voice. | **Natural Keyboard Workflow with Zero Fatigue** |
+| **Phase 12 (Current)** | Version 2.3 Release | Integrated Gboard-style 3-suggestion AI autocomplete pills powered by Groq Cloud + offline fallback with keys `1`, `2`, `3` shortcuts. | **Context-Aware Instant Word Completion** |
 
 ---
 
 ## 🚀 4. Next Planned Enhancements (Future Iteration Roadmap)
 
-* [ ] **1-Click AI Grammar Polish:** Integrate free API (Groq LLaMA 3.3 / Gemini) to translate raw sign sequence glosses into fluent English/Hindi on demand.
+* [ ] **1-Click AI Grammar Polish:** Option to refine sign-order sentence glosses into fluent conversational English/Hindi before voice synthesis.
 * [ ] **Bi-directional Translation:** Add a Text/Speech-to-Sign animated avatar module to allow two-way deaf $\leftrightarrow$ hearing conversation.
 * [ ] **Standalone Installer & Executable Packaging:** Bundle the application, ONNX models, and Piper TTS into a single-click Windows `.exe` using PyInstaller.
+
 
 
 

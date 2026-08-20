@@ -286,56 +286,128 @@ class InferenceThread(QThread):
 
 # ═══════════════════════════════════════════════════════════════
 # Thread 3: Piper Offline TTS Engine
+# ════════════════════════════════════# ═══════════════════════════════════════════════════════════════
+# Thread 5: Non-Blocking AI Autocomplete Worker (Groq Cloud / Offline Fallback)
 # ═══════════════════════════════════════════════════════════════
-class TTSThread(QThread):
-    speech_done = pyqtSignal(str)
+class AIPredictionThread(QThread):
+    suggestions_ready = pyqtSignal(list)
+    status_update = pyqtSignal(str)
 
-    def __init__(self, piper_model_path):
+    def __init__(self, config_path=None):
         super().__init__()
-        self.piper_model_path = str(piper_model_path)
-        self.text_queue = queue.Queue()
-        self.running = False
+        self.config_path = config_path or (BASE_DIR / "ai_config.json")
+        self.request_queue = queue.Queue(maxsize=4)
+        self.running = True
+        self.api_key = None
+        self._load_config()
 
-    def enqueue_text(self, text):
-        if not self.text_queue.full():
-            self.text_queue.put(text)
+        # Offline common frequency dictionary for zero-delay instant fallback
+        self.offline_dict = [
+            "ABOUT", "AFTER", "AGAIN", "ALL", "ALWAYS", "AND", "ANY", "ASK", "BAD", "BEAUTIFUL",
+            "BECAUSE", "BEFORE", "BEST", "BETTER", "BIG", "BOOK", "BOY", "CALL", "CAN", "CAR",
+            "CHANGE", "CHILD", "COME", "COOK", "DAY", "DOCTOR", "DO", "DOG", "DRINK", "DRIVE",
+            "EAT", "FAMILY", "FATHER", "FEEL", "FIND", "FOOD", "FOR", "FRIEND", "GIVE", "GO",
+            "GOOD", "HAPPY", "HAVE", "HEAR", "HELLO", "HELP", "HERE", "HOME", "HOSPITAL", "HOUSE",
+            "HOW", "HURT", "IMPORTANT", "IS", "KNOW", "LANGUAGE", "LEARN", "LIKE", "LISTEN", "LIVE",
+            "LOOK", "LOVE", "MAKE", "MAN", "ME", "MEET", "MONEY", "MORE", "MORNING", "MOTHER",
+            "NAME", "NEED", "NEW", "NIGHT", "NO", "NOW", "OF", "OFFICE", "OLD", "OPEN",
+            "PEOPLE", "PLEASE", "READ", "RIGHT", "ROOM", "SAD", "SAY", "SCHOOL", "SEE", "SIGN",
+            "SIT", "SLEEP", "SLOW", "SMALL", "SORRY", "SPEAK", "STAND", "STOP", "STUDY", "TALK",
+            "TEACHER", "TELL", "THANK", "THAT", "THE", "THEIR", "THEM", "THINK", "TIME", "TODAY",
+            "TOMORROW", "UNDERSTAND", "USE", "WAIT", "WALK", "WANT", "WARM", "WATCH", "WATER",
+            "WAY", "WE", "WELCOME", "WHAT", "WHEN", "WHERE", "WHICH", "WHO", "WHY", "WILL",
+            "WITH", "WOMAN", "WORD", "WORK", "WORLD", "WRITE", "WRONG", "YES", "YOU", "YOUR"
+        ]
+
+    def _load_config(self):
+        if os.path.exists(self.config_path):
+            try:
+                with open(self.config_path, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                    self.api_key = cfg.get("api_key", "").strip()
+            except Exception as e:
+                print(f"AI Config Load Notice: {e}")
+
+    def enqueue_prediction(self, prefix, sentence_context=""):
+        while not self.request_queue.empty():
+            try:
+                self.request_queue.get_nowait()
+            except queue.Empty:
+                break
+        self.request_queue.put((prefix.upper().strip(), sentence_context.strip()))
 
     def run(self):
         self.running = True
-        voice = None
-        if os.path.exists(self.piper_model_path):
-            try:
-                voice = PiperVoice.load(self.piper_model_path)
-            except Exception as e:
-                print(f"Piper Load Error: {e}")
-
         while self.running:
             try:
-                text = self.text_queue.get(timeout=0.5)
+                item = self.request_queue.get(timeout=0.5)
             except queue.Empty:
                 continue
 
-            text = text.strip()
-            if not text:
+            prefix, context = item
+            if not prefix:
+                self.suggestions_ready.emit([])
                 continue
 
-            try:
-                if voice:
-                    wav_path = os.path.join(tempfile.gettempdir(), "signspeak_letter_tts.wav")
-                    with wave.open(wav_path, "w") as wf:
-                        voice.synthesize_wav(text, wf)
-                    import winsound
-                    winsound.PlaySound(wav_path, winsound.SND_FILENAME)
-                self.speech_done.emit(text)
-            except Exception as e:
-                print(f"TTS Synthesis Error: {e}")
+            # 1. Query Groq Cloud API
+            suggestions = self._query_groq(prefix, context)
+
+            # 2. Fallback to offline dictionary if offline or timed out
+            if not suggestions:
+                suggestions = [w for w in self.offline_dict if w.startswith(prefix) and w != prefix][:3]
+
+            self.suggestions_ready.emit(suggestions)
+
+    def _query_groq(self, prefix, context):
+        if not self.api_key:
+            return None
+
+        url = "https://api.groq.com/openai/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        }
+        prompt = f"Suggest up to 3 uppercase English words starting with '{prefix}'."
+        if context:
+            prompt += f" Previous sentence context: '{context}'."
+        prompt += " Return ONLY a JSON list of uppercase strings, e.g. [\"WATER\", \"WATCH\", \"WAIT\"]."
+
+        payload = {
+            "model": "groq/compound-mini",
+            "messages": [
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.1,
+            "max_tokens": 35
+        }
+
+        try:
+            import urllib.request
+            import re
+            req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
+            with urllib.request.urlopen(req, timeout=1.8) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                content = data["choices"][0]["message"]["content"]
+                match = re.search(r"\[.*?\]", content, re.DOTALL)
+                if match:
+                    words = json.loads(match.group(0))
+                    valid = []
+                    for w in words:
+                        clean = re.sub(r"[^A-Z]", "", str(w).upper())
+                        if clean and clean.startswith(prefix) and clean not in valid:
+                            valid.append(clean)
+                    return valid[:3]
+        except Exception:
+            pass
+        return None
 
     def stop(self):
         self.running = False
 
 
 # ═══════════════════════════════════════════════════════════════
-# Main PyQt6 Desktop Application Window (UI/UX Redesigned)
+# Main PyQt6 Desktop Application Window (UI/UX Redesigned + AI Autocomplete)
 # ═══════════════════════════════════════════════════════════════
 class SignSpeakApp(QMainWindow):
     def __init__(self):
@@ -348,6 +420,7 @@ class SignSpeakApp(QMainWindow):
         self.is_running = False
         self.current_word_letters = []
         self.sentence_words = []
+        self.current_suggestions = []
 
         self.live_letter = None
         self.live_confidence = 0.0
@@ -525,6 +598,14 @@ class SignSpeakApp(QMainWindow):
         badges_layout = QHBoxLayout()
         badges_layout.setSpacing(10)
 
+        ai_badge = QLabel("⚡ AI Autocomplete")
+        ai_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+        ai_badge.setStyleSheet(
+            "background-color: #EFE7DE; color: #5C4D44; border: 1px solid #D8C9B8; "
+            "border-radius: 8px; padding: 6px 12px;"
+        )
+        badges_layout.addWidget(ai_badge)
+
         offline_badge = QLabel("🔊 Neural Piper Voice")
         offline_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
         offline_badge.setStyleSheet(
@@ -597,6 +678,7 @@ class SignSpeakApp(QMainWindow):
 
         shortcuts = [
             ("Hold Sign (0.8s)", "Captures letter into active word"),
+            ("Keys [ 1 / 2 / 3 ]", "Accepts AI Autocomplete suggestion"),
             ("Spacebar", "Commits active word to sentence line"),
             ("Backspace", "Deletes last letter (or restores last word)"),
             ("Enter", "Synthesizes speech for full sentence"),
@@ -610,7 +692,7 @@ class SignSpeakApp(QMainWindow):
             k_lbl.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
             k_lbl.setStyleSheet(
                 "background-color: #EFE7DE; color: #4A3E37; border: 1px solid #D8C9B8; "
-                "border-radius: 5px; padding: 2px 8px; min-width: 110px;"
+                "border-radius: 5px; padding: 2px 8px; min-width: 120px;"
             )
             d_lbl = QLabel(desc_text)
             d_lbl.setFont(QFont("Segoe UI", 10))
@@ -704,11 +786,55 @@ class SignSpeakApp(QMainWindow):
         letter_layout.addLayout(meters_vbox, stretch=1)
         right_col.addWidget(letter_group)
 
-        # ── Card 2: Active Word Builder ──
+        # ── Card 2: Active Word Builder + AI Autocomplete Strip ──
         word_group = QGroupBox("Active Word Builder")
         word_layout = QVBoxLayout(word_group)
         word_layout.setContentsMargins(14, 14, 14, 14)
-        word_layout.setSpacing(10)
+        word_layout.setSpacing(8)
+
+        # 💡 Gboard-Style 3 Suggestion Pills Strip
+        self.suggestions_container = QWidget()
+        self.suggestions_layout = QHBoxLayout(self.suggestions_container)
+        self.suggestions_layout.setContentsMargins(0, 0, 0, 2)
+        self.suggestions_layout.setSpacing(8)
+
+        self.sug_title_lbl = QLabel("💡 AI Suggestions:")
+        self.sug_title_lbl.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.sug_title_lbl.setStyleSheet("color: #8C6D58;")
+        self.suggestions_layout.addWidget(self.sug_title_lbl)
+
+        self.pill_buttons = []
+        for i in range(3):
+            btn = QPushButton(f"[{i+1}] -")
+            btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+            btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #EFE7DE;
+                    color: #4A3E37;
+                    border: 1.5px solid #D8C9B8;
+                    border-radius: 8px;
+                    padding: 5px 12px;
+                    font-size: 11px;
+                    font-weight: bold;
+                    font-family: 'Segoe UI', sans-serif;
+                }
+                QPushButton:hover {
+                    background-color: #D96B43;
+                    color: #FFFFFF;
+                    border-color: #C55A32;
+                }
+                QPushButton:pressed {
+                    background-color: #B04A25;
+                }
+            """)
+            btn.clicked.connect(lambda checked, idx=i: self._on_suggestion_clicked(idx))
+            btn.setVisible(False)
+            self.suggestions_layout.addWidget(btn)
+            self.pill_buttons.append(btn)
+
+        self.suggestions_layout.addStretch()
+        self.suggestions_container.setVisible(False)
+        word_layout.addWidget(self.suggestions_container)
 
         self.word_label = QLabel("")
         self.word_label.setFont(QFont("Segoe UI", 26, QFont.Weight.Bold))
@@ -782,7 +908,7 @@ class SignSpeakApp(QMainWindow):
         self.log_text.setFixedHeight(105)
         log_layout.addWidget(self.log_text)
 
-        self.status_label = QLabel("Status: Ready — Hold sign steady for 0.8s to capture.")
+        self.status_label = QLabel("Status: Ready — Hold sign steady for 0.8s to capture | Keys [1/2/3] for AI Autocomplete.")
         self.status_label.setStyleSheet("color: #75655B; font-size: 11px; padding: 0 2px;")
         log_layout.addWidget(self.status_label)
 
@@ -805,6 +931,9 @@ class SignSpeakApp(QMainWindow):
         self.tts_thread = TTSThread(PIPER_MODEL_PATH)
         self.tts_thread.speech_done.connect(self.on_speech_done)
 
+        self.ai_thread = AIPredictionThread(BASE_DIR / "ai_config.json")
+        self.ai_thread.suggestions_ready.connect(self.on_suggestions_ready)
+
     def start_pipeline(self):
         if self.is_running:
             return
@@ -821,16 +950,19 @@ class SignSpeakApp(QMainWindow):
         self.capture_thread.start()
         self.inference_thread.start()
         self.tts_thread.start()
+        self.ai_thread.start()
 
     def stop_pipeline(self):
         self.is_running = False
         self.capture_thread.stop()
         self.inference_thread.stop()
         self.tts_thread.stop()
+        self.ai_thread.stop()
 
         self.capture_thread.wait(3000)
         self.inference_thread.wait(3000)
         self.tts_thread.wait(3000)
+        self.ai_thread.wait(3000)
 
         self._init_threads()
         self.start_btn.setEnabled(True)
@@ -937,6 +1069,51 @@ class SignSpeakApp(QMainWindow):
         self.word_label.setText(word_str)
         self.log(f"Captured Letter: '{letter}' ({confidence:.1%}) ──► Word: \"{word_str}\"")
         play_feedback_tone(freq=1250, duration_ms=35)
+        self._trigger_ai_prediction()
+
+    # ═══════════════════════════════════════════════════════════
+    # AI Autocomplete & Gboard Suggestion Handlers
+    # ═══════════════════════════════════════════════════════════
+    def _trigger_ai_prediction(self):
+        """Dispatches non-blocking suggestion lookup for active prefix."""
+        prefix = "".join(self.current_word_letters).strip()
+        context = " ".join(self.sentence_words).strip()
+        if prefix:
+            self.ai_thread.enqueue_prediction(prefix, context)
+        else:
+            self.on_suggestions_ready([])
+
+    def on_suggestions_ready(self, suggestions):
+        """Updates the 3 Gboard suggestion pills smoothly."""
+        self.current_suggestions = suggestions
+        prefix = "".join(self.current_word_letters).strip()
+        if suggestions and prefix:
+            self.suggestions_container.setVisible(True)
+            for i in range(3):
+                if i < len(suggestions):
+                    self.pill_buttons[i].setText(f"[{i+1}] {suggestions[i]}")
+                    self.pill_buttons[i].setVisible(True)
+                else:
+                    self.pill_buttons[i].setVisible(False)
+        else:
+            for btn in self.pill_buttons:
+                btn.setVisible(False)
+            self.suggestions_container.setVisible(False)
+
+    def _on_suggestion_clicked(self, idx):
+        """Triggered when clicking a suggestion pill."""
+        if self.current_suggestions and idx < len(self.current_suggestions):
+            self._accept_autocomplete(self.current_suggestions[idx])
+
+    def _accept_autocomplete(self, word):
+        """Commits chosen autocomplete suggestion directly into the sentence line."""
+        self.sentence_words.append(word)
+        self.sentence_label.setText(" ".join(self.sentence_words))
+        self.current_word_letters.clear()
+        self.word_label.setText("")
+        self.on_suggestions_ready([])
+        self.log(f"AI Autocomplete: \"{word}\" committed to sentence.")
+        play_feedback_tone(freq=1100, duration_ms=40)
 
     # ═══════════════════════════════════════════════════════════
     # Word & Sentence Construction (100% Preserved)
@@ -950,6 +1127,7 @@ class SignSpeakApp(QMainWindow):
             self.log(f"Committed Word: \"{word}\" (Spacebar)")
             self.current_word_letters.clear()
             self.word_label.setText("")
+            self.on_suggestions_ready([])
             play_feedback_tone(freq=900, duration_ms=25)
 
     def delete_last_letter(self):
@@ -958,12 +1136,14 @@ class SignSpeakApp(QMainWindow):
             popped = self.current_word_letters.pop()
             self.word_label.setText("".join(self.current_word_letters))
             self.log(f"Deleted Letter: '{popped}'")
+            self._trigger_ai_prediction()
         elif self.sentence_words:
             last_word = self.sentence_words.pop()
             self.sentence_label.setText(" ".join(self.sentence_words))
             self.current_word_letters = list(last_word)
             self.word_label.setText(last_word)
             self.log(f"Restored Word for Editing: \"{last_word}\"")
+            self._trigger_ai_prediction()
 
     def speak_full_sentence(self):
         """Commits any pending word and synthesizes speech for the complete sentence."""
@@ -987,11 +1167,18 @@ class SignSpeakApp(QMainWindow):
         self.locked_letter = None
         self.dwell_progress_bar.setValue(0)
         self.dwell_progress_bar.setFormat("Hold Steady for 0.8s to Capture")
+        self.on_suggestions_ready([])
         self.log("Cleared word and sentence buffers.")
 
     def keyPressEvent(self, event):
-        """Handle global keyboard shortcuts cleanly (100% Preserved)."""
-        if event.key() == Qt.Key.Key_Space:
+        """Handle global keyboard shortcuts cleanly (100% Preserved + Keys 1/2/3)."""
+        if event.key() == Qt.Key.Key_1 and self.current_suggestions and len(self.current_suggestions) >= 1:
+            self._accept_autocomplete(self.current_suggestions[0])
+        elif event.key() == Qt.Key.Key_2 and self.current_suggestions and len(self.current_suggestions) >= 2:
+            self._accept_autocomplete(self.current_suggestions[1])
+        elif event.key() == Qt.Key.Key_3 and self.current_suggestions and len(self.current_suggestions) >= 3:
+            self._accept_autocomplete(self.current_suggestions[2])
+        elif event.key() == Qt.Key.Key_Space:
             self.commit_word()
         elif event.key() == Qt.Key.Key_Backspace:
             self.delete_last_letter()
@@ -1014,9 +1201,9 @@ class SignSpeakApp(QMainWindow):
         event.accept()
 
 
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════
 # Main Entry Point
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════
 def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
@@ -1040,3 +1227,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
