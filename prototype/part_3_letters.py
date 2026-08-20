@@ -286,8 +286,56 @@ class InferenceThread(QThread):
 
 # ═══════════════════════════════════════════════════════════════
 # Thread 3: Piper Offline TTS Engine
-# ════════════════════════════════════# ═══════════════════════════════════════════════════════════════
-# Thread 5: Non-Blocking AI Autocomplete Worker (Groq Cloud / Offline Fallback)
+# ═══════════════════════════════════════════════════════════════
+class TTSThread(QThread):
+    speech_done = pyqtSignal(str)
+
+    def __init__(self, piper_model_path):
+        super().__init__()
+        self.piper_model_path = str(piper_model_path)
+        self.text_queue = queue.Queue()
+        self.running = False
+
+    def enqueue_text(self, text):
+        if not self.text_queue.full():
+            self.text_queue.put(text)
+
+    def run(self):
+        self.running = True
+        voice = None
+        if os.path.exists(self.piper_model_path):
+            try:
+                voice = PiperVoice.load(self.piper_model_path)
+            except Exception as e:
+                print(f"Piper Load Error: {e}")
+
+        while self.running:
+            try:
+                text = self.text_queue.get(timeout=0.5)
+            except queue.Empty:
+                continue
+
+            text = text.strip()
+            if not text:
+                continue
+
+            try:
+                if voice:
+                    wav_path = os.path.join(tempfile.gettempdir(), "signspeak_letter_tts.wav")
+                    with wave.open(wav_path, "w") as wf:
+                        voice.synthesize_wav(text, wf)
+                    import winsound
+                    winsound.PlaySound(wav_path, winsound.SND_FILENAME)
+                self.speech_done.emit(text)
+            except Exception as e:
+                print(f"TTS Synthesis Error: {e}")
+
+    def stop(self):
+        self.running = False
+
+
+# ═══════════════════════════════════════════════════════════════
+# Thread 4: Non-Blocking AI Autocomplete Worker (Groq Cloud / Offline Fallback)
 # ═══════════════════════════════════════════════════════════════
 class AIPredictionThread(QThread):
     suggestions_ready = pyqtSignal(list)
