@@ -144,6 +144,14 @@
   * **One-Touch Keyboard Selection (`1`, `2`, `3`):** Pressing `1`, `2`, or `3` instantly autocompletes and commits the word into the full sentence line.
   * **Zero-Failure Offline Safety:** Automatically falls back to offline frequency dictionary if internet or API connection drops.
 
+### 2.10 Version 2.4 AI Sign Grammar Polish & Natural Sentence Synthesis (In Progress)
+* **File:** [`prototype/part_3_letters.py`](file:///d:/finalspeak/prototype/part_3_letters.py)
+* **Design Philosophy:** Bridge the linguistic syntax gap between Deaf Sign Language Gloss (Subject-Object-Verb, e.g., `"BALL GIVE"`, `"ME WATER DRINK WANT"`) and natural conversational spoken English/Hindi using zero-latency asynchronous AI grammar transformation.
+* **Core Interaction Mechanics:**
+  * **1-Click AI Polish Action:** Dedicated `✨ AI Polish (Ctrl+P)` button and toggle converting telegraphic sign sequences into natural grammatical sentences in $<200\text{ ms}$.
+  * **Natural Spoken Voice Output:** Piper Neural TTS vocalizes the polished, natural sentence instead of fragmented raw sign glosses.
+  * **Non-Destructive Revert:** `Ctrl+Z` / Undo button restores original signed words if user prefers raw transcript.
+
 ---
 
 ## 📝 3. Progressive Changelog & Work Log
@@ -161,15 +169,18 @@
 | **Phase 9 (Recent)** | Master Co-Training & Augmentation | Merged user recordings with 107k baseline, added 3D rotations/jitter (246k samples), trained on GPU. | **99.84%–99.96% Accuracy** |
 | **Phase 10 (Recent)** | Evolution Tracker | Created living tracking master document (`PROTOTYPE_EVOLUTION_TRACKER.md`). | Complete ongoing roadmap & sync |
 | **Phase 11 (Recent)** | Version 2.2 Release | Integrated 0.8s Steady-Hold letter capture with hysteresis lock, Spacebar word commit, smart Backspace, and Piper TTS full-sentence voice. | **Natural Keyboard Workflow with Zero Fatigue** |
-| **Phase 12 (Current)** | Version 2.3 Release | Integrated Gboard-style 3-suggestion AI autocomplete pills powered by Groq Cloud + offline fallback with keys `1`, `2`, `3` shortcuts. | **Context-Aware Instant Word Completion** |
+| **Phase 12 (Recent)** | Version 2.3 Release | Integrated Gboard-style 3-suggestion AI autocomplete pills powered by Groq Cloud + offline fallback with keys `1`, `2`, `3` shortcuts. | **Context-Aware Instant Word Completion** |
+| **Phase 13 (Current)** | Version 2.4 Development | Building 1-Click AI Sign Grammar Polish to transform telegraphic sign glosses into fluent spoken English/Hindi before Piper TTS vocalization. | **Linguistic Syntax Bridge for Natural Conversation** |
 
 ---
 
 ## 🚀 4. Next Planned Enhancements (Future Iteration Roadmap)
 
-* [ ] **1-Click AI Grammar Polish:** Option to refine sign-order sentence glosses into fluent conversational English/Hindi before voice synthesis.
+* [ ] **1-Click AI Sign Grammar Polish:** Refine sign-order sentence glosses into fluent conversational English/Hindi on demand before voice synthesis.
+* [ ] **Multilingual Regional Voice Output:** Synthesize spoken sentences in Hindi, Telugu, Tamil, or Bengali via Piper voices.
 * [ ] **Bi-directional Translation:** Add a Text/Speech-to-Sign animated avatar module to allow two-way deaf $\leftrightarrow$ hearing conversation.
 * [ ] **Standalone Installer & Executable Packaging:** Bundle the application, ONNX models, and Piper TTS into a single-click Windows `.exe` using PyInstaller.
+
 
 
 
