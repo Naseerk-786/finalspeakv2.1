@@ -21,8 +21,8 @@
 | **Model Accuracy** | $42.8\%$ Top-1 Accuracy (severe dialect collision) | **$99.84\% - 99.96\%$ Accuracy** | Deep Residual MLP with skip connections, SiLU activations, Label Smoothing ($0.05$), and Cosine Annealing. |
 | **Model Binary Size** | Large video checkpoints ($> 150\text{ MB}$) | **556 KB** (`isl_letter_classifier.onnx`) | Compact Residual MLP architecture exported to optimized ONNX format. |
 | **Application Architecture** | Single-threaded script / Jupyter Notebook (`part_1.ipynb`) | **Decoupled 4-Thread Asynchronous Engine** | Separated Video Capture, ONNX Inference, PyQt6 UI, and Neural TTS into isolated parallel threads. |
-| **Interaction Paradigm** | Manual Spacebar keypress required for every single letter | **100% Hands-Free Dwell Meter + Hand-Drop Commit** | 0.75s steady hold auto-records letter; 1.2s hand lowering auto-commits word & triggers Piper voice. |
-| **Word Prediction** | None (Manual raw spelling only) | **Instant Top-3 Predictive Candidate Pills** | Embedded frequency NLP dictionary suggesting words dynamically based on prefix. |
+| **Interaction Paradigm** | Manual Spacebar keypress required for every single letter | **0.8s Steady-Hold Dwell + Spacebar Word Commit** | 0.80s steady hold auto-records letter with audio tick; Spacebar commits word to full sentence. |
+| **Word & Sentence Construction** | Single raw letter display with manual clearing | **Multi-Word Sentence Builder with Smart Backspace** | Full sentence line accumulation, smart Backspace word pullback, and Piper TTS speech synthesis. |
 | **Audio Speech Synthesis** | No audio or browser-dependent online APIs | **Offline Neural Voice Synthesis (Piper TTS)** | Integrated local Piper ONNX neural voice engine (`en_US-lessac-medium.onnx`, $<12\text{ms}$ synthesis). |
 
 
@@ -125,14 +125,15 @@
 * **File:** [`prototype/one_euro_filter.py`](file:///d:/finalspeak/prototype/one_euro_filter.py)
 * **How it was done:** Integrated adaptive cutoff frequency filtering ($f_c = f_{c,\min} + \beta |\dot{x}|$) to eliminate jitter during slow gestures while maintaining zero lag during rapid movements.
 
-### 2.8 Version 2.1 Core Interactive Prototype
+### 2.8 Version 2.2 Steady-Hold Letter Capture & Spacebar Sentence Builder
 * **File:** [`prototype/part_3_letters.py`](file:///d:/finalspeak/prototype/part_3_letters.py)
-* **Design Philosophy:** Clean, distraction-free Warm Soft 2D Plushy interface focused on direct sign recognition and user-controlled letter recording.
+* **Design Philosophy:** Clean Warm Soft 2D Plushy interface pairing continuous 0.8s hold-to-type letter recognition with keyboard Spacebar word commitment.
 * **Core Interaction Mechanics:**
-  * **Direct Spacebar Recording:** Pressing `Spacebar` captures the currently recognized letter with confidence validation ($\ge 50\%$).
-  * **Optional Hands-Free Auto-Capture Toggle:** Checkbox toggle providing temporal stability frame confirmation (4 consecutive frames) without intrusive popup suggestions.
-  * **Backspace & Commit:** `Backspace` deletes the last letter; `Enter` or button commits the word to the sentence buffer.
-  * **Offline Neural Audio:** Neural Piper TTS speaks words upon commit or full sentence playback.
+  * **0.80s Steady-Hold Dwell Capture:** Holding any sign steady ($\text{confidence} \ge 50\%$) fills a plushy green progress bar over $0.80\text{ s}$, auto-recording the letter with an anti-duplication hysteresis lock and soft non-blocking audio tick.
+  * **Spacebar Word Commit:** Pressing `Spacebar` commits the current word into the sentence buffer and clears the word builder for the next word.
+  * **Smart Backspace:** Pressing `Backspace` deletes the last letter; if the word buffer is empty, pulls the previous word back for editing.
+  * **Enter Spoken Output:** Pressing `Enter` commits any active letters and speaks the complete multi-word sentence line via offline Piper Neural TTS.
+  * **Escape Clear All:** Clears both word and sentence buffers instantly.
 
 ---
 
@@ -150,14 +151,15 @@
 | **Phase 8 (Recent)** | Sign Recorder Studio | Built interactive 3s preparation $\to$ 3s recording studio with live test mode. | 33 user sign classes captured |
 | **Phase 9 (Recent)** | Master Co-Training & Augmentation | Merged user recordings with 107k baseline, added 3D rotations/jitter (246k samples), trained on GPU. | **99.84%–99.96% Accuracy** |
 | **Phase 10 (Recent)** | Evolution Tracker | Created living tracking master document (`PROTOTYPE_EVOLUTION_TRACKER.md`). | Complete ongoing roadmap & sync |
-| **Phase 11 (Current)** | Stable Version 2.1 Release | Clean, responsive single-frame ISL interpreter with Warm Soft 2D Plushy UI, direct Spacebar capture, robust camera fallback, and Piper TTS. | **Zero Latency, Pure Manual & Auto Controls** |
+| **Phase 11 (Current)** | Version 2.2 Release | Integrated 0.8s Steady-Hold letter capture with hysteresis lock, Spacebar word commit, smart Backspace, and Piper TTS full-sentence voice. | **Natural Keyboard Workflow with Zero Fatigue** |
 
 ---
 
 ## 🚀 4. Next Planned Enhancements (Future Iteration Roadmap)
 
+* [ ] **1-Click AI Grammar Polish:** Integrate free API (Groq LLaMA 3.3 / Gemini) to translate raw sign sequence glosses into fluent English/Hindi on demand.
 * [ ] **Bi-directional Translation:** Add a Text/Speech-to-Sign animated avatar module to allow two-way deaf $\leftrightarrow$ hearing conversation.
-* [ ] **Multi-Dialect Preset Switcher:** Allow one-click switching between pure ISL (two-handed) and pure ASL (one-handed) sign sets.
 * [ ] **Standalone Installer & Executable Packaging:** Bundle the application, ONNX models, and Piper TTS into a single-click Windows `.exe` using PyInstaller.
+
 
 

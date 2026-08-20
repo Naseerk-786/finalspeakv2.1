@@ -1,7 +1,7 @@
 # SignSpeak Universal Prototype — Real-Time ISL Letter & Fingerspelling Application
-# Version: 2.1 (Phase 0 Prototype — Single-Frame ISL Alphabet Recognition & Word Builder)
-# Architecture: Real-Time Hand Landmark Classifier -> Letter Stabilizer -> Word Builder -> Piper TTS
-# UI Theme: Warm Soft 2D Plushy Design (No Gradient Neon, No Emojis, Spacebar Manual Letter Recording)
+# Version: 2.2 (0.8s Steady-Hold Letter Capture & Spacebar Sentence Builder)
+# Architecture: Real-Time Hand Landmark Classifier -> 0.8s Dwell Stabilizer -> Spacebar Word Builder -> Piper TTS
+# UI Theme: Warm Soft 2D Plushy Design (0.8s Hold-to-Capture, Spacebar Word Commit, Enter Speech)
 
 import os
 import sys
@@ -10,6 +10,7 @@ import time
 import wave
 import tempfile
 import queue
+import threading
 import numpy as np
 from pathlib import Path
 from collections import deque
@@ -26,8 +27,7 @@ from one_euro_filter import LandmarkStreamSmoother
 
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QTextEdit, QFrame, QGroupBox, QProgressBar,
-    QCheckBox
+    QLabel, QPushButton, QTextEdit, QFrame, QGroupBox, QProgressBar
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QThread
 from PyQt6.QtGui import QImage, QPixmap, QFont, QColor, QPalette
@@ -42,12 +42,25 @@ ONNX_MODEL_PATH = MODELS_DIR / "isl_letter_classifier.onnx"
 CLASS_META_PATH = MODELS_DIR / "isl_letter_meta.json"
 PIPER_MODEL_PATH = MODELS_DIR / "en_US-lessac-medium.onnx"
 
-CONFIDENCE_THRESHOLD = 0.50   # Min confidence to accept letter
-STABILITY_FRAMES = 4          # Consecutive frames required to confirm letter in auto mode
-NO_HAND_COMMIT_TIMEOUT = 2.0  # Seconds of no-hand to commit word in auto mode
+CONFIDENCE_THRESHOLD = 0.50   # Min confidence to start dwell hold
+DWELL_HOLD_SECONDS = 0.80     # Hold sign steady for 0.80s to capture letter
 
 CAMERA_WIDTH = 640
 CAMERA_HEIGHT = 480
+
+
+# ═══════════════════════════════════════════════════════════════
+# Audio Feedback Tone (Non-Blocking)
+# ═══════════════════════════════════════════════════════════════
+def play_feedback_tone(freq=1200, duration_ms=30):
+    """Plays a soft, non-blocking confirmation audio tick on letter capture."""
+    def _beep():
+        try:
+            import winsound
+            winsound.Beep(freq, duration_ms)
+        except Exception:
+            pass
+    threading.Thread(target=_beep, daemon=True).start()
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -144,11 +157,10 @@ class CaptureThread(QThread):
         self.extractor = SingleFrameHandExtractor()
         self.extractor.initialize()
 
-        # Try multiple camera indices and backends with retry
+        # Try multiple camera indices and backends with DirectShow first
         cap = None
         for cam_idx in [0, 1, 2]:
             for backend in [cv2.CAP_DSHOW, cv2.CAP_MSMF, cv2.CAP_ANY]:
-                self.status_update.emit(f"Trying camera index {cam_idx}, backend {backend}...")
                 test_cap = cv2.VideoCapture(cam_idx, backend)
                 if test_cap.isOpened():
                     ret, _ = test_cap.read()
@@ -164,7 +176,7 @@ class CaptureThread(QThread):
         if cap is None or not cap.isOpened():
             self.status_update.emit("ERROR: Unable to open camera. Please check camera connection.")
             err_frame = np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH, 3), dtype=np.uint8)
-            err_frame[:] = (245, 235, 226)  # Warm soft background
+            err_frame[:] = (245, 235, 226)
             cv2.putText(err_frame, "CAMERA NOT AVAILABLE", (80, 220),
                         cv2.FONT_HERSHEY_SIMPLEX, 1.0, (60, 50, 45), 2, cv2.LINE_AA)
             cv2.putText(err_frame, "Close other camera applications and restart", (80, 270),
@@ -323,7 +335,7 @@ class TTSThread(QThread):
 
 
 # ═══════════════════════════════════════════════════════════════
-# Main PyQt6 Desktop Application Window
+# Main PyQt6 Desktop Application Window (0.8s Dwell + Spacebar Word Commit)
 # ═══════════════════════════════════════════════════════════════
 class SignSpeakApp(QMainWindow):
     def __init__(self):
@@ -340,15 +352,19 @@ class SignSpeakApp(QMainWindow):
         self.live_letter = None
         self.live_confidence = 0.0
 
-        self.candidate_letter = None
-        self.candidate_count = 0
-        self.last_confirmed_letter = None
-
-        self.last_hand_time = time.time()
-        self.word_committed_for_idle = True
+        # 0.8s Steady-Hold Dwell Tracker
+        self.held_candidate = None
+        self.dwell_start_time = None
+        self.dwell_progress_pct = 0
+        self.locked_letter = None         # Prevents repeating same letter while holding same pose
 
         self._build_ui()
         self._init_threads()
+
+        # Dwell progress animation timer (30 FPS)
+        self.dwell_timer = QTimer()
+        self.dwell_timer.timeout.connect(self._on_dwell_tick)
+        self.dwell_timer.start(30)
 
         # Enable window key capturing
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
@@ -430,23 +446,17 @@ class SignSpeakApp(QMainWindow):
             QPushButton#commitBtn:hover {
                 background-color: #487A62;
             }
-            QCheckBox {
-                color: #5C4D44;
-                font-family: 'Segoe UI', sans-serif;
-                font-size: 13px;
+            QProgressBar {
+                background-color: #EFE7DE;
+                border-radius: 8px;
+                text-align: center;
+                color: #4A3E37;
                 font-weight: bold;
-                spacing: 8px;
+                height: 22px;
             }
-            QCheckBox::indicator {
-                width: 18px;
-                height: 18px;
-                border-radius: 5px;
-                border: 2px solid #D4C4B7;
-                background-color: #FFFDFB;
-            }
-            QCheckBox::indicator:checked {
+            QProgressBar::chunk {
                 background-color: #D96B43;
-                border-color: #D96B43;
+                border-radius: 8px;
             }
             QTextEdit {
                 background-color: #FAF6F0;
@@ -504,15 +514,17 @@ class SignSpeakApp(QMainWindow):
         # === RIGHT COLUMN: Sign Recognition & Word Builder ===
         right_col = QVBoxLayout()
 
-        # Current Detected Letter Display
-        letter_group = QGroupBox("Live Detected Letter")
+        # Current Detected Letter Display + 0.8s Steady-Hold Progress
+        letter_group = QGroupBox("Live Detected Sign & 0.8s Hold Capture")
         letter_layout = QVBoxLayout(letter_group)
+        
         self.letter_label = QLabel("-")
         self.letter_label.setFont(QFont("Segoe UI", 48, QFont.Weight.Bold))
         self.letter_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.letter_label.setStyleSheet("color: #D96B43; padding: 2px;")
         letter_layout.addWidget(self.letter_label)
 
+        # Confidence Bar
         self.confidence_bar = QProgressBar()
         self.confidence_bar.setMaximum(100)
         self.confidence_bar.setValue(0)
@@ -525,7 +537,7 @@ class SignSpeakApp(QMainWindow):
                 text-align: center;
                 color: #4A3E37;
                 font-weight: bold;
-                height: 22px;
+                height: 20px;
             }
             QProgressBar::chunk {
                 background-color: #E29578;
@@ -534,17 +546,32 @@ class SignSpeakApp(QMainWindow):
         """)
         letter_layout.addWidget(self.confidence_bar)
 
-        # Recording Mode Selection Toggle
-        self.auto_capture_checkbox = QCheckBox("Hands-Free Auto-Capture Mode")
-        self.auto_capture_checkbox.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.auto_capture_checkbox.setChecked(False)  # Manual Spacebar Mode is default!
-        self.auto_capture_checkbox.stateChanged.connect(self.on_mode_changed)
-        letter_layout.addWidget(self.auto_capture_checkbox)
+        # 0.8s Steady-Hold Progress Bar
+        self.dwell_progress_bar = QProgressBar()
+        self.dwell_progress_bar.setMaximum(100)
+        self.dwell_progress_bar.setValue(0)
+        self.dwell_progress_bar.setTextVisible(True)
+        self.dwell_progress_bar.setFormat("Hold Steady for 0.8s to Capture")
+        self.dwell_progress_bar.setStyleSheet("""
+            QProgressBar {
+                background-color: #EFE7DE;
+                border-radius: 8px;
+                text-align: center;
+                color: #4A3E37;
+                font-weight: bold;
+                height: 24px;
+            }
+            QProgressBar::chunk {
+                background-color: #5A8F76;
+                border-radius: 8px;
+            }
+        """)
+        letter_layout.addWidget(self.dwell_progress_bar)
 
         right_col.addWidget(letter_group)
 
-        # Active Word Builder Box
-        word_group = QGroupBox("Word Builder (Press Spacebar to Record)")
+        # Active Word Builder Box (Spacebar = Commit Word)
+        word_group = QGroupBox("Active Word Builder (Press Spacebar to Commit)")
         word_layout = QVBoxLayout(word_group)
         
         self.word_label = QLabel("")
@@ -558,29 +585,23 @@ class SignSpeakApp(QMainWindow):
 
         word_btn_layout = QHBoxLayout()
 
-        self.record_btn = QPushButton("Record Letter (Spacebar)")
-        self.record_btn.setObjectName("recordBtn")
-        self.record_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.record_btn.clicked.connect(self.record_current_letter)
-        word_btn_layout.addWidget(self.record_btn)
+        self.commit_btn = QPushButton("Commit Word (Spacebar)")
+        self.commit_btn.setObjectName("commitBtn")
+        self.commit_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.commit_btn.clicked.connect(self.commit_word)
+        word_btn_layout.addWidget(self.commit_btn)
 
-        del_btn = QPushButton("Delete Letter")
+        del_btn = QPushButton("Delete Letter (Backspace)")
         del_btn.setObjectName("secondaryBtn")
         del_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         del_btn.clicked.connect(self.delete_last_letter)
         word_btn_layout.addWidget(del_btn)
 
-        commit_btn = QPushButton("Commit Word")
-        commit_btn.setObjectName("commitBtn")
-        commit_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        commit_btn.clicked.connect(self.commit_word)
-        word_btn_layout.addWidget(commit_btn)
-
         word_layout.addLayout(word_btn_layout)
         right_col.addWidget(word_group)
 
         # Sentence Builder & Spoken Output Box
-        sentence_group = QGroupBox("Full Sentence Output")
+        sentence_group = QGroupBox("Full Sentence Line (Press Enter to Speak)")
         sentence_layout = QVBoxLayout(sentence_group)
         self.sentence_label = QLabel("")
         self.sentence_label.setFont(QFont("Segoe UI", 16))
@@ -592,12 +613,12 @@ class SignSpeakApp(QMainWindow):
         sentence_layout.addWidget(self.sentence_label)
 
         sent_btn_layout = QHBoxLayout()
-        speak_btn = QPushButton("Speak Sentence (Enter)")
+        speak_btn = QPushButton("Speak Full Sentence (Enter)")
         speak_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         speak_btn.clicked.connect(self.speak_full_sentence)
         sent_btn_layout.addWidget(speak_btn)
 
-        clear_btn = QPushButton("Clear All")
+        clear_btn = QPushButton("Clear All (Esc)")
         clear_btn.setObjectName("secondaryBtn")
         clear_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         clear_btn.clicked.connect(self.clear_all)
@@ -615,7 +636,7 @@ class SignSpeakApp(QMainWindow):
         log_layout.addWidget(self.log_text)
         right_col.addWidget(log_group)
 
-        self.status_label = QLabel("Status: Ready (Spacebar = Record Letter)")
+        self.status_label = QLabel("Status: Ready — Hold sign steady for 0.8s to capture.")
         self.status_label.setStyleSheet("color: #8C7C72; font-size: 12px; padding: 2px;")
         right_col.addWidget(self.status_label)
 
@@ -677,94 +698,123 @@ class SignSpeakApp(QMainWindow):
     def on_feature_ready(self, feat_vec):
         self.inference_thread.enqueue_feature(feat_vec)
 
+    # ═══════════════════════════════════════════════════════════
+    # 0.8s Steady-Hold Dwell Capture Engine
+    # ═══════════════════════════════════════════════════════════
     def on_prediction(self, letter, confidence):
-        self.last_hand_time = time.time()
-        self.word_committed_for_idle = False
-
+        now = time.time()
         self.live_letter = letter
         self.live_confidence = confidence
 
         self.letter_label.setText(letter)
         self.confidence_bar.setValue(min(100, int(confidence * 100)))
 
-        # If Hands-Free Auto-Capture Mode is enabled:
-        if self.auto_capture_checkbox.isChecked():
-            if letter == self.candidate_letter:
-                self.candidate_count += 1
+        # Dwell logic: Track continuous steady posture
+        if confidence >= CONFIDENCE_THRESHOLD and letter not in ("-", "?", "NO_SIGN"):
+            if letter == self.held_candidate:
+                # Same sign being maintained
+                if self.dwell_start_time is None:
+                    self.dwell_start_time = now
             else:
-                self.candidate_letter = letter
-                self.candidate_count = 1
+                # Switched to a new letter: reset dwell timer and unlock
+                self.held_candidate = letter
+                self.dwell_start_time = now
+                self.dwell_progress_pct = 0
+                self.locked_letter = None
+        else:
+            # Low confidence or transitioning
+            self.held_candidate = None
+            self.dwell_start_time = None
+            self.dwell_progress_pct = 0
+            self.locked_letter = None
 
-            if confidence >= CONFIDENCE_THRESHOLD and self.candidate_count >= STABILITY_FRAMES:
-                if letter != self.last_confirmed_letter:
-                    self.last_confirmed_letter = letter
-                    self.current_word_letters.append(letter)
-                    self.word_label.setText("".join(self.current_word_letters))
-                    self.log(f"Auto-Recorded Letter: '{letter}' ({confidence:.1%})")
-
-        self.status_label.setText(f"Live — Letter: {letter} ({confidence:.1%}) | Press Spacebar to Record")
+        self.status_label.setText(f"Live — Sign: {letter} ({confidence:.1%}) | Hold for 0.8s to record | Spacebar = Commit Word")
 
     def on_no_hand(self):
         self.letter_label.setText("-")
         self.confidence_bar.setValue(0)
         self.live_letter = None
         self.live_confidence = 0.0
-        self.candidate_letter = None
-        self.candidate_count = 0
-        self.last_confirmed_letter = None
-
-        # Auto-commit word after pause (only in Auto-Capture mode)
-        if self.auto_capture_checkbox.isChecked():
-            if not self.word_committed_for_idle and (time.time() - self.last_hand_time) >= NO_HAND_COMMIT_TIMEOUT:
-                if self.current_word_letters:
-                    self.commit_word()
-                self.word_committed_for_idle = True
-
+        self.held_candidate = None
+        self.dwell_start_time = None
+        self.dwell_progress_pct = 0
+        self.locked_letter = None
+        self.dwell_progress_bar.setValue(0)
+        self.dwell_progress_bar.setFormat("Hold Steady for 0.8s to Capture")
         self.status_label.setText("Live — Waiting for Hand Gesture...")
 
-    def on_mode_changed(self, state):
-        is_auto = self.auto_capture_checkbox.isChecked()
-        if is_auto:
-            self.log("Switched to Hands-Free Auto-Capture Mode.")
-        else:
-            self.log("Switched to Manual Spacebar Mode (Recommended).")
+    def _on_dwell_tick(self):
+        """Timer callback updating the 0.8s progress bar and capturing upon completion."""
+        if not self.is_running:
+            return
 
-    def record_current_letter(self):
-        """Records the live detected letter manually (Spacebar or Button Click)."""
-        if self.live_letter and self.live_letter != "-" and self.live_letter != "?":
-            if self.live_confidence >= CONFIDENCE_THRESHOLD:
-                self.current_word_letters.append(self.live_letter)
-                self.word_label.setText("".join(self.current_word_letters))
-                self.log(f"Recorded Letter: '{self.live_letter}' ({self.live_confidence:.1%}) via Spacebar")
+        now = time.time()
+        if self.held_candidate and self.dwell_start_time is not None:
+            if self.locked_letter != self.held_candidate:
+                elapsed = now - self.dwell_start_time
+                self.dwell_progress_pct = min(100, int((elapsed / DWELL_HOLD_SECONDS) * 100))
+
+                if elapsed >= DWELL_HOLD_SECONDS:
+                    self._capture_letter(self.held_candidate, self.live_confidence)
+                    self.locked_letter = self.held_candidate
+                    self.dwell_progress_pct = 100
             else:
-                self.log(f"Confidence too low ({self.live_confidence:.1%}). Hold hand steady.")
+                self.dwell_progress_pct = 100
         else:
-            self.log("No valid letter detected to record.")
+            self.dwell_progress_pct = 0
 
-    def delete_last_letter(self):
-        """Deletes the last recorded letter (Backspace)."""
-        if self.current_word_letters:
-            popped = self.current_word_letters.pop()
-            self.word_label.setText("".join(self.current_word_letters))
-            self.log(f"Deleted Letter: '{popped}'")
+        self.dwell_progress_bar.setValue(self.dwell_progress_pct)
+        if self.dwell_progress_pct >= 100 and self.locked_letter:
+            self.dwell_progress_bar.setFormat(f"Captured '{self.locked_letter}'")
+        elif self.dwell_progress_pct > 0 and self.held_candidate:
+            self.dwell_progress_bar.setFormat(f"Holding '{self.held_candidate}' ({self.dwell_progress_pct}%)")
+        else:
+            self.dwell_progress_bar.setFormat("Hold Steady for 0.8s to Capture")
 
+    def _capture_letter(self, letter, confidence):
+        """Adds confirmed letter to the active word with audio feedback."""
+        self.current_word_letters.append(letter)
+        word_str = "".join(self.current_word_letters)
+        self.word_label.setText(word_str)
+        self.log(f"Captured Letter: '{letter}' ({confidence:.1%}) ──► Word: \"{word_str}\"")
+        play_feedback_tone(freq=1250, duration_ms=35)
+
+    # ═══════════════════════════════════════════════════════════
+    # Word & Sentence Construction
+    # ═══════════════════════════════════════════════════════════
     def commit_word(self):
-        """Commits the active word to the sentence line."""
+        """Commits the active word to the sentence line (Spacebar)."""
         if self.current_word_letters:
             word = "".join(self.current_word_letters)
             self.sentence_words.append(word)
             self.sentence_label.setText(" ".join(self.sentence_words))
-            self.tts_thread.enqueue_text(word)
-            self.log(f"Committed Word: \"{word}\"")
+            self.log(f"Committed Word: \"{word}\" (Spacebar)")
             self.current_word_letters.clear()
             self.word_label.setText("")
+            play_feedback_tone(freq=900, duration_ms=25)
+
+    def delete_last_letter(self):
+        """Deletes last letter, or pulls back last committed word if active word is empty."""
+        if self.current_word_letters:
+            popped = self.current_word_letters.pop()
+            self.word_label.setText("".join(self.current_word_letters))
+            self.log(f"Deleted Letter: '{popped}'")
+        elif self.sentence_words:
+            last_word = self.sentence_words.pop()
+            self.sentence_label.setText(" ".join(self.sentence_words))
+            self.current_word_letters = list(last_word)
+            self.word_label.setText(last_word)
+            self.log(f"Restored Word for Editing: \"{last_word}\"")
 
     def speak_full_sentence(self):
-        """Synthesizes speech for the complete sentence."""
+        """Commits any pending word and synthesizes speech for the complete sentence."""
+        if self.current_word_letters:
+            self.commit_word()
+
         full_text = self.sentence_label.text().strip()
         if full_text:
             self.tts_thread.enqueue_text(full_text)
-            self.log(f"Speaking Sentence: \"{full_text}\"")
+            self.log(f"Speaking Full Sentence: \"{full_text}\"")
 
     def clear_all(self):
         """Clears word and sentence buffers."""
@@ -772,29 +822,29 @@ class SignSpeakApp(QMainWindow):
         self.sentence_words.clear()
         self.word_label.setText("")
         self.sentence_label.setText("")
-        self.candidate_letter = None
-        self.candidate_count = 0
-        self.last_confirmed_letter = None
-        self.log("Cleared all word and sentence buffers.")
+        self.held_candidate = None
+        self.dwell_start_time = None
+        self.dwell_progress_pct = 0
+        self.locked_letter = None
+        self.dwell_progress_bar.setValue(0)
+        self.dwell_progress_bar.setFormat("Hold Steady for 0.8s to Capture")
+        self.log("Cleared word and sentence buffers.")
 
     def keyPressEvent(self, event):
         """Handle global keyboard shortcuts cleanly."""
         if event.key() == Qt.Key.Key_Space:
-            self.record_current_letter()
+            self.commit_word()
         elif event.key() == Qt.Key.Key_Backspace:
             self.delete_last_letter()
         elif event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
-            if self.current_word_letters:
-                self.commit_word()
-            else:
-                self.speak_full_sentence()
+            self.speak_full_sentence()
         elif event.key() == Qt.Key.Key_Escape:
             self.clear_all()
         else:
             super().keyPressEvent(event)
 
     def on_speech_done(self, text):
-        self.log(f"Spoke Audio: \"{text}\"")
+        self.log(f"Piper TTS Spoke: \"{text}\"")
 
     def log(self, msg):
         ts = time.strftime("%H:%M:%S")
