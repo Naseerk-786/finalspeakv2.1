@@ -29,3 +29,8 @@ ai_config.json
 Thumbs.db
 # Generated session transcripts
 transcripts/
+
+# PyInstaller Build Artifacts
+build/
+dist/
+
