@@ -173,6 +173,18 @@
   * **Non-Blocking Multilingual Neural Voice:** Synthesizes and vocalizes regional Indian speech audio without UI frame drops or camera latency.
   * **Universal Keypad Support:** Numbers `1`, `2`, `3` and numeric keypad keys (`Numpad1`, `Numpad2`, `Numpad3`) instantly commit autocomplete suggestion pills.
 
+### 2.12 Version 2.6 Two-Way Deaf ↔ Hearing Communication Loop & Dialogue Exporter (Completed)
+* **File:** [`prototype/part_3_letters.py`](file:///d:/finalspeak/prototype/part_3_letters.py)
+* **Design Philosophy:** Complete bidirectional communication loop transforming SignSpeak from a 1-way tool into a full face-to-face conversational cockpit:
+  * **Signer ──► Hearing Partner:** Continuous ISL fingerspelling with 0.8s dwell hold, AI autocomplete, grammar polish, and Piper / regional Indian speech synthesis.
+  * **Hearing Partner ──► Signer:** Dedicated background microphone audio worker (`SpeechToTextThread`) recording speech and transcribing in <200ms via Whisper AI.
+* **Core Interaction Mechanics:**
+  * **Non-Blocking Live Audio Listener (`Ctrl + M` / `F2`):** Streams microphone audio via `sounddevice` with live RMS energy level meter and zero interference with 30 FPS video feed.
+  * **Incoming Hearing Speech Card:** Displays transcribed speech in a high-contrast subtitle bubble.
+  * **Live ISL Visual Fingerspelling Strip:** Dynamically parses incoming spoken words into individual ISL sign letter badges (`[ H ] [ E ] [ L ] [ P ]`).
+  * **Two-Way Dialogue Timeline Tab:** Turn-by-turn chat history color-coded by role (🟢 Signer vs 🔵 Hearing Partner) with timestamps.
+  * **1-Click Dialogue Session Exporter:** Exports complete conversation history to formatted timestamped files (`transcripts/dialogue_YYYYMMDD_HHMMSS.txt`) or copies to clipboard.
+
 ### 2.13 Version 3.0 Camera-First Spacious Assistive UI/UX Workspace (Completed)
 * **File:** [`prototype/part_3_letters.py`](file:///d:/finalspeak/prototype/part_3_letters.py)
 * **Design Philosophy:** Complete transformation from a cluttered dashboard to a calm, spacious, **camera-first assistive communication workspace**:
@@ -181,6 +193,14 @@
   * **Comfortable Touch & Click Targets:** All primary buttons enlarged to **44–52px height** for comfortable, effortless interaction on laptops.
   * **Progressive Disclosure:** Two-Way Dialogue Timeline and Activity Diagnostics neatly tucked into a clean, collapsible secondary drawer that can be toggled to maximize camera space.
   * **Fixed Qt6 Hotkeys:** Universal key handling across standard and keypad numeric keys `1`, `2`, `3`.
+
+### 2.14 Version 3.1 1-Click Multilingual Translation, Polish Auto-Commit & STT Fixes (Completed)
+* **File:** [`prototype/part_3_letters.py`](file:///d:/finalspeak/prototype/part_3_letters.py)
+* **Core Interaction Mechanics:**
+  * **Dedicated 1-Click Translate (`Ctrl + T`):** Translates current sign sentence into selected Indian language directly with visual and audio feedback.
+  * **Dynamic Regional Speak Button:** Button automatically updates text (`[ 🔊 Speak in Hindi  Enter ]`) and auto-translates + vocalizes with 1-click.
+  * **Auto-Commit Word Before Polish:** `Ctrl + P` / `[ Polish ]` automatically commits active word buffers to ensure zero lost letters.
+  * **Zero-Error Whisper STT:** Resolved background thread `urllib` scope, enabling instant microphone transcription, subtitle display, and ISL visual badge generation.
 
 ---
 
@@ -203,7 +223,8 @@
 | **Phase 13 (Recent)** | Version 2.4 Release | Integrated 1-Click AI Sign Grammar Polish, non-destructive Revert, Auto-Polish on Speak, F1 Shortcuts Guide Modal, and clean enterprise UI styling. | **Natural Linguistic Syntax Bridge & Pro Cockpit** |
 | **Phase 14 (Recent)** | Version 2.5 Release | Integrated Regional Indian Language Selector Dropdown (Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, Gujarati) + Multilingual Neural Speech Synthesis. | **Native Multi-Dialect Voice Output** |
 | **Phase 15 (Recent)** | Version 2.6 Release | Integrated Two-Way Deaf ↔ Hearing Communication Loop with non-blocking Whisper STT listener, Live ISL Sign Visualizer, and Dialogue Transcript Exporter. | **Full Bidirectional Conversational Loop** |
-| **Phase 16 (Latest)** | Version 3.0 Release | Complete Camera-First UI/UX overhaul: spacious 60% hero video surface, progressive drawer, 48px action buttons, and warm assistive palette. | **Calm, Premium Assistive Workspace** |
+| **Phase 16 (Recent)** | Version 3.0 Release | Complete Camera-First UI/UX overhaul: spacious 60% hero video surface, progressive drawer, 48px action buttons, and warm assistive palette. | **Calm, Premium Assistive Workspace** |
+| **Phase 17 (Latest)** | Version 3.1 Release | Added 1-click regional translate button (`Ctrl+T`), dynamic regional speak trigger, auto-commit word on polish, and Whisper STT scope fixes. | **Instant Multi-Dialect Vocalization & Reliable STT** |
 
 ---
 
