@@ -27,5 +27,5 @@ ai_config.json
 .idea/
 *.swp
 Thumbs.db
-Desktop.ini
-.DS_Store
+# Generated session transcripts
+transcripts/
