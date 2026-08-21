@@ -68,11 +68,11 @@
 %\newcommand{\dissertation}{\reporttype{dissertation}\approvaltype{Dissertation}}
 %\newcommand{\project}{\reporttype{project report}\approvaltype{Report}}
 %\newcommand{\prelim}{\reporttype{preliminary report}\approvaltype{Report}}
-\newcommand{\aps}{\reporttype{project report submitted in partial fulfillment of \\ Bachelor Degree of Engineering in \\Computer Technology}\approvaltype{Summer Internship Project Report}}
+\newcommand{\aps}{\reporttype{project report submitted in partial fulfillment of \\ Bachelor / Master Degree in \\Computer Science and Engineering}\approvaltype{Mini Project Report}}
 
 \gdef\@rollnum{}    % Default is Unknown 00000000
 \gdef\@iitbdegree{Unknown Degree}    % Default is Unknown Degree
-\gdef\@doctype{\textbf{\LARGE Summer Internship Project Report}\\[4pt]Submitted in partial fulfillment of the requirements for\\[4pt]\large\bf Summer Internship Programme\\[4pt]MBA -- TECH}  % Default report type
+\gdef\@doctype{\textbf{\LARGE Mini Project Report (Mock 2)}\\[4pt]Submitted in partial fulfillment of the requirements for\\[4pt]\large\bf Mini Project Mock 2 Evaluation\\[4pt]Department of Computer Science and Engineering}  % Default report type
 \gdef\@department{(Unknown Department)} % Default is Unknown
 
 \renewcommand{\maketitle}{%\begin{titlepage}
