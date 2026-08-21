@@ -48,7 +48,14 @@ from PyQt6.QtGui import QImage, QPixmap, QFont, QColor, QPalette, QIcon
 # ═══════════════════════════════════════════════════════════════
 # Constants & Paths
 # ═══════════════════════════════════════════════════════════════
-BASE_DIR = Path(r"d:\finalspeak")
+# Dynamic Base Directory (Supports PyInstaller Frozen Bundles & Any Workspace Drive)
+if getattr(sys, 'frozen', False):
+    BASE_DIR = Path(sys.executable).resolve().parent
+    if hasattr(sys, '_MEIPASS') and (Path(sys._MEIPASS) / "models").exists():
+        BASE_DIR = Path(sys._MEIPASS)
+else:
+    BASE_DIR = Path(__file__).resolve().parent.parent
+
 MODELS_DIR = BASE_DIR / "models"
 
 ONNX_MODEL_PATH = MODELS_DIR / "isl_letter_classifier.onnx"
