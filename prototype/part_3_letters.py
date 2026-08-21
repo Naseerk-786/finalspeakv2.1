@@ -2372,25 +2372,41 @@ class SignSpeakApp(QMainWindow):
 # Main Entry Point
 # ═══════════════════════════════════════════════════════════
 def main():
-    app = QApplication(sys.argv)
-    app.setStyle("Fusion")
+    try:
+        app = QApplication(sys.argv)
+        app.setStyle("Fusion")
 
-    # Warm Soft Assistive-Tech Palette (Global)
-    palette = QPalette()
-    palette.setColor(QPalette.ColorRole.Window, QColor(246, 243, 238))
-    palette.setColor(QPalette.ColorRole.WindowText, QColor(41, 39, 37))
-    palette.setColor(QPalette.ColorRole.Base, QColor(252, 250, 247))
-    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(246, 243, 238))
-    palette.setColor(QPalette.ColorRole.Text, QColor(41, 39, 37))
-    palette.setColor(QPalette.ColorRole.Button, QColor(45, 106, 79))
-    palette.setColor(QPalette.ColorRole.ButtonText, QColor(255, 255, 255))
-    palette.setColor(QPalette.ColorRole.Highlight, QColor(77, 139, 111))
-    palette.setColor(QPalette.ColorRole.HighlightedText, QColor(255, 255, 255))
-    app.setPalette(palette)
+        # Warm Soft Assistive-Tech Palette (Global)
+        palette = QPalette()
+        palette.setColor(QPalette.ColorRole.Window, QColor(246, 243, 238))
+        palette.setColor(QPalette.ColorRole.WindowText, QColor(41, 39, 37))
+        palette.setColor(QPalette.ColorRole.Base, QColor(252, 250, 247))
+        palette.setColor(QPalette.ColorRole.AlternateBase, QColor(246, 243, 238))
+        palette.setColor(QPalette.ColorRole.Text, QColor(41, 39, 37))
+        palette.setColor(QPalette.ColorRole.Button, QColor(45, 106, 79))
+        palette.setColor(QPalette.ColorRole.ButtonText, QColor(255, 255, 255))
+        palette.setColor(QPalette.ColorRole.Highlight, QColor(77, 139, 111))
+        palette.setColor(QPalette.ColorRole.HighlightedText, QColor(255, 255, 255))
+        app.setPalette(palette)
 
-    window = SignSpeakApp()
-    window.show()
-    sys.exit(app.exec())
+        window = SignSpeakApp()
+        window.show()
+        sys.exit(app.exec())
+    except Exception as e:
+        import traceback
+        err_msg = f"SignSpeak Startup Error:\n\n{e}\n\nTraceback:\n{traceback.format_exc()}"
+        print(err_msg, file=sys.stderr)
+        try:
+            from PyQt6.QtWidgets import QMessageBox
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Icon.Critical)
+            msg_box.setWindowTitle("SignSpeak — Launch Error")
+            msg_box.setText(f"An unexpected error occurred while launching:\n{e}")
+            msg_box.setDetailedText(traceback.format_exc())
+            msg_box.exec()
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     main()
+
