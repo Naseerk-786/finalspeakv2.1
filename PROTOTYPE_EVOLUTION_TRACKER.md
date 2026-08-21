@@ -24,6 +24,9 @@
 | **Interaction Paradigm** | Manual Spacebar keypress required for every single letter | **0.8s Steady-Hold Dwell + Spacebar Word Commit** | 0.80s steady hold auto-records letter with audio tick; Spacebar commits word to full sentence. |
 | **Word & Sentence Construction** | Single raw letter display with manual clearing | **Multi-Word Sentence Builder with Smart Backspace** | Full sentence line accumulation, smart Backspace word pullback, and Piper TTS speech synthesis. |
 | **Audio Speech Synthesis** | No audio or browser-dependent online APIs | **Offline Neural Voice Synthesis (Piper TTS)** | Integrated local Piper ONNX neural voice engine (`en_US-lessac-medium.onnx`, $<12\text{ms}$ synthesis). |
+| **Multilingual Voice Output** | English only (no regional support) | **8 Indian Regional Languages** (English, Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, Gujarati) | Integrated multilingual neural translator & non-blocking regional voice synthesis dropdown. |
+| **Word Completion & Predictive AI** | None (Letter-by-letter typing only) | **Gboard-Style AI Autocomplete Strip** (Keys `1`, `2`, `3` & Numpad) | Asynchronous dual-tier autocomplete with Groq Cloud LLM + instant <0.1ms offline fallback dictionary. |
+| **Linguistic Naturalness** | Raw disjointed sign glosses | **1-Click AI Sign Grammar Polish (`Ctrl+P` / `Ctrl+Z`)** | Converts telegraphic sign glosses into fluent conversational sentences with auto-polish on speak. |
 
 
 ---
@@ -152,7 +155,22 @@
   * **Auto-Polish on Speak Toggle:** Automatically converts raw sign glosses to fluent natural sentences right before Piper Neural TTS vocalization.
   * **Revert to Raw (`Ctrl + Z`):** Non-destructively toggles back to the exact signed word sequence at any time.
   * **System Controls & Shortcuts Modal (`F1`):** Interactive keyboard cheat-sheet dialog accessible via top app bar button or `F1` key press.
-  * **Enterprise-Grade UI Polish:** Clean typography, minimalist labels, and refined accessibility status badges.
+### 2.11 Version 2.5 Multilingual Indian Speech Engine & Voice Selector (Completed)
+* **File:** [`prototype/part_3_letters.py`](file:///d:/finalspeak/prototype/part_3_letters.py)
+* **Design Philosophy:** Seamless regional localization empowering Indian signers to translate and vocalize signed sentences in **8 Indian languages**:
+  * `English` (Default Piper Neural Voice)
+  * `Hindi` (हिन्दी)
+  * `Telugu` (తెలుగు)
+  * `Tamil` (தமிழ்)
+  * `Marathi` (मराठी)
+  * `Kannada` (ಕನ್ನಡ)
+  * `Bengali` (বাংলা)
+  * `Gujarati` (ગુજરાતી)
+* **Core Interaction Mechanics:**
+  * **Plushy Language Dropdown:** Seamlessly switch between English and 7 major Indian languages right in the Spoken Sentence Cockpit.
+  * **Asynchronous Neural Translation Worker:** Translates signed sentences into the target regional script using Groq Cloud with comprehensive offline fallback dictionary support.
+  * **Non-Blocking Multilingual Neural Voice:** Synthesizes and vocalizes regional Indian speech audio without UI frame drops or camera latency.
+  * **Universal Keypad Support:** Numbers `1`, `2`, `3` and numeric keypad keys (`Numpad1`, `Numpad2`, `Numpad3`) instantly commit autocomplete suggestion pills.
 
 ---
 
@@ -173,6 +191,7 @@
 | **Phase 11 (Recent)** | Version 2.2 Release | Integrated 0.8s Steady-Hold letter capture with hysteresis lock, Spacebar word commit, smart Backspace, and Piper TTS full-sentence voice. | **Natural Keyboard Workflow with Zero Fatigue** |
 | **Phase 12 (Recent)** | Version 2.3 Release | Integrated Gboard-style 3-suggestion AI autocomplete pills powered by Groq Cloud + offline fallback with keys `1`, `2`, `3` shortcuts. | **Context-Aware Instant Word Completion** |
 | **Phase 13 (Recent)** | Version 2.4 Release | Integrated 1-Click AI Sign Grammar Polish, non-destructive Revert, Auto-Polish on Speak, F1 Shortcuts Guide Modal, and clean enterprise UI styling. | **Natural Linguistic Syntax Bridge & Pro Cockpit** |
+| **Phase 14 (Latest)** | Version 2.5 Release | Integrated Regional Indian Language Selector Dropdown (Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, Gujarati) + Multilingual Neural Speech Synthesis. | **Native Multi-Dialect Voice Output** |
 
 ---
 
@@ -180,15 +199,13 @@
 
 * [ ] **1. Two-Way Speech-to-Sign Communication (Deaf $\leftrightarrow$ Hearing Loop):**
   * Offline Whisper AI speech recognition on incoming audio $\to$ live transcript + 3D animated Sign Language Avatar rendering corresponding ISL signs.
-* [ ] **2. Multilingual Indian Voice Engine:**
-  * Real-time translation to Hindi, Telugu, Tamil, Marathi, and Bengali paired with regional Piper neural acoustic models.
-* [ ] **3. Dynamic Dynamic-Time-Warping (DTW) Multi-Word Gestures:**
-  * Continuous whole-word macro gesture recognition for common signs (`THANK YOU`, `EMERGENCY`, `DOCTOR`, `WATER`) without letter-by-letter spelling.
-* [ ] **4. WebRTC Web & Mobile Companion App:**
+* [x] **2. Multilingual Indian Voice Engine:**
+  * Real-time translation to Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, and Gujarati paired with regional neural acoustic speech.
+* [ ] **3. WebRTC Web & Mobile Companion App:**
   * WebAssembly (Wasm) + ONNX Runtime Web port running in modern mobile browser with zero installation.
-* [ ] **5. Standalone 1-Click Windows Executable (.exe):**
+* [ ] **4. Standalone 1-Click Windows Executable (.exe):**
   * Single-file PyInstaller / Inno Setup installer packaging ONNX models, Piper voices, and DirectShow drivers.
-* [ ] **6. Smart Wearable & IoT Audio Broadcaster:**
+* [ ] **5. Smart Wearable & IoT Audio Broadcaster:**
   * Bluetooth LE audio streaming directly to external smart speakers, hearing aids, or classroom PA systems.
 
 

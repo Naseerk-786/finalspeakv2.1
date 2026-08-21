@@ -28,7 +28,7 @@ from one_euro_filter import LandmarkStreamSmoother
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QTextEdit, QFrame, QGroupBox, QProgressBar,
-    QDialog, QCheckBox
+    QDialog, QCheckBox, QComboBox
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QThread
 from PyQt6.QtGui import QImage, QPixmap, QFont, QColor, QPalette
@@ -288,8 +288,10 @@ class InferenceThread(QThread):
 # ═══════════════════════════════════════════════════════════════
 # Thread 3: Piper Offline TTS Engine
 # ═══════════════════════════════════════════════════════════════
+# Thread 3: Piper & Multilingual Neural Voice TTS Engine
+# ═══════════════════════════════════════════════════════════════
 class TTSThread(QThread):
-    speech_done = pyqtSignal(str)
+    speech_done = pyqtSignal(str, str)  # (text, lang_code)
 
     def __init__(self, piper_model_path):
         super().__init__()
@@ -297,9 +299,9 @@ class TTSThread(QThread):
         self.text_queue = queue.Queue()
         self.running = False
 
-    def enqueue_text(self, text):
+    def enqueue_text(self, text, lang_code="en"):
         if not self.text_queue.full():
-            self.text_queue.put(text)
+            self.text_queue.put((text, lang_code))
 
     def run(self):
         self.running = True
@@ -312,24 +314,67 @@ class TTSThread(QThread):
 
         while self.running:
             try:
-                text = self.text_queue.get(timeout=0.5)
+                item = self.text_queue.get(timeout=0.5)
             except queue.Empty:
                 continue
 
+            text, lang_code = item
             text = text.strip()
             if not text:
                 continue
 
             try:
-                if voice:
-                    wav_path = os.path.join(tempfile.gettempdir(), "signspeak_letter_tts.wav")
-                    with wave.open(wav_path, "w") as wf:
-                        voice.synthesize_wav(text, wf)
-                    import winsound
-                    winsound.PlaySound(wav_path, winsound.SND_FILENAME)
-                self.speech_done.emit(text)
+                if lang_code == "en":
+                    # English: Use Local Offline Piper Neural Voice
+                    if voice:
+                        wav_path = os.path.join(tempfile.gettempdir(), "signspeak_letter_tts.wav")
+                        with wave.open(wav_path, "w") as wf:
+                            voice.synthesize_wav(text, wf)
+                        import winsound
+                        winsound.PlaySound(wav_path, winsound.SND_FILENAME)
+                    else:
+                        import pyttsx3
+                        eng = pyttsx3.init()
+                        eng.say(text)
+                        eng.runAndWait()
+                else:
+                    # Regional Indian Language Speech (Hindi, Telugu, Tamil, Marathi, etc.)
+                    self._synthesize_regional(text, lang_code)
+
+                self.speech_done.emit(text, lang_code)
             except Exception as e:
                 print(f"TTS Synthesis Error: {e}")
+
+    def _synthesize_regional(self, text, lang_code):
+        """Synthesizes and plays regional Indian neural audio cleanly."""
+        try:
+            import urllib.request
+            import urllib.parse
+            import ctypes
+            encoded = urllib.parse.quote(text)
+            url = f"https://translate.google.com/translate_tts?ie=UTF-8&tl={lang_code}&client=tw-ob&q={encoded}"
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+            with urllib.request.urlopen(req, timeout=3.5) as resp:
+                audio_bytes = resp.read()
+
+            mp3_path = os.path.join(tempfile.gettempdir(), f"signspeak_voice_{lang_code}.mp3")
+            with open(mp3_path, "wb") as f:
+                f.write(audio_bytes)
+
+            winmm = ctypes.windll.winmm
+            alias = f"sign_audio_{int(time.time() * 1000)}"
+            winmm.mciSendStringW(f'open "{mp3_path}" type mpegvideo alias {alias}', None, 0, None)
+            winmm.mciSendStringW(f'play {alias} wait', None, 0, None)
+            winmm.mciSendStringW(f'close {alias}', None, 0, None)
+        except Exception as e:
+            print(f"Regional Voice Fallback Error: {e}")
+            try:
+                import pyttsx3
+                eng = pyttsx3.init()
+                eng.say(text)
+                eng.runAndWait()
+            except Exception:
+                pass
 
     def stop(self):
         self.running = False
@@ -344,12 +389,13 @@ class TTSThread(QThread):
 class AIPredictionThread(QThread):
     suggestions_ready = pyqtSignal(list)
     polish_ready = pyqtSignal(str)
+    translation_ready = pyqtSignal(str, str, str)  # (translated_text, target_lang_code, original_text)
     status_update = pyqtSignal(str)
 
     def __init__(self, config_path=None):
         super().__init__()
         self.config_path = config_path or (BASE_DIR / "ai_config.json")
-        self.request_queue = queue.Queue(maxsize=8)
+        self.request_queue = queue.Queue(maxsize=12)
         self.running = True
         self.api_key = None
         self._load_config()
@@ -436,6 +482,45 @@ class AIPredictionThread(QThread):
             "FOOD": ["EAT", "DELICIOUS", "PLEASE", "HUNGRY"]
         }
 
+        # Offline dictionary fallback for Indian languages
+        self.offline_translations = {
+            "hi": {
+                "HELLO": "नमस्ते", "THANK YOU": "धन्यवाद", "PLEASE": "कृपया", "HELP": "मदद करें",
+                "WATER": "पानी", "FOOD": "खाना", "DOCTOR": "डॉक्टर", "YES": "हाँ", "NO": "नहीं",
+                "GOOD": "अच्छा", "I WANT WATER": "मुझे पानी चाहिए", "PLEASE HELP ME": "कृपया मेरी मदद करें"
+            },
+            "te": {
+                "HELLO": "నమస్కారం", "THANK YOU": "ధన్యవాదాలు", "PLEASE": "దయచేసి", "HELP": "సహాయం చేయండి",
+                "WATER": "నీరు", "FOOD": "ఆహారం", "DOCTOR": "వైద్యుడు", "YES": "అవును", "NO": "కాదు",
+                "GOOD": "మంచిది", "I WANT WATER": "నాకు నీరు కావాలి", "PLEASE HELP ME": "దయచేసి నాకు సహాయం చేయండి"
+            },
+            "ta": {
+                "HELLO": "வணக்கம்", "THANK YOU": "நன்றி", "PLEASE": "தயவுசெய்து", "HELP": "உதவி செய்யுங்கள்",
+                "WATER": "தண்ணீர்", "FOOD": "உணவு", "DOCTOR": "மருத்துவர்", "YES": "ஆம்", "NO": "இல்லை",
+                "GOOD": "நல்லது", "I WANT WATER": "எனக்கு தண்ணீர் வேண்டும்", "PLEASE HELP ME": "தயவுசெய்து எனக்கு உதவுங்கள்"
+            },
+            "mr": {
+                "HELLO": "नमस्कार", "THANK YOU": "धन्यवाद", "PLEASE": "कृपया", "HELP": "मदत करा",
+                "WATER": "पाणी", "FOOD": "अन्न", "DOCTOR": "डॉक्टर", "YES": "होय", "NO": "नाही",
+                "GOOD": "छान", "I WANT WATER": "मला पाणी हवे आहे", "PLEASE HELP ME": "कृपया मला मदत करा"
+            },
+            "kn": {
+                "HELLO": "ನಮಸ್ಕಾರ", "THANK YOU": "ಧನ್ಯವಾದಗಳು", "PLEASE": "ದಯವಿಟ್ಟು", "HELP": "ಸಹಾಯ ಮಾಡಿ",
+                "WATER": "ನೀರು", "FOOD": "ಆಹಾರ", "DOCTOR": "ವೈದ್ಯರು", "YES": "ಹೌದು", "NO": "ಇಲ್ಲ",
+                "GOOD": "ಉತ್ತಮ", "I WANT WATER": "ನನಗೆ ನೀರು ಬೇಕು", "PLEASE HELP ME": "ದಯವಿಟ್ಟು ನನಗೆ ಸಹಾಯ ಮಾಡಿ"
+            },
+            "bn": {
+                "HELLO": "নমস্কার", "THANK YOU": "ধন্যবাদ", "PLEASE": "দয়া করে", "HELP": "সাহায্য করুন",
+                "WATER": "জল", "FOOD": "খাবার", "DOCTOR": "ডাক্তার", "YES": "হ্যাঁ", "NO": "না",
+                "GOOD": "ভালো", "I WANT WATER": "আমার জল চাই", "PLEASE HELP ME": "দয়া করে আমাকে সাহায্য করুন"
+            },
+            "gu": {
+                "HELLO": "નમસ્તે", "THANK YOU": "આભાર", "PLEASE": "કૃપા કરીને", "HELP": "મદદ કરો",
+                "WATER": "પાણી", "FOOD": "ખોરાક", "DOCTOR": "ડૉક્ટર", "YES": "હા", "NO": "ના",
+                "GOOD": "સારું", "I WANT WATER": "મને પાણી જોઈએ છે", "PLEASE HELP ME": "કૃપા કરીને મને મદદ કરો"
+            }
+        }
+
     def _load_config(self):
         if os.path.exists(self.config_path):
             try:
@@ -449,8 +534,7 @@ class AIPredictionThread(QThread):
         while not self.request_queue.empty():
             try:
                 item = self.request_queue.get_nowait()
-                if item[0] == "polish":
-                    # Re-queue polish requests so we don't drop them
+                if item[0] in ("polish", "translate"):
                     self.request_queue.put(item)
                     break
             except queue.Empty:
@@ -459,6 +543,9 @@ class AIPredictionThread(QThread):
 
     def enqueue_polish(self, raw_sentence):
         self.request_queue.put(("polish", raw_sentence.strip(), ""))
+
+    def enqueue_translate(self, raw_sentence, target_lang_code, target_lang_name):
+        self.request_queue.put(("translate", raw_sentence.strip(), (target_lang_code, target_lang_name)))
 
     def run(self):
         self.running = True
@@ -486,11 +573,21 @@ class AIPredictionThread(QThread):
                 raw_text = arg1
                 polished = self._polish_groq(raw_text)
                 if not polished:
-                    # Offline fallback: capitalize and punctuate
                     polished = raw_text.strip().capitalize()
                     if not polished.endswith((".", "!", "?")):
                         polished += "."
                 self.polish_ready.emit(polished)
+
+            elif task_type == "translate":
+                raw_text = arg1
+                lang_code, lang_name = arg2
+                translated = self._translate_groq(raw_text, lang_name)
+                if not translated:
+                    # Offline fallback dictionary lookup
+                    clean_key = raw_text.upper().strip().rstrip(".!?")
+                    lang_dict = self.offline_translations.get(lang_code, {})
+                    translated = lang_dict.get(clean_key, raw_text)
+                self.translation_ready.emit(translated, lang_code, raw_text)
 
     def _query_groq(self, prefix, context):
         if not self.api_key:
@@ -585,6 +682,46 @@ class AIPredictionThread(QThread):
             pass
         return None
 
+    def _translate_groq(self, raw_text, target_lang_name):
+        """Translates English sentence to regional Indian language with high fluency."""
+        if not self.api_key or not raw_text:
+            return None
+
+        url = "https://api.groq.com/openai/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        }
+        prompt = (
+            f"Translate this sentence to natural, everyday {target_lang_name}: '{raw_text}'. "
+            f"Output ONLY the translated sentence in {target_lang_name} native script. "
+            f"No transliteration, no English translation, no explanations, no quotes."
+        )
+
+        payload = {
+            "model": "groq/compound-mini",
+            "messages": [
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.1,
+            "max_tokens": 60
+        }
+
+        try:
+            import urllib.request
+            import re
+            req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
+            with urllib.request.urlopen(req, timeout=2.5) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                content = data["choices"][0]["message"]["content"].strip()
+                content = re.sub(r'^["\']|["\']$', '', content).strip()
+                if content:
+                    return content
+        except Exception:
+            pass
+        return None
+
     def stop(self):
         self.running = False
 
@@ -647,7 +784,8 @@ class ShortcutsHelpDialog(QDialog):
             ("Backspace", "Deletes last letter (or restores previous word for editing)"),
             ("Ctrl + P", "Applies AI sentence grammar polish (raw gloss to fluent English)"),
             ("Ctrl + Z", "Reverts grammar polish to original signed words"),
-            ("Enter", "Vocalizes full sentence via offline Piper Neural Voice"),
+            ("Voice Dropdown", "Selects Indian regional speech language (Hindi, Telugu, Tamil, etc.)"),
+            ("Enter", "Vocalizes full sentence in selected regional voice"),
             ("Escape", "Clears both word and sentence buffers instantly"),
             ("F1", "Opens this shortcuts and controls guide")
         ]
@@ -965,7 +1103,8 @@ class SignSpeakApp(QMainWindow):
             ("Backspace", "Deletes last letter (or restores last word)"),
             ("Ctrl + P", "Applies AI sentence grammar polish"),
             ("Ctrl + Z", "Reverts to original signed sequence"),
-            ("Enter", "Synthesizes speech for full sentence"),
+            ("Voice Dropdown", "Translates to Hindi, Telugu, Tamil, etc."),
+            ("Enter", "Synthesizes speech in selected voice"),
             ("Escape", "Clears active word and sentence line")
         ]
 
@@ -1175,10 +1314,64 @@ class SignSpeakApp(QMainWindow):
 
         self.auto_polish_checkbox = QCheckBox("Auto-polish before speaking")
         self.auto_polish_checkbox.setChecked(True)
+        self.auto_polish_checkbox.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.auto_polish_checkbox.setStyleSheet("color: #5C4D44; font-weight: 700; font-size: 11px;")
         polish_row.addWidget(self.auto_polish_checkbox, stretch=2)
 
         sentence_layout.addLayout(polish_row)
+
+        # Voice & Regional Indian Language Selection Row
+        voice_row = QHBoxLayout()
+        voice_row.setSpacing(8)
+
+        lang_icon_lbl = QLabel("Voice Language:")
+        lang_icon_lbl.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        lang_icon_lbl.setStyleSheet("color: #75655B;")
+        voice_row.addWidget(lang_icon_lbl)
+
+        self.language_combo = QComboBox()
+        self.language_combo.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.language_combo.setStyleSheet("""
+            QComboBox {
+                background-color: #FAF4EE;
+                color: #2D2521;
+                border: 1.5px solid #D8C9B8;
+                border-radius: 8px;
+                padding: 4px 10px;
+                font-family: 'Segoe UI', sans-serif;
+                font-size: 11px;
+                font-weight: 700;
+            }
+            QComboBox:hover {
+                border-color: #D96B43;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #FFFFFF;
+                color: #2D2521;
+                selection-background-color: #E29578;
+                selection-color: #FFFFFF;
+                border: 1px solid #D8C9B8;
+                border-radius: 6px;
+                padding: 4px;
+            }
+        """)
+
+        # Supported Regional Languages
+        self.languages = [
+            ("en", "English (Piper Neural Voice)"),
+            ("hi", "Hindi (हिन्दी)"),
+            ("te", "Telugu (తెలుగు)"),
+            ("ta", "Tamil (தமிழ்)"),
+            ("mr", "Marathi (मराठी)"),
+            ("kn", "Kannada (ಕನ್ನಡ)"),
+            ("bn", "Bengali (বাংলা)"),
+            ("gu", "Gujarati (ગુજરાતી)")
+        ]
+        for code, label in self.languages:
+            self.language_combo.addItem(label, code)
+
+        voice_row.addWidget(self.language_combo, stretch=1)
+        sentence_layout.addLayout(voice_row)
 
         sent_btn_layout = QHBoxLayout()
         sent_btn_layout.setSpacing(10)
@@ -1205,6 +1398,7 @@ class SignSpeakApp(QMainWindow):
 
         self.log_text = QTextEdit()
         self.log_text.setReadOnly(True)
+        self.log_text.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.log_text.setFixedHeight(105)
         log_layout.addWidget(self.log_text)
 
@@ -1234,6 +1428,7 @@ class SignSpeakApp(QMainWindow):
         self.ai_thread = AIPredictionThread(BASE_DIR / "ai_config.json")
         self.ai_thread.suggestions_ready.connect(self.on_suggestions_ready)
         self.ai_thread.polish_ready.connect(self.on_sentence_polished)
+        self.ai_thread.translation_ready.connect(self.on_sentence_translated)
 
     def show_shortcuts_guide(self):
         """Displays the interactive Keyboard & Controls guide modal."""
@@ -1518,7 +1713,7 @@ class SignSpeakApp(QMainWindow):
             self._trigger_ai_prediction()
 
     def speak_full_sentence(self):
-        """Commits any pending word and synthesizes speech for the complete sentence."""
+        """Commits any pending word and synthesizes speech for the complete sentence in the selected language."""
         if self.current_word_letters:
             self.commit_word()
 
@@ -1526,17 +1721,36 @@ class SignSpeakApp(QMainWindow):
         if not full_text:
             return
 
-        # Check if Auto-Polish is requested before speaking
-        if self.auto_polish_checkbox.isChecked() and not self.is_polished:
-            self.raw_sentence_words = list(self.sentence_words)
-            self._speak_after_polish = True
-            self.polish_btn.setEnabled(False)
-            self.polish_btn.setText("Polishing Grammar...")
-            self.log(f"Auto-Polishing before Speech: \"{full_text}\"...")
-            self.ai_thread.enqueue_polish(full_text)
+        lang_code = self.language_combo.currentData() or "en"
+        lang_name = self.language_combo.currentText()
+
+        if lang_code == "en":
+            # English Speech Flow
+            if self.auto_polish_checkbox.isChecked() and not self.is_polished:
+                self.raw_sentence_words = list(self.sentence_words)
+                self._speak_after_polish = True
+                self.polish_btn.setEnabled(False)
+                self.polish_btn.setText("Polishing Grammar...")
+                self.log(f"Auto-Polishing before Speech: \"{full_text}\"...")
+                self.ai_thread.enqueue_polish(full_text)
+            else:
+                self.tts_thread.enqueue_text(full_text, lang_code="en")
+                self.log(f"Speaking Full Sentence (English): \"{full_text}\"")
         else:
-            self.tts_thread.enqueue_text(full_text)
-            self.log(f"Speaking Full Sentence: \"{full_text}\"")
+            # Regional Indian Language Speech Flow (Hindi, Telugu, Tamil, Marathi, etc.)
+            self.polish_btn.setEnabled(False)
+            self.polish_btn.setText("Translating...")
+            self.log(f"Translating to {lang_name}: \"{full_text}\"...")
+            self.ai_thread.enqueue_translate(full_text, lang_code, lang_name)
+
+    def on_sentence_translated(self, translated_text, lang_code, original_text):
+        """Callback when regional language translation completes."""
+        self.polish_btn.setEnabled(True)
+        self.polish_btn.setText("Grammar Polish [ Ctrl+P ]")
+        if translated_text:
+            self.sentence_label.setText(translated_text)
+            self.log(f"Translated to [{lang_code.upper()}]: \"{translated_text}\" (Original: \"{original_text}\")")
+            self.tts_thread.enqueue_text(translated_text, lang_code=lang_code)
 
     def clear_all(self):
         """Clears word and sentence buffers."""
@@ -1558,33 +1772,35 @@ class SignSpeakApp(QMainWindow):
         self.log("Cleared word and sentence buffers.")
 
     def keyPressEvent(self, event):
-        """Handle global keyboard shortcuts cleanly (100% Preserved + F1/Ctrl+P/Ctrl+Z/Keys 1,2,3)."""
-        if event.key() == Qt.Key.Key_F1:
+        """Handle global keyboard shortcuts cleanly (100% Preserved + F1/Ctrl+P/Ctrl+Z/Keys 1,2,3 & Numpad)."""
+        key = event.key()
+        if key == Qt.Key.Key_F1:
             self.show_shortcuts_guide()
-        elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and event.key() == Qt.Key.Key_P:
+        elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and key == Qt.Key.Key_P:
             self.toggle_ai_polish()
-        elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and event.key() == Qt.Key.Key_Z:
+        elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and key == Qt.Key.Key_Z:
             if self.is_polished:
                 self.toggle_ai_polish()
-        elif event.key() == Qt.Key.Key_1 and self.current_suggestions and len(self.current_suggestions) >= 1:
+        elif key in (Qt.Key.Key_1, Qt.Key.Key_Numpad1) and self.current_suggestions and len(self.current_suggestions) >= 1:
             self._accept_autocomplete(self.current_suggestions[0])
-        elif event.key() == Qt.Key.Key_2 and self.current_suggestions and len(self.current_suggestions) >= 2:
+        elif key in (Qt.Key.Key_2, Qt.Key.Key_Numpad2) and self.current_suggestions and len(self.current_suggestions) >= 2:
             self._accept_autocomplete(self.current_suggestions[1])
-        elif event.key() == Qt.Key.Key_3 and self.current_suggestions and len(self.current_suggestions) >= 3:
+        elif key in (Qt.Key.Key_3, Qt.Key.Key_Numpad3) and self.current_suggestions and len(self.current_suggestions) >= 3:
             self._accept_autocomplete(self.current_suggestions[2])
-        elif event.key() == Qt.Key.Key_Space:
+        elif key == Qt.Key.Key_Space:
             self.commit_word()
-        elif event.key() == Qt.Key.Key_Backspace:
+        elif key == Qt.Key.Key_Backspace:
             self.delete_last_letter()
-        elif event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+        elif key in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
             self.speak_full_sentence()
-        elif event.key() == Qt.Key.Key_Escape:
+        elif key == Qt.Key.Key_Escape:
             self.clear_all()
         else:
             super().keyPressEvent(event)
 
-    def on_speech_done(self, text):
-        self.log(f"Piper TTS Spoke: \"{text}\"")
+    def on_speech_done(self, text, lang_code="en"):
+        lang_tag = lang_code.upper() if lang_code else "EN"
+        self.log(f"Speech Vocalized [{lang_tag}]: \"{text}\"")
 
     def log(self, msg):
         ts = time.strftime("%H:%M:%S")
