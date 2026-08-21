@@ -1,16 +1,24 @@
 \chapter{Phase 7 \& 8: Two-Way Loop, UI/UX Overhaul, Evaluation and Standalone Deployment}
 \label{Chapter 6}
 
-\section{The Two-Way Deaf $\leftrightarrow$ Hearing Conversational Loop}
-Existing automated sign language systems are universally one-way translators: they vocalize what the deaf user signs, but leave the deaf user unable to understand the hearing partner's verbal response without juggling third-party mobile apps.
+\section{The Breakthrough: Closing the Two-Way Conversational Loop}
+During our early user testing, we observed a fundamental limitation of almost all sign language apps: they are **one-way megaphones**. They allow the deaf user to speak, but offer no mechanism for the deaf user to understand the hearing partner's verbal reply without juggling separate speech-to-text apps on a phone.
 
-We engineered a **Bidirectional Conversational Loop**:
+We engineered a **Bidirectional Conversational Loop** (illustrated in Figure~\ref{fig:twoway_loop}):
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\textwidth]{figures/fig_07_twoway_loop.png}
+    \caption{SignSpeak Universal Bidirectional Conversational Loop: Forward sign-to-speech loop (green) paired with reverse microphone speech-to-sign loop (blue) via Whisper AI and ISL letter badge rendering.}
+    \label{fig:twoway_loop}
+\end{figure}
+
 \begin{enumerate}
     \item \textbf{Signer $\longrightarrow$ Hearing Partner (Forward Loop):} Fingerspelling recognition $\longrightarrow$ Dwell hold capture $\longrightarrow$ AI autocomplete $\longrightarrow$ Grammar polish $\longrightarrow$ Offline Piper / Indian regional voice vocalization.
     \item \textbf{Hearing Partner $\longrightarrow$ Signer (Reverse Loop):} 
     \begin{itemize}
         \item The hearing partner speaks into the laptop microphone (\texttt{Ctrl + M} or \texttt{F2}).
-        \item \texttt{SpeechToTextThread} streams 16kHz audio in the background and sends packaged WAV buffers to Groq's \texttt{whisper-large-v3-turbo} endpoint, returning transcripts in \textbf{$<200\text{ ms}$}.
+        \item \texttt{SpeechToTextThread} streams 16kHz audio in the background and transmits packaged audio frames to Groq's \texttt{whisper-large-v3-turbo} endpoint, returning transcripts in \textbf{$<200\text{ ms}$}.
         \item \textbf{Incoming Subtitles Card:} Displays the transcribed speech in a high-contrast subtitle bubble.
         \item \textbf{Live ISL Visual Fingerspelling Badges:} Dynamically parses spoken words into visual ISL sign letter badges (e.g., \texttt{[ H ] [ E ] [ L ] [ P ]}), allowing the deaf user to read both text and sign equivalents.
         \item \textbf{Dialogue Timeline \& Exporter:} Logs turn-by-turn chat history with timestamps and provides 1-click export to \texttt{transcripts/dialogue\_YYYYMMDD\_HHMMSS.txt} or clipboard.
@@ -18,7 +26,7 @@ We engineered a **Bidirectional Conversational Loop**:
 \end{enumerate}
 
 \section{Camera-First Spacious Assistive UI/UX Overhaul}
-In Version 3.0/3.1, we completely restructured the desktop interface from a cluttered technical dashboard into a calm, camera-first assistive workspace:
+In Version 3.0/3.1, we redesigned the desktop interface around a calm, camera-first assistive workspace:
 \begin{itemize}
     \item \textbf{Hero Video Surface (60\% Main Viewport):} The camera feed occupies the visual center with aspect-ratio preservation and clean translucent live status overlays (\texttt{● Hand Detected}).
     \item \textbf{Strict Visual Hierarchy:} Structured vertically: \texttt{DETECTED SIGN} (52px tile + 0.8s hold bar) $\longrightarrow$ \texttt{CURRENT WORD} (26px text + 3 autocomplete chips) $\longrightarrow$ \texttt{SENTENCE} (17px text + voice dropdown + prominent Speak button).
@@ -27,7 +35,16 @@ In Version 3.0/3.1, we completely restructured the desktop interface from a clut
 \end{itemize}
 
 \section{Quantitative Evaluation and Latency Benchmarks}
-The complete system was evaluated across end-to-end execution latency, memory footprint, and classification metrics on held-out test splits:
+The complete system was evaluated across end-to-end execution latency, memory footprint, and classification metrics on held-out test splits.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.88\textwidth]{figures/fig_06_latency_breakdown.png}
+    \caption{End-to-End System Execution Latency Budget Breakdown: Measured latency across each pipeline stage, totaling just 23.4 ms (well below the 50 ms interactive ceiling).}
+    \label{fig:latency_breakdown}
+\end{figure}
+
+As shown in Figure~\ref{fig:latency_breakdown}, total end-to-end system latency from camera acquisition to speech playback is **$23.4\text{ ms}$**, well below the 50ms human perception ceiling.
 
 \begin{table}[htbp]
 \centering

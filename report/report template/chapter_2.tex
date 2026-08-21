@@ -1,51 +1,53 @@
-\chapter{Phase 1: Low-Fidelity Prototype and Baseline Failure Analysis}
+\chapter{Phase 1: The Low-Fidelity Prototype and Baseline Failure Analysis}
 \label{Chapter 2}
 
-\section{Initial System Hypothesis and Architecture}
-At the inception of this research, we followed the dominant paradigm in academic sign language recognition: dynamic word-level gesture classification. Our initial objective was to build a system capable of classifying 364 continuous sign language word glosses (such as \textit{``Hospital'', ``Doctor'', ``Car'', ``Election'', ``Telephone''}) directly from live video streams.
+\section{Our Initial Hypothesis: The 364-Word Dynamic Gesture Model}
+When we started our experimentation in early exploratory Jupyter notebooks (\texttt{part\_1.ipynb} and \texttt{part\_2.ipynb}), we followed the mainstream trend in academic literature: dynamic word-level sign recognition. Our initial plan was to build a system capable of recognizing 364 continuous sign language word glosses (such as \textit{``Hospital'', ``Doctor'', ``Car'', ``Election'', ``Telephone''}).
 
-To construct a sufficiently comprehensive training corpus, we merged two prominent open-source video datasets:
+To assemble a sufficiently large video dataset, we merged two prominent public repositories:
 \begin{itemize}
-    \item \textbf{INCLUDE Dataset:} A benchmark Indian Sign Language dataset recorded across educational institutions in India, comprising isolated video clips of native signers.
-    \item \textbf{WLASL (World Level American Sign Language) Dataset:} A large-scale American Sign Language dataset containing videos of diverse signers under varying illumination and camera distances.
+    \item \textbf{INCLUDE Dataset:} An Indian Sign Language video corpus recorded across Indian institutions.
+    \item \textbf{WLASL Dataset:} A large-scale American Sign Language benchmark containing diverse video recordings.
 \end{itemize}
 
-\section{Feature Engineering: 856-Dimensional Spatio-Temporal Vectors}
-Using MediaPipe Holistic, we extracted skeletal landmarks across the body pose, face, and both hands. Across consecutive video frames, we computed spatial coordinates, inter-joint Euclidean distances, and first-order velocity deltas, yielding an \textbf{856-dimensional feature vector per frame}.
+Using MediaPipe Holistic, we extracted skeletal landmarks across the body, face, and hands. We computed relative joint distances and first-order velocity deltas across consecutive video frames, constructing an \textbf{856-dimensional feature vector per frame}. We fed 30-frame temporal sliding window tensors ($\mathbf{X} \in \mathbb{R}^{30 \times 856}$) into a Spatial-Temporal Graph Convolutional Network (ST-GCN).
 
-To capture gesture dynamics over time, we implemented a 30-frame temporal sliding window buffer. Each input tensor $\mathbf{X} \in \mathbb{R}^{30 \times 856}$ was fed into a Spatial-Temporal Graph Convolutional Network (ST-GCN), where spatial graph edges represented biological skeletal bones and temporal graph edges connected identical joints across consecutive time steps.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/fig_02_baseline_vs_highfi.png}
+    \caption{Empirical comparison: Low-Fidelity Baseline (ST-GCN Sequence Model) vs. High-Fidelity SignSpeak Universal (Single-Frame Residual MLP + ONNX).}
+    \label{fig:baseline_vs_highfi}
+\end{figure}
 
-\section{Empirical Failure Analysis: Why the Baseline Failed}
-When we evaluated the trained ST-GCN model on live webcam feeds and held-out validation sets, the system encountered systemic failures that rendered it unusable for practical assistive communication. We identified four compounding bottlenecks:
+\section{The Failure Post-Mortem: What Went Wrong}
+When we deployed our trained ST-GCN model on our webcam, our initial excitement turned into a humbling realization. The prototype failed across four critical dimensions (visualized in Figure~\ref{fig:baseline_vs_highfi}):
 
-\subsection{1. Cross-Regional Dialect Collision (Accuracy Collapse to 42.8\%)}
-Sign languages are not universal; Indian Sign Language (ISL) and American Sign Language (ASL) possess completely distinct gestural vocabularies and syntactic conventions. For instance, the sign for \textit{``Hospital''} in ISL involves forming a two-handed cross near the upper shoulder, whereas in ASL it requires drawing an \textit{``H''} handshape downward across the opposite arm.
+\subsection{1. Dialect Collision (Accuracy Collapsed to 42.8\%)}
+Sign languages are not universal. Indian Sign Language (ISL) and American Sign Language (ASL) have fundamentally different gestural vocabularies. For instance, the sign for \textit{``Hospital''} in ISL involves a two-handed cross gesture near the shoulder, whereas in ASL it requires drawing an \textit{``H''} handshape downward across the opposite arm. By merging both datasets into one 364-class taxonomy, the neural network was forced to map conflicting spatio-temporal trajectories to the same label, causing top-1 accuracy to collapse to **42.8\%**.
 
-By merging the INCLUDE and WLASL datasets into a single 364-class taxonomy, the neural network was forced to learn contradictory spatio-temporal trajectories mapped to the exact same target labels. Consequently, the model suffered from severe catastrophic interference, achieving a dismal \textbf{42.8\% Top-1 classification accuracy} on validation test splits.
-
-\subsection{2. Intolerable Temporal Latency ($>500\text{ ms}$ Buffer Delay)}
-A dynamic sequence classifier requiring 30 video frames at 30 FPS cannot compute a prediction until the full 30-frame window is populated. This introduced a mandatory \textbf{1,000-millisecond physical gesture buffering delay}, followed by 80--120ms of neural inference time. In live conversational settings, signers felt an unnatural lag between physical hand motion and on-screen feedback, disrupting the rhythm of communication.
+\subsection{2. The 30-Frame Buffering Lag ($>1,000\text{ ms}$ Latency)}
+A dynamic sequence classifier requiring 30 video frames at 30 FPS cannot output a single prediction until all 30 frames are captured. This introduced a mandatory **1,000ms physical gesture buffering delay** plus 80--120ms of neural inference time. In live tests, signers felt an unnatural lag between their hands moving and text appearing on the screen.
 
 \subsection{3. The Closed-Dictionary Barrier}
-Word-level models are strictly bounded by their training vocabulary. When a user attempted to sign an Indian personal name (e.g., \textit{``Naseer''} or \textit{``Amaan''}), a specific local town, or a specialized technical term not present in the 364-word training dictionary, the system failed completely, outputting arbitrary high-loss classifications.
+The word-level model could only recognize the exact 364 words in its training set. When we tried to sign our names (\textit{``Amaan''} or \textit{``Naseer''}) or a simple medical term like \textit{``Paracetamol''}, the model had no way to process the input, outputting random high-loss predictions.
 
-\subsection{4. Single-Threaded GUI Freezing (Frame Drops to 5--12 FPS)}
-Our initial desktop implementation executed OpenCV video capture, MediaPipe tracking, PyTorch neural inference, and Tkinter GUI rendering in a single sequential execution thread. The computational cost of forward-passing 30-frame temporal tensors through the ST-GCN starved the video capture loop of CPU cycles, causing the camera feed to stutter severely from 30 FPS down to \textbf{5--12 FPS}.
+\subsection{4. Single-Threaded Desktop Lag (Frame Drops to 5--12 FPS)}
+Our initial prototype executed OpenCV video capture, MediaPipe landmark extraction, ST-GCN inference, and UI rendering in a single sequential execution loop. The heavy matrix operations of the graph neural network starved the camera feed of CPU cycles, causing severe video stuttering from 30 FPS down to **5--12 FPS**.
 
 \begin{table}[htbp]
 \centering
-\caption{Summary of Baseline ST-GCN Limitations}
-\label{tab:baseline_limitations}
+\caption{Empirical Limitations of the Low-Fidelity Baseline}
+\label{tab:baseline_comparison}
 \begin{tabular}{@{}lll@{}}
 \toprule
-\textbf{Dimension} & \textbf{Low-Fidelity Baseline} & \textbf{Observed Impact} \\
+\textbf{Dimension} & \textbf{Low-Fidelity Baseline (Phase 1)} & \textbf{Identified Bottleneck} \\
 \midrule
 Recognition Paradigm & 30-Frame Word Sequences & 1,000ms buffer lag before prediction \\
-Vocabulary Reach & Closed 364-Word Dictionary & Complete failure on proper nouns and names \\
+Vocabulary Reach & Closed 364-Word Dictionary & Complete failure on names and medical terms \\
 Dataset Integration & Merged ISL + ASL Videos & Severe dialect clashes (42.8\% accuracy) \\
-System Architecture & Single-Threaded Python Script & Severe GUI freezing (5--12 FPS) \\
+System Architecture & Single-Threaded Script & Severe GUI freezing (5--12 FPS) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-This empirical failure forced a fundamental reassessment of our technical approach, prompting the strategic architectural pivot detailed in Chapter~3.
+This failure was our turning point: we realized that building a practical assistive tool required rethinking our entire technical paradigm from the ground up.

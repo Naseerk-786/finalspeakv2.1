@@ -1,27 +1,34 @@
 \chapter{Phase 2: The Strategic Architectural Pivot and Coordinate Geometry}
 \label{Chapter 3}
 
-\section{The Core Paradigm Shift: From Word Glosses to Fingerspelling}
-Confronted with the insurmountable latency and closed-vocabulary bottlenecks of dynamic word-level modeling, we executed a foundational architectural pivot:
+\section{The Breakthrough: Pivoting to Spatial Fingerspelling}
+After analyzing the failure of our word-level baseline, we had our defining insight:
 
 \begin{quote}
-\textit{Rather than attempting to train a sequence classifier on a closed dictionary of 364 complex dynamic word gestures, we pivoted to a high-speed, single-frame 35-class fingerspelling and digit recognition engine (representing English alphabet characters `A' through `Z' and digits `1' through `9').}
+\textit{Rather than forcing a neural network to memorize a fixed dictionary of dynamic words across a 30-frame temporal buffer, we pivoted to a high-speed, single-frame 35-class alphabet and digit fingerspelling paradigm (classes `A' through `Z' and digits `1' through `9').}
 \end{quote}
 
-This strategic shift resolved all three fundamental failure modes of the baseline:
+This single architectural decision solved all three core bottlenecks:
 \begin{enumerate}
-    \item \textbf{Latency Vanished ($<1.8\text{ ms}$):} Evaluating individual static frames completely eliminated the 30-frame temporal buffer, slashing inference latency from over 500ms down to sub-2 milliseconds.
-    \item \textbf{Infinite Vocabulary Unlocked:} Fingerspelling allows users to spell any word, proper noun, medication name, or regional location character-by-character, which a downstream software layer can assemble into full sentences.
-    \item \textbf{Elimination of Dialect Clashes:} Standard ISL/ASL fingerspelling hand postures exhibit consistent geometric structures, eliminating the dialect ambiguity that collapsed baseline accuracy.
+    \item \textbf{Sub-2ms Inference Latency:} Evaluating a single static frame eliminated the 30-frame video buffer, reducing inference latency from >500ms down to **$<1.8\text{ ms}$**.
+    \item \textbf{Infinite Vocabulary Reach:} Users can spell any word, proper noun, Indian name, or medical term character-by-character, which a downstream software layer can assemble into full sentences.
+    \item \textbf{Dialect Consistency:} Standard ISL/ASL fingerspelling hand postures exhibit consistent spatial geometry, eliminating the cross-regional dialect clashes that collapsed baseline accuracy.
 \end{enumerate}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.68\textwidth]{figures/fig_03_coordinate_geometry.png}
+    \caption{Geometric coordinate normalization: Wrist-centered origin translation ($\mathbf{P}_0$) and middle-MCP ($\mathbf{P}_9$) hand-span scale normalization ($S = \|\mathbf{P}_9 - \mathbf{P}_0\|_2$) yielding 126-dimensional scale- and translation-invariant vectors.}
+    \label{fig:coordinate_geometry}
+\end{figure}
+
 \section{Mathematical Formulation of 126-Dimensional Invariant Features}
-Raw pixel coordinates $(x_i, y_i, z_i)$ extracted from camera frames vary substantially depending on camera resolution, user hand size, and distance from the lens. To guarantee generalization across diverse webcams and lighting conditions, we designed a two-stage spatial normalization transform.
+Raw pixel coordinates $(x_i, y_i, z_i)$ extracted by MediaPipe vary significantly depending on camera resolution, hand size, and distance from the lens. To guarantee generalization across diverse webcams, we derived a two-stage geometric normalization pipeline (illustrated in Figure~\ref{fig:coordinate_geometry}):
 
 Let $\mathbf{P}_i = (x_i, y_i, z_i) \in \mathbb{R}^3$ denote the 3D spatial coordinates of the $i$-th hand keypoint for $i \in \{0, 1, \dots, 20\}$, where $\mathbf{P}_0$ represents the wrist landmark.
 
 \subsection{Stage 1: Wrist-Centered Origin Translation}
-To render the representation invariant to the physical location of the hand within the camera viewport, all 21 keypoints are translated relative to the wrist origin:
+To make the representation invariant to the physical location of the hand within the camera viewport, all 21 keypoints are translated relative to the wrist origin:
 \begin{equation}
 \mathbf{P}'_i = \mathbf{P}_i - \mathbf{P}_0 \quad \forall i \in \{0, 1, \dots, 20\}
 \end{equation}
@@ -55,6 +62,6 @@ When only one hand is visible in the frame (the standard case during single-hand
 This mathematical symmetry guarantees that the neural network receives an identical feature representation regardless of whether the user signs with their left or right hand.
 
 \section{Multi-Core Dataset Harvesting and Automated QC Filtering}
-To train our classifier on a comprehensive baseline, we developed an automated multi-threaded harvesting pipeline (\texttt{download\_and\_extract\_isl\_letters.py}) that harvested and merged 129,773 raw sign alphabet images across three public repositories: Kaggle ISL, Kaggle ASL, and GitHub ISL.
+To train our classifier on a comprehensive baseline, we developed an automated multi-threaded harvesting pipeline (\texttt{prototype/download\_and\_extract\_isl\_letters.py}) that harvested and merged 129,773 raw sign alphabet images across three public repositories: Kaggle ISL, Kaggle ASL, and GitHub ISL.
 
 Because public image datasets contain blurred photos, occluded fingers, and empty backgrounds, we deployed \textbf{12 parallel CPU worker processes} running MediaPipe Hands with an automated quality threshold ($\ge 0.40$ detection confidence). The pipeline discarded 22,256 defective images, outputting \textbf{107,517 clean, validated 126-dimensional hand landmark vectors} stored in structured JSON format.

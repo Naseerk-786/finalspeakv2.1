@@ -2,45 +2,43 @@
 \contentsline {chapter}{List of Figures}{ix}{chapter*.3}%
 \contentsline {chapter}{List of Tables}{x}{chapter*.4}%
 \contentsline {chapter}{\numberline {1}Introduction and Problem Formulation}{1}{chapter.1}%
-\contentsline {section}{\numberline {1.1}The Socio-Technical Accessibility Divide in India}{1}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Linguistic Characteristics of Indian Sign Language}{2}{section.1.2}%
-\contentsline {section}{\numberline {1.3}Project Motivation and Core Engineering Objectives}{2}{section.1.3}%
-\contentsline {section}{\numberline {1.4}Report Organization}{3}{section.1.4}%
-\contentsline {chapter}{\numberline {2}Phase 1: Low-Fidelity Prototype and Baseline Failure Analysis}{4}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Initial System Hypothesis and Architecture}{4}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Feature Engineering: 856-Dimensional Spatio-Temporal Vectors}{4}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Empirical Failure Analysis: Why the Baseline Failed}{5}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}1. Cross-Regional Dialect Collision (Accuracy Collapse to 42.8\%)}{5}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}2. Intolerable Temporal Latency ($>500\text { ms}$ Buffer Delay)}{5}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}3. The Closed-Dictionary Barrier}{6}{subsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.3.4}4. Single-Threaded GUI Freezing (Frame Drops to 5--12 FPS)}{6}{subsection.2.3.4}%
+\contentsline {section}{\numberline {1.1}Starting from Zero: The Human Motivation Behind SignSpeak}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Linguistic Nuances of Indian Sign Language}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Our Core Engineering Commitments}{3}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Phase 1: The Low-Fidelity Prototype and Baseline Failure Analysis}{4}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Our Initial Hypothesis: The 364-Word Dynamic Gesture Model}{4}{section.2.1}%
+\contentsline {section}{\numberline {2.2}The Failure Post-Mortem: What Went Wrong}{5}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}1. Dialect Collision (Accuracy Collapsed to 42.8\%)}{5}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}2. The 30-Frame Buffering Lag ($>1,000\text { ms}$ Latency)}{6}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}3. The Closed-Dictionary Barrier}{6}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}4. Single-Threaded Desktop Lag (Frame Drops to 5--12 FPS)}{6}{subsection.2.2.4}%
 \contentsline {chapter}{\numberline {3}Phase 2: The Strategic Architectural Pivot and Coordinate Geometry}{7}{chapter.3}%
-\contentsline {section}{\numberline {3.1}The Core Paradigm Shift: From Word Glosses to Fingerspelling}{7}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Mathematical Formulation of 126-Dimensional Invariant Features}{8}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Stage 1: Wrist-Centered Origin Translation}{8}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Stage 2: Hand Span Euclidean Scale Normalization}{8}{subsection.3.2.2}%
-\contentsline {section}{\numberline {3.3}Active Hand Mirroring for Left/Right Hand Invariance}{9}{section.3.3}%
-\contentsline {section}{\numberline {3.4}Multi-Core Dataset Harvesting and Automated QC Filtering}{9}{section.3.4}%
-\contentsline {chapter}{\numberline {4}Phase 3 \& 4: Deep Residual MLP, Sign Studio and 3D Augmentations}{10}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Deep Residual MLP Topology (\texttt {ISLLetterClassifier})}{10}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Loss Formulation with Label Smoothing}{11}{section.4.2}%
-\contentsline {section}{\numberline {4.3}GPU Baseline Training Run and ONNX Export}{11}{section.4.3}%
-\contentsline {section}{\numberline {4.4}The Inter-User Anatomical Variance Challenge}{12}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Personalized Sign Recorder Studio GUI}{12}{section.4.5}%
-\contentsline {section}{\numberline {4.6}3D Geometric Spatial Augmentation Mathematics}{12}{section.4.6}%
-\contentsline {section}{\numberline {4.7}8-Second GPU Co-Training and Zero-Forgetting Fine-Tuner}{13}{section.4.7}%
-\contentsline {chapter}{\numberline {5}Phase 5 \& 6: Multi-Threading, Dwell Stabilizer and AI Linguistic Bridge}{14}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Five-Thread Asynchronous Decoupled Engine Architecture}{14}{section.5.1}%
-\contentsline {section}{\numberline {5.2}The 0.8s Steady-Hold Dwell Stabilizer with Hysteresis Lock}{15}{section.5.2}%
-\contentsline {section}{\numberline {5.3}One-Euro Signal Filtering}{15}{section.5.3}%
-\contentsline {section}{\numberline {5.4}Ergonomic Keyboard Mechanics}{16}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Gboard-Style AI Autocomplete Strip}{16}{section.5.5}%
-\contentsline {section}{\numberline {5.6}1-Click AI Sign Grammar Polish and Non-Destructive Revert}{16}{section.5.6}%
-\contentsline {section}{\numberline {5.7}Multilingual Indian Regional Speech Engine (8 Languages)}{17}{section.5.7}%
-\contentsline {chapter}{\numberline {6}Phase 7 \& 8: Two-Way Loop, UI/UX Overhaul, Evaluation and Standalone Deployment}{18}{chapter.6}%
-\contentsline {section}{\numberline {6.1}The Two-Way Deaf $\leftrightarrow $ Hearing Conversational Loop}{18}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Camera-First Spacious Assistive UI/UX Overhaul}{19}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Quantitative Evaluation and Latency Benchmarks}{19}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Standalone Windows Executable (.exe) Compilation Strategy}{21}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Conclusion and Future Horizons}{21}{section.6.5}%
-\contentsline {chapter}{References}{22}{section.6.5}%
+\contentsline {section}{\numberline {3.1}The Breakthrough: Pivoting to Spatial Fingerspelling}{7}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Mathematical Formulation of 126-Dimensional Invariant Features}{9}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Stage 1: Wrist-Centered Origin Translation}{9}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Stage 2: Hand Span Euclidean Scale Normalization}{9}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Active Hand Mirroring for Left/Right Hand Invariance}{10}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Multi-Core Dataset Harvesting and Automated QC Filtering}{10}{section.3.4}%
+\contentsline {chapter}{\numberline {4}Phase 3 \& 4: Deep Residual MLP, Sign Studio and 3D Augmentations}{11}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Deep Residual MLP Topology (\texttt {ISLLetterClassifier})}{11}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Loss Formulation with Label Smoothing}{12}{section.4.2}%
+\contentsline {section}{\numberline {4.3}GPU Baseline Training Run and ONNX Export}{12}{section.4.3}%
+\contentsline {section}{\numberline {4.4}The Inter-User Anatomical Variance Challenge}{13}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Building Our Own Sign Recorder Studio GUI}{13}{section.4.5}%
+\contentsline {section}{\numberline {4.6}3D Geometric Spatial Augmentation Mathematics}{13}{section.4.6}%
+\contentsline {section}{\numberline {4.7}8-Second GPU Co-Training and Zero-Forgetting Fine-Tuner}{14}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Phase 5 \& 6: Multi-Threading, Dwell Stabilizer and AI Linguistic Bridge}{15}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Five-Thread Asynchronous Decoupled Engine Architecture}{15}{section.5.1}%
+\contentsline {section}{\numberline {5.2}The 0.8s Steady-Hold Dwell Stabilizer with Hysteresis Lock}{16}{section.5.2}%
+\contentsline {section}{\numberline {5.3}One-Euro Signal Filtering}{17}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Ergonomic Keyboard Mechanics}{17}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Gboard-Style AI Autocomplete Strip}{17}{section.5.5}%
+\contentsline {section}{\numberline {5.6}1-Click AI Sign Grammar Polish and Non-Destructive Revert}{18}{section.5.6}%
+\contentsline {section}{\numberline {5.7}Multilingual Indian Regional Speech Engine (8 Languages)}{18}{section.5.7}%
+\contentsline {chapter}{\numberline {6}Phase 7 \& 8: Two-Way Loop, UI/UX Overhaul, Evaluation and Standalone Deployment}{19}{chapter.6}%
+\contentsline {section}{\numberline {6.1}The Breakthrough: Closing the Two-Way Conversational Loop}{19}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Camera-First Spacious Assistive UI/UX Overhaul}{20}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Quantitative Evaluation and Latency Benchmarks}{21}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Standalone Windows Executable (.exe) Compilation Strategy}{23}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Conclusion and Future Horizons}{23}{section.6.5}%
+\contentsline {chapter}{References}{24}{section.6.5}%

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.10)  21 AUG 2026 10:28
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.10)  21 AUG 2026 10:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -421,7 +421,7 @@ Package epstopdf Info: Source file: <logo.eps>
 o.pdf logo.eps>
 (epstopdf)             \includegraphics on input line 18.
 Package epstopdf Info: Output file is already uptodate.
-<logo-eps-converted-to.pdf, id=186, 772.8875pt x 326.21875pt>
+<logo-eps-converted-to.pdf, id=178, 772.8875pt x 326.21875pt>
 File: logo-eps-converted-to.pdf Graphic file (type pdf)
 <use logo-eps-converted-to.pdf>
 Package pdftex.def Info: logo-eps-converted-to.pdf  used on input line 18.
@@ -437,7 +437,7 @@ Package hyperref Info: Option `pageanchor' set `true' on input line 18.
 
 pdfTeX warning: pdflatex.exe (file ./logo.pdf): PDF inclusion: found PDF versio
 n <1.7>, but at most version <1.5> allowed
-<logo.pdf, id=195, 772.8875pt x 326.21875pt>
+<logo.pdf, id=187, 772.8875pt x 326.21875pt>
 File: logo.pdf Graphic file (type pdf)
 <use logo.pdf>
 Package pdftex.def Info: logo.pdf  used on input line 25.
@@ -456,7 +456,7 @@ Overfull \hbox (5.69604pt too wide) in paragraph at lines 61--72
 ] [6] (final_disseratation.toc [7
 
 ]
-Overfull \hbox (3.16405pt too wide) in paragraph at lines 32--32
+Overfull \hbox (3.16405pt too wide) in paragraph at lines 30--30
  [] [][]\OT1/cmr/bx/n/12 Phase 5 & 6: Multi-Threading, Dwell Sta-bi-lizer and A
 I Lin-guis-tic Bridge[] []  
  []
@@ -465,7 +465,13 @@ I Lin-guis-tic Bridge[] []
 \tf@toc=\write4
 \openout4 = `final_disseratation.toc'.
 
- [8] (final_disseratation.lof)
+ [8] (final_disseratation.lof
+Overfull \hbox (0.40425pt too wide) in paragraph at lines 6--6
+ [][] [][]\OT1/cmr/m/n/12 Geometric co-or-di-nate nor-mal-iza-tion: Wrist-cente
+red ori-gin trans-la-tion ($\OT1/cmr/bx/n/12 P[]$\OT1/cmr/m/n/12 ) 
+ []
+
+)
 \tf@lof=\write5
 \openout5 = `final_disseratation.lof'.
 
@@ -482,30 +488,39 @@ I Lin-guis-tic Bridge[] []
 ])
 \openout2 = `chapter_1.aux'.
 
-
-(chapter_1.tex
+ (chapter_1.tex
 Chapter 1.
-
-Overfull \hbox (8.08966pt too wide) in paragraph at lines 9--9
-[]\OT1/cmr/bx/n/17.28 Linguistic Char-ac-ter-is-tics of In-dian Sign Lan-guage 
-
- []
-
+<figures/fig_01_evolution_timeline.png, id=319, 606.5862pt x 289.3209pt>
+File: figures/fig_01_evolution_timeline.png Graphic file (type png)
+<use figures/fig_01_evolution_timeline.png>
+Package pdftex.def Info: figures/fig_01_evolution_timeline.png  used on input l
+ine 13.
+(pdftex.def)             Requested size: 418.82372pt x 199.76848pt.
 [1
 
 
 
 
 
-] [2]) [3]
+] [2 <./figures/fig_01_evolution_timeline.png>]) [3]
 \openout2 = `chapter_2.aux'.
 
  (chapter_2.tex
 Chapter 2.
 
-Overfull \hbox (57.08353pt too wide) in paragraph at lines 13--13
-[]\OT1/cmr/bx/n/17.28 Feature En-gi-neer-ing: 856-Dimensional Spatio-Temporal
+Overfull \hbox (12.6673pt too wide) in paragraph at lines 5--6
+\OT1/cmr/m/n/12 When we started our ex-per-i-men-ta-tion in early ex-ploratory 
+Jupyter note-books (\OT1/cmtt/m/n/12 part[]1.ipynb
  []
+
+! Undefined control sequence.
+l.13 ...ng window tensors ($\mathbf{X} \in \mathbb
+                                                  {R}^{30 \times 856}$) into...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
 
 [4
 
@@ -513,25 +528,23 @@ Overfull \hbox (57.08353pt too wide) in paragraph at lines 13--13
 
 
 ]
-! Undefined control sequence.
-l.16 ... Each input tensor $\mathbf{X} \in \mathbb
-                                                  {R}^{30 \times 856}$ was f...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
+<figures/fig_02_baseline_vs_highfi.png, id=346, 643.203pt x 281.853pt>
+File: figures/fig_02_baseline_vs_highfi.png Graphic file (type png)
+<use figures/fig_02_baseline_vs_highfi.png>
+Package pdftex.def Info: figures/fig_02_baseline_vs_highfi.png  used on input l
+ine 17.
+(pdftex.def)             Requested size: 418.82372pt x 183.53343pt.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 26.
+(hyperref)                removing `math shift' on input line 28.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 26.
+(hyperref)                removing `math shift' on input line 28.
 
-[5]
-Overfull \hbox (74.61462pt too wide) in paragraph at lines 39--49
+[5 <./figures/fig_02_baseline_vs_highfi.png>]
+Overfull \hbox (107.54958pt too wide) in paragraph at lines 41--51
  [][] 
  []
 
@@ -540,18 +553,24 @@ Overfull \hbox (74.61462pt too wide) in paragraph at lines 39--49
 
  (chapter_3.tex
 Chapter 3.
+<figures/fig_03_coordinate_geometry.png, id=358, 299.4387pt x 307.3884pt>
+File: figures/fig_03_coordinate_geometry.png Graphic file (type png)
+<use figures/fig_03_coordinate_geometry.png>
+Package pdftex.def Info: figures/fig_03_coordinate_geometry.png  used on input 
+line 20.
+(pdftex.def)             Requested size: 309.56264pt x 317.78146pt.
 [7
 
 
 
 
-]
-Overfull \hbox (7.01366pt too wide) in paragraph at lines 18--18
+] [8 <./figures/fig_03_coordinate_geometry.png>]
+Overfull \hbox (7.01366pt too wide) in paragraph at lines 25--25
 []\OT1/cmr/bx/n/17.28 Mathematical For-mu-la-tion of 126-Dimensional In-
  []
 
 ! Undefined control sequence.
-l.21 ...\mathbf{P}_i = (x_i, y_i, z_i) \in \mathbb
+l.28 ...\mathbf{P}_i = (x_i, y_i, z_i) \in \mathbb
                                                   {R}^3$ denote the 3D spati...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -560,7 +579,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.42 ..._{\text{norm}, 20}^T \right]^T \in \mathbb
+l.49 ..._{\text{norm}, 20}^T \right]^T \in \mathbb
                                                   {R}^{63}
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -568,9 +587,8 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[8]
 ! Undefined control sequence.
-l.46 ... Left ($\mathbf{X}_{\text{LH}} \in \mathbb
+l.53 ... Left ($\mathbf{X}_{\text{LH}} \in \mathbb
                                                   {R}^{63}$) and Right ($\ma...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -579,7 +597,7 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 ! Undefined control sequence.
-l.46 ...Right ($\mathbf{X}_{\text{RH}} \in \mathbb
+l.53 ...Right ($\mathbf{X}_{\text{RH}} \in \mathbb
                                                   {R}^{63}$) hands, forming ...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -587,8 +605,9 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
+[9]
 ! Undefined control sequence.
-l.48 ...f{X}_{\text{RH}} \end{bmatrix} \in \mathbb
+l.55 ...f{X}_{\text{RH}} \end{bmatrix} \in \mathbb
                                                   {R}^{126}
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -597,12 +616,12 @@ spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
 )
-Overfull \hbox (11.94725pt too wide) in paragraph at lines 60--47
+Overfull \hbox (11.94725pt too wide) in paragraph at lines 67--47
 \OT1/cmr/m/n/12 dis-carded 22,256 de-fec-tive im-ages, out-putting \OT1/cmr/bx/
 n/12 107,517 clean, val-i-dated 126-dimensional
  []
 
-[9]
+[10]
 \openout2 = `chapter_4.aux'.
 
  (chapter_4.tex
@@ -626,14 +645,21 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[10
+[11
 
 
 
 
 ]
+<figures/fig_04_training_curves.png, id=397, 679.338pt x 267.399pt>
+File: figures/fig_04_training_curves.png Graphic file (type png)
+<use figures/fig_04_training_curves.png>
+Package pdftex.def Info: figures/fig_04_training_curves.png  used on input line
+ 28.
+(pdftex.def)             Requested size: 432.48048pt x 170.23714pt.
+
 ! Undefined control sequence.
-l.29 ...t{where } q_k = (1 - \alpha) \cdot \mathbb
+l.36 ...t{where } q_k = (1 - \alpha) \cdot \mathbb
                                                   {I}(y = k) + \frac{\alpha}{K}
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -641,26 +667,20 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-[11]
-Overfull \hbox (5.75789pt too wide) in paragraph at lines 63--64
-[]\OT1/cmr/bx/n/12 3-Second Green Ac-tive Record-ing Win-dow: \OT1/cmr/m/n/12 A
-u-to-mat-i-cally streams and records
- []
-
-[12]
+[12 <./figures/fig_04_training_curves.png>] [13]
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.80 ...ne (\texttt{prototype/fine_tune_engine.py}
-                                                  ) uses a **co-training min...
+l.69 ...ne (\texttt{prototype/fine_tune_engine.py}
+                                                  ) employs a **co-training ...
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
 ! Extra }, or forgotten $.
 <recently read> \egroup 
                         
-l.80 ...ne (\texttt{prototype/fine_tune_engine.py}
-                                                  ) uses a **co-training min...
+l.69 ...ne (\texttt{prototype/fine_tune_engine.py}
+                                                  ) employs a **co-training ...
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
 you forgot something else, as in `\hbox{$x}'. In such cases
@@ -677,7 +697,7 @@ I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
 
-Overfull \hbox (225.15811pt too wide) in paragraph at lines 80--48
+Overfull \hbox (225.15811pt too wide) in paragraph at lines 69--48
 \OML/cmm/m/it/12 batchstrategy \OMS/cmsy/m/n/12 ^^C ^^C\OML/cmm/m/it/12 blendin
 g\OT1/cmr/m/n/12 20%\OML/cmm/m/it/12 user \OMS/cmsy/m/n/12 ^^@ \OML/cmm/m/it/12
  recordedaugmentedvectorswith\OT1/cmr/m/n/12 80%\OML/cmm/m/it/12 globalbaseline
@@ -686,7 +706,7 @@ sy/m/n/12 ^^@
  []
 
 
-Overfull \hbox (10.23654pt too wide) in paragraph at lines 80--48
+Overfull \hbox (10.23654pt too wide) in paragraph at lines 69--48
 \OML/cmm/m/it/12 tuningcompletesin \OMS/cmsy/m/n/12 ^^C ^^C \OT1/cmr/m/n/12 8\O
 ML/cmm/m/it/12 seconds \OMS/cmsy/m/n/12 ^^C ^^C\OML/cmm/m/it/12 ; elevatinglive
 validationaccuracyto \OMS/cmsy/m/n/12 ^^C ^^C\OT1/cmr/m/n/12 99\OML/cmm/m/it/12
@@ -694,7 +714,7 @@ validationaccuracyto \OMS/cmsy/m/n/12 ^^C ^^C\OT1/cmr/m/n/12 99\OML/cmm/m/it/12
 2 :\OT1/cmr/m/n/12 96% \OMS/cmsy/m/n/12 ^^C
  []
 
-[13]
+[14]
 \openout2 = `chapter_5.aux'.
 
  (chapter_5.tex
@@ -705,265 +725,259 @@ Overfull \hbox (5.59166pt too wide) in paragraph at lines 4--4
  []
 
 
-Overfull \hbox (32.58116pt too wide) in paragraph at lines 5--6
-\OT1/cmtt/m/n/12 To guarantee that compute-intensive operations (such as audio 
-speech synthesis,
- []
-
-
-Overfull \hbox (20.23116pt too wide) in paragraph at lines 5--6
-\OT1/cmtt/m/n/12 neural translation, grammar polishing, and audio transcription
-) never degrade
- []
-
-
 Overfull \hbox (38.75616pt too wide) in paragraph at lines 5--6
-\OT1/cmtt/m/n/12 the 30 FPS camera feed or cause user interface freezing, **Sig
-nSpeak Universal**
+\OT1/cmtt/m/n/12 To ensure that compute-heavy tasks (neural voice synthesis, tr
+anslation, grammar
  []
 
 
-Overfull \hbox (1.70615pt too wide) in paragraph at lines 5--6
-\OT1/cmtt/m/n/12 is architected across **five isolated asynchronous threads** c
-ommunicating
+Overfull \hbox (26.40616pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 polishing, and audio transcription) never cause the 30 FPS cam
+era feed to drop
  []
 
 
-Overfull \hbox (0.20583pt too wide) in paragraph at lines 8--9
-[]\OT1/cmtt/m/n/12 CaptureThread: Executes DirectShow video capture at 30 FPS, 
-performs
+Overfull \hbox (26.40616pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 frames, **SignSpeak Universal** runs across **five isolated pa
+rallel threads**
+ []
+
+<figures/fig_05_concurrency_threads.png, id=422, 525.6438pt x 268.8444pt>
+File: figures/fig_05_concurrency_threads.png Graphic file (type png)
+<use figures/fig_05_concurrency_threads.png>
+Package pdftex.def Info: figures/fig_05_concurrency_threads.png  used on input 
+line 9.
+(pdftex.def)             Requested size: 418.82372pt x 214.21434pt.
+
+Overfull \hbox (31.08084pt too wide) in paragraph at lines 15--16
+[]\OT1/cmtt/m/n/12 CaptureThread: DirectShow camera capture at 30 FPS, MediaPip
+e 3D landmark
  []
 
 
-Overfull \hbox (12.55583pt too wide) in paragraph at lines 8--9
-\OT1/cmtt/m/n/12 MediaPipe 3D landmark tracking, and extracts normalized 126-di
-mensional
+Overfull \hbox (24.90584pt too wide) in paragraph at lines 16--17
+[]\OT1/cmtt/m/n/12 InferenceThread: Sub-2ms ONNX letter inference on incoming v
+ectors, with
  []
 
 
-Overfull \hbox (49.60585pt too wide) in paragraph at lines 9--10
-[]\OT1/cmtt/m/n/12 InferenceThread: Performs sub-2ms ONNX letter inference on i
-ncoming vectors,
+Overfull \hbox (61.95586pt too wide) in paragraph at lines 16--17
+\OT1/cmtt/m/n/12 a 4-frame consecutive temporal confirmation filter to prevent 
+visual flickering
  []
 
 
-Overfull \hbox (12.55583pt too wide) in paragraph at lines 9--10
-\OT1/cmtt/m/n/12 passing predictions through a 4-frame consecutive temporal con
-firmation
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 17--18
+[]\OT1/cmtt/m/n/12 SignSpeakApp (Main UI Thread): Manages the Qt6 desktop works
+pace, 0.8s
  []
 
 
-Overfull \hbox (6.38083pt too wide) in paragraph at lines 10--11
-[]\OT1/cmtt/m/n/12 SignSpeakApp (Main UI Thread): Manages the interactive Qt6 w
-orkspace,
+Overfull \hbox (31.08084pt too wide) in paragraph at lines 17--18
+\OT1/cmtt/m/n/12 dwell hold progress calculation, autocomplete chip rendering, 
+and keyboard
  []
 
 
-Overfull \hbox (6.38083pt too wide) in paragraph at lines 10--11
-\OT1/cmtt/m/n/12 the 0.8s dwell hold progress calculation, autocomplete chip re
-ndering,
- []
-
-
-Overfull \hbox (152.8519pt too wide) in paragraph at lines 11--12
+Overfull \hbox (152.8519pt too wide) in paragraph at lines 18--19
 []\OT1/cmtt/m/n/12 TTSThread: Manages non-blocking local Piper neural voice syn
 thesis (en[]US-lessac-medium.onnx,
  []
 
-[14
 
-
-
-
-]
-Overfull \hbox (6.38083pt too wide) in paragraph at lines 12--13
+Overfull \hbox (6.38083pt too wide) in paragraph at lines 19--20
 []\OT1/cmtt/m/n/12 SpeechToTextThread: Streams background microphone audio at 1
 6kHz mono
  []
 
 
-Overfull \hbox (24.90584pt too wide) in paragraph at lines 12--13
+Overfull \hbox (24.90584pt too wide) in paragraph at lines 19--20
 \OT1/cmtt/m/n/12 via sounddevice, packaging PCM audio frames for Whisper AI tra
 nscription. 
  []
 
+[15
 
-Overfull \hbox (69.63118pt too wide) in paragraph at lines 16--17
-\OT1/cmtt/m/n/12 A critical usability flaw in traditional sign recognition soft
-ware is the requirement
+
+
+
+]
+Overfull \hbox (38.75616pt too wide) in paragraph at lines 23--24
+\OT1/cmtt/m/n/12 A major ergonomic flaw in conventional sign recognition tools 
+is the requirement
  []
 
 
-Overfull \hbox (26.40616pt too wide) in paragraph at lines 16--17
-\OT1/cmtt/m/n/12 for manual mouse clicking or constant spacebar tapping to capt
-ure each letter,
+Overfull \hbox (26.40616pt too wide) in paragraph at lines 23--24
+\OT1/cmtt/m/n/12 for manual mouse clicks or continuous spacebar tapping to capt
+ure each letter.
  []
 
 
-Overfull \hbox (18.73083pt too wide) in paragraph at lines 20--21
+Overfull \hbox (18.73083pt too wide) in paragraph at lines 27--28
 []\OT1/cmtt/m/n/12 0.80s Hold Threshold: When a user holds a recognizable sign 
 steady with
  []
 
 
-Overfull \hbox (3.5389pt too wide) in paragraph at lines 20--21
+Overfull \hbox (3.5389pt too wide) in paragraph at lines 27--28
 \OMS/cmsy/m/n/12 ^^U \OT1/cmr/m/n/12 50%$ \OT1/cmtt/m/n/12 confidence, an on-sc
 reen green progress bar fills smoothly over
  []
 
 
-Overfull \hbox (0.20583pt too wide) in paragraph at lines 21--22
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 28--29
 []\OT1/cmtt/m/n/12 Audio Feedback Confirmation: When the dwell reaches 100%, th
 e letter
  []
 
 
-Overfull \hbox (12.55583pt too wide) in paragraph at lines 21--22
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 28--29
 \OT1/cmtt/m/n/12 is automatically committed into the active word builder, accom
 panied by
  []
 
 
-Overfull \hbox (12.55583pt too wide) in paragraph at lines 22--23
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 29--30
 []\OT1/cmtt/m/n/12 Anti-Duplication Hysteresis Lock: Following capture, an inte
 rnal state
  []
 
 
-Overfull \hbox (0.20583pt too wide) in paragraph at lines 22--23
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 29--30
 \OT1/cmtt/m/n/12 lock prevents the letter from repeating until the user either 
 changes
  []
 
 
-Overfull \hbox (31.08084pt too wide) in paragraph at lines 22--23
+Overfull \hbox (31.08084pt too wide) in paragraph at lines 29--30
 \OT1/cmtt/m/n/12 their handshape or lowers their hand, completely eliminating u
 nintentional
  []
 
-
-Overfull \hbox (14.05615pt too wide) in paragraph at lines 26--27
+[16 <./figures/fig_05_concurrency_threads.png>]
+Overfull \hbox (14.05615pt too wide) in paragraph at lines 33--34
 \OT1/cmtt/m/n/12 To eliminate high-frequency coordinate jitter caused by webcam
  sensor noise,
  []
 
 
-Overfull \hbox (69.91806pt too wide) in paragraph at lines 29--31
+Overfull \hbox (69.91806pt too wide) in paragraph at lines 36--38
 \OT1/cmtt/m/n/12 During slow, stationary gestures, the cutoff frequency $\OML/c
 mm/m/it/12 f[]$ \OT1/cmtt/m/n/12 drops to $\OT1/cmr/m/n/12 1\OML/cmm/m/it/12 :\
 OT1/cmr/m/n/12 0[]$\OT1/cmtt/m/n/12 , eliminating
  []
 
 
-Overfull \hbox (11.6793pt too wide) in paragraph at lines 29--31
+Overfull \hbox (11.6793pt too wide) in paragraph at lines 36--38
 \OT1/cmtt/m/n/12 jitter completely. During rapid hand transitions, $\OML/cmm/m/
 it/12 f[]$ \OT1/cmtt/m/n/12 scales up dynamically,
  []
 
-[15]
-Overfull \hbox (12.55583pt too wide) in paragraph at lines 34--35
+
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 41--42
 []\OT1/cmtt/m/n/12 Spacebar Word Commit: Commits the formed word into the spoke
 n sentence
  []
 
 
-Overfull \hbox (18.73083pt too wide) in paragraph at lines 35--36
+Overfull \hbox (18.73083pt too wide) in paragraph at lines 42--43
 []\OT1/cmtt/m/n/12 Smart Backspace: Deletes the last character; if the active w
 ord builder
  []
 
 
-Overfull \hbox (24.90584pt too wide) in paragraph at lines 35--36
+Overfull \hbox (24.90584pt too wide) in paragraph at lines 42--43
 \OT1/cmtt/m/n/12 is empty, it intelligently pulls the previous word back from t
 he sentence
  []
 
 
-Overfull \hbox (6.38083pt too wide) in paragraph at lines 36--37
+Overfull \hbox (6.38083pt too wide) in paragraph at lines 43--44
 []\OT1/cmtt/m/n/12 Escape Buffer Reset: Instantly clears both word and sentence
  buffers. 
  []
 
 
-Overfull \hbox (26.40616pt too wide) in paragraph at lines 40--41
+Overfull \hbox (26.40616pt too wide) in paragraph at lines 47--48
 \OT1/cmtt/m/n/12 To accelerate communication, we built a **Gboard-Style AI Auto
 complete Strip**
  []
 
 
-Overfull \hbox (7.88115pt too wide) in paragraph at lines 40--41
+Overfull \hbox (7.88115pt too wide) in paragraph at lines 47--48
 \OT1/cmtt/m/n/12 displaying three clickable suggestion chips (e.g., [ 1 HELLO ]
 , [ 2 HELP ],
  []
 
 
-Overfull \hbox (31.08084pt too wide) in paragraph at lines 42--43
+Overfull \hbox (31.08084pt too wide) in paragraph at lines 49--50
 \OT1/cmtt/m/n/12 frequency dictionary with an asynchronous background Groq Clou
 d LLM worker
  []
 
 
-Overfull \hbox (6.38083pt too wide) in paragraph at lines 43--44
+Overfull \hbox (6.38083pt too wide) in paragraph at lines 50--51
 []\OT1/cmtt/m/n/12 One-Touch Hotkeys (1, 2, 3): Pressing standard number keys o
 r numeric
  []
 
-
-Overfull \hbox (38.35957pt too wide) in paragraph at lines 46--46
+[17]
+Overfull \hbox (38.35957pt too wide) in paragraph at lines 53--53
 []\OT1/cmr/bx/n/17.28 1-Click AI Sign Gram-mar Pol-ish and Non-Destructive
  []
 
 
-Overfull \hbox (3.70517pt too wide) in paragraph at lines 47--48
+Overfull \hbox (3.70517pt too wide) in paragraph at lines 54--55
 \OT1/cmtt/m/n/12 To bridge the gap between telegraphic sign glosses (e.g., \OT1
 /cmtt/m/it/12 ``ME WATER DRINK
  []
 
 
-Overfull \hbox (12.55583pt too wide) in paragraph at lines 49--50
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 56--57
 []\OT1/cmtt/m/n/12 Pressing Ctrl + P (or clicking Polish) automatically commits
  any active
  []
 
 
-Overfull \hbox (18.73083pt too wide) in paragraph at lines 49--50
+Overfull \hbox (18.73083pt too wide) in paragraph at lines 56--57
 \OT1/cmtt/m/n/12 word and sends the full sentence to our background AI worker, 
 converting
  []
 
 
-Overfull \hbox (42.00403pt too wide) in paragraph at lines 49--50
+Overfull \hbox (42.00403pt too wide) in paragraph at lines 56--57
 \OT1/cmtt/m/n/12 the gloss into a fluent sentence (\OT1/cmtt/m/it/12 ``I want t
 o drink water.''\OT1/cmtt/m/n/12 ) in $\OMS/cmsy/m/n/12 ^^X \OT1/cmr/m/n/12 150
 []$\OT1/cmtt/m/n/12 . 
  []
 
-[16]
-Overfull \hbox (31.08084pt too wide) in paragraph at lines 50--51
+
+Overfull \hbox (31.08084pt too wide) in paragraph at lines 57--58
 []\OT1/cmtt/m/n/12 Ctrl + Z Revert: Non-destructively restores the exact origin
 al raw signed
  []
 
 
-Overfull \hbox (6.38083pt too wide) in paragraph at lines 51--52
+Overfull \hbox (6.38083pt too wide) in paragraph at lines 58--59
 []\OT1/cmtt/m/n/12 Auto-Polish on Speak: Automatically converts sign syntax rig
 ht before
  []
 
 
-Overfull \hbox (32.58116pt too wide) in paragraph at lines 55--56
+Overfull \hbox (32.58116pt too wide) in paragraph at lines 62--63
 \OT1/cmtt/m/n/12 To empower signers across India, we built a multilingual regio
 nal speech engine
  []
 
 
-Overfull \hbox (20.23116pt too wide) in paragraph at lines 55--56
+Overfull \hbox (20.23116pt too wide) in paragraph at lines 62--63
 \OT1/cmtt/m/n/12 supporting **8 languages**: English, Hindi, Telugu, Tamil, Mar
 athi, Kannada,
  []
 
 
-Overfull \hbox (0.20583pt too wide) in paragraph at lines 57--58
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 64--65
 []\OT1/cmtt/m/n/12 1-Click Translate (Ctrl + T): Translates the signed sentence
  into the
  []
@@ -976,145 +990,145 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.58 ...., \texttt{[ 🔊 Speak in Hindi  Enter ]}
+l.65 ...., \texttt{[ 🔊 Speak in Hindi  Enter ]}
                                                   ) and automatically transl...
 
 You may provide a definition with
 \DeclareUnicodeCharacter 
 
 
-Overfull \hbox (0.20583pt too wide) in paragraph at lines 58--59
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 65--66
 []\OT1/cmtt/m/n/12 Dynamic Regional Speak (Enter): The Speak button dynamically
  updates
  []
 
 
-Overfull \hbox (43.43085pt too wide) in paragraph at lines 58--59
+Overfull \hbox (43.43085pt too wide) in paragraph at lines 65--66
 \OT1/cmtt/m/n/12 (e.g., [  Speak in Hindi Enter ]) and automatically translates
  and vocalizes
  []
 
-) [17]
+) [18]
 \openout2 = `chapter_6.aux'.
 
  (chapter_6.tex
 Chapter 6.
 
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 4.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\leftrightarrow' on input line 4.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 4.
-
-
 Overfull \hbox (20.23116pt too wide) in paragraph at lines 5--6
-\OT1/cmtt/m/n/12 Existing automated sign language systems are universally one-w
-ay translators:
+\OT1/cmtt/m/n/12 During our early user testing, we observed a fundamental limit
+ation of almost
  []
 
 
-Overfull \hbox (63.45618pt too wide) in paragraph at lines 5--6
-\OT1/cmtt/m/n/12 they vocalize what the deaf user signs, but leave the deaf use
-r unable to understand
+Overfull \hbox (26.40616pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 all sign language apps: they are **one-way megaphones**. They 
+allow the deaf
  []
 
 
-Overfull \hbox (32.58116pt too wide) in paragraph at lines 5--6
-\OT1/cmtt/m/n/12 the hearing partner's verbal response without juggling third-p
-arty mobile apps. 
+Overfull \hbox (44.93117pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 user to speak, but offer no mechanism for the deaf user to und
+erstand the hearing
  []
 
 
-Overfull \hbox (7.18924pt too wide) in paragraph at lines 9--10
+Overfull \hbox (38.75616pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 partner's verbal reply without juggling separate speech-to-tex
+t apps on a phone. 
+ []
+
+
+Overfull \hbox (76.93953pt too wide) in paragraph at lines 7--8
+[]\OT1/cmtt/m/n/12 We engineered a **Bidirectional Conversational Loop** (illus
+trated in Figure []6.1[]): 
+ []
+
+<figures/fig_07_twoway_loop.png, id=448, 545.1567pt x 255.8358pt>
+File: figures/fig_07_twoway_loop.png Graphic file (type png)
+<use figures/fig_07_twoway_loop.png>
+Package pdftex.def Info: figures/fig_07_twoway_loop.png  used on input line 11.
+
+(pdftex.def)             Requested size: 409.71689pt x 192.28236pt.
+
+Overfull \hbox (7.18924pt too wide) in paragraph at lines 17--18
 []\OT1/cmtt/m/n/12 Signer $[][]\OMS/cmsy/m/n/12 !$ \OT1/cmtt/m/n/12 Hearing Par
 tner (Forward Loop): Fingerspelling recognition
  []
 
 
-Overfull \hbox (28.13948pt too wide) in paragraph at lines 9--10
+Overfull \hbox (28.13948pt too wide) in paragraph at lines 17--18
 [][]\OMS/cmsy/m/n/12 !$ \OT1/cmtt/m/n/12 Dwell hold capture $[][]\OMS/cmsy/m/n/
 12 !$ \OT1/cmtt/m/n/12 AI autocomplete $[][]\OMS/cmsy/m/n/12 !$ \OT1/cmtt/m/n/1
 2 Grammar polish $[][]\OMS/cmsy/m/n/12 !$ \OT1/cmtt/m/n/12 Offline
  []
 
 
-Overfull \hbox (7.5305pt too wide) in paragraph at lines 12--13
+Overfull \hbox (7.5305pt too wide) in paragraph at lines 20--21
 []\OT1/cmtt/m/n/12 The hearing partner speaks into the laptop microphone (Ctrl 
 + M or
  []
 
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <8> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 13.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 21.
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <6> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 13.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 21.
 
-Overfull \hbox (7.5305pt too wide) in paragraph at lines 13--14
+Overfull \hbox (32.23051pt too wide) in paragraph at lines 21--22
 []\OT1/cmtt/m/n/12 SpeechToTextThread streams 16kHz audio in the background and
- sends
+ transmits
  []
 
 
-Overfull \hbox (50.75552pt too wide) in paragraph at lines 13--14
-\OT1/cmtt/m/n/12 packaged WAV buffers to Groq's whisper-large-v3-turbo endpoint
-, returning
+Overfull \hbox (56.93053pt too wide) in paragraph at lines 21--22
+\OT1/cmtt/m/n/12 packaged audio frames to Groq's whisper-large-v3-turbo endpoin
+t, returning
  []
 
-
-Overfull \hbox (69.28053pt too wide) in paragraph at lines 14--15
-[]\OT1/cmtt/m/n/12 Incoming Subtitles Card: Displays the transcribed speech in 
-a high-contrast
- []
-
-[18
+[19
 
 
 
 
 ]
-Overfull \hbox (1.3555pt too wide) in paragraph at lines 15--16
+Overfull \hbox (69.28053pt too wide) in paragraph at lines 22--23
+[]\OT1/cmtt/m/n/12 Incoming Subtitles Card: Displays the transcribed speech in 
+a high-contrast
+ []
+
+
+Overfull \hbox (1.3555pt too wide) in paragraph at lines 23--24
 []\OT1/cmtt/m/n/12 Live ISL Visual Fingerspelling Badges: Dynamically parses sp
 oken
  []
 
 
-Overfull \hbox (1.3555pt too wide) in paragraph at lines 15--16
+Overfull \hbox (1.3555pt too wide) in paragraph at lines 23--24
 \OT1/cmtt/m/n/12 words into visual ISL sign letter badges (e.g., [ H ] [ E ] [ 
 L ]
  []
 
 
-Overfull \hbox (32.23051pt too wide) in paragraph at lines 15--16
+Overfull \hbox (32.23051pt too wide) in paragraph at lines 23--24
 \OT1/cmtt/m/n/12 [ P ]), allowing the deaf user to read both text and sign equi
 valents. 
  []
 
 
-Overfull \hbox (7.5305pt too wide) in paragraph at lines 16--17
+Overfull \hbox (7.5305pt too wide) in paragraph at lines 24--25
 []\OT1/cmtt/m/n/12 Dialogue Timeline & Exporter: Logs turn-by-turn chat history
  with
  []
 
 
-Overfull \hbox (102.87254pt too wide) in paragraph at lines 16--17
+Overfull \hbox (102.87254pt too wide) in paragraph at lines 24--25
 \OT1/cmtt/m/n/12 timestamps and provides 1-click export to transcripts/dialogue
 []YYYYMMDD[]HHMMSS.txt
  []
 
 
-Overfull \hbox (7.88115pt too wide) in paragraph at lines 21--22
-\OT1/cmtt/m/n/12 In Version 3.0/3.1, we completely restructured the desktop int
-erface from a
- []
-
-
-Overfull \hbox (14.05615pt too wide) in paragraph at lines 21--22
-\OT1/cmtt/m/n/12 cluttered technical dashboard into a calm, camera-first assist
-ive workspace: 
+Overfull \hbox (57.28117pt too wide) in paragraph at lines 29--30
+\OT1/cmtt/m/n/12 In Version 3.0/3.1, we redesigned the desktop interface around
+ a calm, camera-first
  []
 
 
@@ -1125,141 +1139,160 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.23 ...tatus overlays (\texttt{● Hand Detected}
+l.31 ...tatus overlays (\texttt{● Hand Detected}
                                                   ).
 You may provide a definition with
 \DeclareUnicodeCharacter 
 
 
-Overfull \hbox (0.20583pt too wide) in paragraph at lines 23--24
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 31--32
 []\OT1/cmtt/m/n/12 Hero Video Surface (60% Main Viewport): The camera feed occu
 pies the
  []
 
 
-Overfull \hbox (12.55583pt too wide) in paragraph at lines 23--24
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 31--32
 \OT1/cmtt/m/n/12 visual center with aspect-ratio preservation and clean translu
 cent live
  []
 
 
-Overfull \hbox (0.20583pt too wide) in paragraph at lines 24--25
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 32--33
 []\OT1/cmtt/m/n/12 Strict Visual Hierarchy: Structured vertically: DETECTED SIG
 N (52px
  []
 
 
-Overfull \hbox (25.71425pt too wide) in paragraph at lines 24--25
+Overfull \hbox (25.71425pt too wide) in paragraph at lines 32--33
 \OT1/cmtt/m/n/12 tile + 0.8s hold bar) $[][]\OMS/cmsy/m/n/12 !$ \OT1/cmtt/m/n/1
 2 CURRENT WORD (26px text + 3 autocomplete chips)
  []
 
-
-Overfull \hbox (18.73083pt too wide) in paragraph at lines 25--26
+[20 <./figures/fig_07_twoway_loop.png>]
+Overfull \hbox (18.73083pt too wide) in paragraph at lines 33--34
 []\OT1/cmtt/m/n/12 Accessible 44--52px Touch Targets: All interactive buttons a
 re enlarged
  []
 
 
-Overfull \hbox (24.90584pt too wide) in paragraph at lines 26--27
+Overfull \hbox (24.90584pt too wide) in paragraph at lines 34--35
 []\OT1/cmtt/m/n/12 Progressive Disclosure Drawer: The conversation timeline and
  diagnostics
  []
 
 
-Overfull \hbox (24.90584pt too wide) in paragraph at lines 26--27
+Overfull \hbox (24.90584pt too wide) in paragraph at lines 34--35
 \OT1/cmtt/m/n/12 are housed in a collapsible bottom drawer, maximizing camera s
 pace during
  []
 
 
-Overfull \hbox (5.68364pt too wide) in paragraph at lines 29--29
+Overfull \hbox (5.68364pt too wide) in paragraph at lines 37--37
 []\OT1/cmr/bx/n/17.28 Quantitative Eval-u-a-tion and La-tency Bench-marks 
  []
 
 
-Overfull \hbox (20.23116pt too wide) in paragraph at lines 30--31
+Overfull \hbox (20.23116pt too wide) in paragraph at lines 38--39
 \OT1/cmtt/m/n/12 The complete system was evaluated across end-to-end execution 
 latency, memory
  []
 
+<figures/fig_06_latency_breakdown.png, id=461, 570.933pt x 252.945pt>
+File: figures/fig_06_latency_breakdown.png Graphic file (type png)
+<use figures/fig_06_latency_breakdown.png>
+Package pdftex.def Info: figures/fig_06_latency_breakdown.png  used on input li
+ne 42.
+(pdftex.def)             Requested size: 400.617pt x 177.49257pt.
 
-Overfull \hbox (92.09924pt too wide) in paragraph at lines 57--73
+Overfull \hbox (58.41452pt too wide) in paragraph at lines 47--48
+[]\OT1/cmtt/m/n/12 As shown in Figure []6.2[], total end-to-end system latency 
+from camera acquisition
+ []
+
+
+Overfull \hbox (34.94482pt too wide) in paragraph at lines 47--48
+\OT1/cmtt/m/n/12 to speech playback is **$\OT1/cmr/m/n/12 23\OML/cmm/m/it/12 :\
+OT1/cmr/m/n/12 4[]$\OT1/cmtt/m/n/12 **, well below the 50ms human perception ce
+iling. 
+ []
+
+
+Overfull \hbox (92.09924pt too wide) in paragraph at lines 74--90
  [][] 
  []
 
-[19] [20]
-Overfull \hbox (14.05615pt too wide) in paragraph at lines 76--77
+[21 <./figures/fig_06_latency_breakdown.png>] [22]
+Overfull \hbox (14.05615pt too wide) in paragraph at lines 93--94
 \OT1/cmtt/m/n/12 To enable seamless deployment on Windows laptops without requi
 ring Python or
  []
 
 
-Overfull \hbox (26.40616pt too wide) in paragraph at lines 76--77
+Overfull \hbox (26.40616pt too wide) in paragraph at lines 93--94
 \OT1/cmtt/m/n/12 CUDA installations, the application is packaged into a standal
 one distribution
  []
 
 
-Overfull \hbox (72.34818pt too wide) detected at line 79
+Overfull \hbox (72.34818pt too wide) detected at line 96
 [][][][]
  []
 
 
-Overfull \hbox (38.75616pt too wide) in paragraph at lines 79--81
+Overfull \hbox (38.75616pt too wide) in paragraph at lines 96--98
 \OT1/cmtt/m/n/12 The resulting bundle packages the 556 KB ONNX binary, offline 
 Piper voice model,
  []
 
 
-Overfull \hbox (7.88115pt too wide) in paragraph at lines 83--84
+Overfull \hbox (7.88115pt too wide) in paragraph at lines 100--101
 \OT1/cmtt/m/n/12 SignSpeak Universal demonstrates that high-performance assisti
 ve technology
  []
 
 
-Overfull \hbox (51.10617pt too wide) in paragraph at lines 83--84
+Overfull \hbox (51.10617pt too wide) in paragraph at lines 100--101
 \OT1/cmtt/m/n/12 can be achieved on consumer laptop hardware at zero operationa
 l cost. By coupling
  []
 
 
-Overfull \hbox (1.70615pt too wide) in paragraph at lines 83--84
+Overfull \hbox (1.70615pt too wide) in paragraph at lines 100--101
 \OT1/cmtt/m/n/12 126-dimensional spatial coordinate normalization with a Deep R
 esidual MLP,
  []
 
 
-Overfull \hbox (38.75616pt too wide) in paragraph at lines 83--84
+Overfull \hbox (38.75616pt too wide) in paragraph at lines 100--101
 \OT1/cmtt/m/n/12 asynchronous multi-threading, an ergonomic dwell stabilizer, a
 nd a bidirectional
  []
 
 
-Overfull \hbox (1.70615pt too wide) in paragraph at lines 83--84
+Overfull \hbox (1.70615pt too wide) in paragraph at lines 100--101
 \OT1/cmtt/m/n/12 Whisper conversational loop, this project delivers a practical
 , dignifying
  []
 
 )
-Overfull \hbox (39.88951pt too wide) in paragraph at lines 85--50
+Overfull \hbox (39.88951pt too wide) in paragraph at lines 102--50
 []\OT1/cmtt/m/n/12 Future work includes porting the ONNX inference engine to We
 bAssembly (Wasm)
  []
 
 
-Overfull \hbox (1.70615pt too wide) in paragraph at lines 85--50
+Overfull \hbox (1.70615pt too wide) in paragraph at lines 102--50
 \OT1/cmtt/m/n/12 for browser execution, developing an Android/iOS mobile compan
 ion app, and
  []
 
 
-Overfull \hbox (14.05615pt too wide) in paragraph at lines 85--50
+Overfull \hbox (14.05615pt too wide) in paragraph at lines 102--50
 \OT1/cmtt/m/n/12 broadcasting synthesized speech directly to smart hearing aids
  via Bluetooth
  []
 
-[21] (bibliography.tex
+[23] (bibliography.tex
 Underfull \hbox (badness 10000) in paragraph at lines 4--7
 []\OT1/cmtt/m/n/12 G. Casiez, N. Roussel, and D. Vogel,  ``1\TS1/cmtt/m/n/12 � 
 \OT1/cmtt/m/n/12 filter: A simple
@@ -1355,7 +1388,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 29--32
 /n/12 , pp. 770--778,
  []
 
-[22
+[24
 
 
 
@@ -1412,7 +1445,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 49--52
 on Machine Learning
  []
 
-) [23] (final_disseratation.aux (final_disser_prelude.aux) (chapter_1.aux)
+) [25] (final_disseratation.aux (final_disser_prelude.aux) (chapter_1.aux)
 (chapter_2.aux) (chapter_3.aux) (chapter_4.aux) (chapter_5.aux) (chapter_6.aux)
 )
  ***********
@@ -1420,20 +1453,20 @@ LaTeX2e <2026-06-01>
 L3 programming layer <2026-06-18>
  ***********
 Package rerunfilecheck Info: File `final_disseratation.out' has not changed.
-(rerunfilecheck)             Checksum: 9C8C7B25273176E04A1B9ADE1CD759B4;13768.
+(rerunfilecheck)             Checksum: BB193344FD0AFEE01D1CA706FD1848E8;13146.
  )
 (\end occurred inside a group at level 1)
 
-### simple group (level 1) entered at line 80 ({)
+### simple group (level 1) entered at line 69 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 10198 strings out of 467510
- 163927 string characters out of 5402926
- 594392 words of memory out of 5000000
- 39138 multiletter control sequences out of 15000+600000
- 639469 words of font info for 82 fonts, out of 8000000 for 9000
+ 10256 strings out of 467510
+ 166180 string characters out of 5402926
+ 596209 words of memory out of 5000000
+ 39190 multiletter control sequences out of 15000+600000
+ 638630 words of font info for 79 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 74i,12n,79p,813b,795s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 74i,12n,79p,813b,799s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\Khaja Naseeruddin\AppData\Local\MiKTeX\fonts/pk/ljfo
 ur/jknappen/ec/dpi600\tctt1200.pk> <C:\Users\Khaja Naseeruddin\AppData\Local\Mi
 KTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcbx1200.pk> <C:\Users\Khaja Naseeruddi
@@ -1454,9 +1487,9 @@ ts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Khaja Naseeruddin/AppData/Local
 /Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/Khaja Nase
 eruddin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb
 >
-Output written on final_disseratation.pdf (35 pages, 380523 bytes).
+Output written on final_disseratation.pdf (37 pages, 1361596 bytes).
 PDF statistics:
- 544 PDF objects out of 1000 (max. 8388607)
- 130 named destinations out of 1000 (max. 500000)
- 379 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 592 PDF objects out of 1000 (max. 8388607)
+ 136 named destinations out of 1000 (max. 500000)
+ 398 words of extra memory for PDF output out of 10000 (max. 10000000)
 

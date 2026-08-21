@@ -1,6 +1,13 @@
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces SignSpeak Universal: Complete end-to-end engineering journey timeline from Phase 1 inception to Phase 7 bidirectional deployment.}}{2}{figure.1.1}%
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Empirical comparison: Low-Fidelity Baseline (ST-GCN Sequence Model) vs. High-Fidelity SignSpeak Universal (Single-Frame Residual MLP + ONNX).}}{5}{figure.2.1}%
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Geometric coordinate normalization: Wrist-centered origin translation ($\mathbf {P}_0$) and middle-MCP ($\mathbf {P}_9$) hand-span scale normalization ($S = \|\mathbf {P}_9 - \mathbf {P}_0\|_2$) yielding 126-dimensional scale- and translation-invariant vectors.}}{8}{figure.3.1}%
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces CUDA GPU training and validation curves over 200 epochs on NVIDIA RTX 4050: Top-1 Accuracy reaching 99.89\% (Train) and 99.67\% (Val) alongside smooth Cosine Annealing loss convergence.}}{12}{figure.4.1}%
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces SignSpeak Universal 5-Thread Asynchronous Concurrency Architecture: Decoupling video capture, sub-2ms ONNX inference, PyQt6 workspace UI, local Piper TTS, and Whisper STT.}}{16}{figure.5.1}%
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces SignSpeak Universal Bidirectional Conversational Loop: Forward sign-to-speech loop (green) paired with reverse microphone speech-to-sign loop (blue) via Whisper AI and ISL letter badge rendering.}}{20}{figure.6.1}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces End-to-End System Execution Latency Budget Breakdown: Measured latency across each pipeline stage, totaling just 23.4 ms (well below the 50 ms interactive ceiling).}}{21}{figure.6.2}%

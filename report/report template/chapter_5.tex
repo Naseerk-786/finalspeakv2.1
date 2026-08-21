@@ -2,18 +2,25 @@
 \label{Chapter 5}
 
 \section{Five-Thread Asynchronous Decoupled Engine Architecture}
-To guarantee that compute-intensive operations (such as audio speech synthesis, neural translation, grammar polishing, and audio transcription) never degrade the 30 FPS camera feed or cause user interface freezing, **SignSpeak Universal** is architected across **five isolated asynchronous threads** communicating via thread-safe Qt signals and locks:
+To ensure that compute-heavy tasks (neural voice synthesis, translation, grammar polishing, and audio transcription) never cause the 30 FPS camera feed to drop frames, **SignSpeak Universal** runs across **five isolated parallel threads** (diagrammed in Figure~\ref{fig:concurrency_threads}):
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/fig_05_concurrency_threads.png}
+    \caption{SignSpeak Universal 5-Thread Asynchronous Concurrency Architecture: Decoupling video capture, sub-2ms ONNX inference, PyQt6 workspace UI, local Piper TTS, and Whisper STT.}
+    \label{fig:concurrency_threads}
+\end{figure}
 
 \begin{enumerate}
-    \item \textbf{\texttt{CaptureThread}:} Executes DirectShow video capture at 30 FPS, performs MediaPipe 3D landmark tracking, and extracts normalized 126-dimensional geometric coordinate vectors.
-    \item \textbf{\texttt{InferenceThread}:} Performs sub-2ms ONNX letter inference on incoming vectors, passing predictions through a 4-frame consecutive temporal confirmation filter to prevent visual flickering during hand transitions.
-    \item \textbf{\texttt{SignSpeakApp} (Main UI Thread):} Manages the interactive Qt6 workspace, the 0.8s dwell hold progress calculation, autocomplete chip rendering, and keyboard event dispatching.
+    \item \textbf{\texttt{CaptureThread}:} DirectShow camera capture at 30 FPS, MediaPipe 3D landmark tracking, and 126-dimensional coordinate vector extraction.
+    \item \textbf{\texttt{InferenceThread}:} Sub-2ms ONNX letter inference on incoming vectors, with a 4-frame consecutive temporal confirmation filter to prevent visual flickering during hand transitions.
+    \item \textbf{\texttt{SignSpeakApp} (Main UI Thread):} Manages the Qt6 desktop workspace, 0.8s dwell hold progress calculation, autocomplete chip rendering, and keyboard event dispatching.
     \item \textbf{\texttt{TTSThread}:} Manages non-blocking local Piper neural voice synthesis (\texttt{en\_US-lessac-medium.onnx}, $<12\text{ ms}$) and regional acoustic voice playback via Windows MCI APIs.
     \item \textbf{\texttt{SpeechToTextThread}:} Streams background microphone audio at 16kHz mono via \texttt{sounddevice}, packaging PCM audio frames for Whisper AI transcription.
 \end{enumerate}
 
 \section{The 0.8s Steady-Hold Dwell Stabilizer with Hysteresis Lock}
-A critical usability flaw in traditional sign recognition software is the requirement for manual mouse clicking or constant spacebar tapping to capture each letter, which causes rapid physical fatigue.
+A major ergonomic flaw in conventional sign recognition tools is the requirement for manual mouse clicks or continuous spacebar tapping to capture each letter. This causes severe physical fatigue.
 
 We engineered a **Hands-Free Steady-Hold Dwell Stabilizer**:
 \begin{itemize}
