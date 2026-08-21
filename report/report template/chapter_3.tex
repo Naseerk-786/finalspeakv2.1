@@ -2,7 +2,7 @@
 \label{Chapter 3}
 
 \section{The Breakthrough: Pivoting to Spatial Fingerspelling}
-After analyzing the failure of our word-level baseline, we had our defining insight:
+After analyzing the catastrophic failure of our word-level baseline, we had our defining insight:
 
 \begin{quote}
 \textit{Rather than forcing a neural network to memorize a fixed dictionary of dynamic words across a 30-frame temporal buffer, we pivoted to a high-speed, single-frame 35-class alphabet and digit fingerspelling paradigm (classes `A' through `Z' and digits `1' through `9').}
@@ -10,10 +10,17 @@ After analyzing the failure of our word-level baseline, we had our defining insi
 
 This single architectural decision solved all three core bottlenecks:
 \begin{enumerate}
-    \item \textbf{Sub-2ms Inference Latency:} Evaluating a single static frame eliminated the 30-frame video buffer, reducing inference latency from >500ms down to **$<1.8\text{ ms}$**.
+    \item \textbf{Sub-2ms Inference Latency:} Evaluating a single static frame eliminated the 30-frame video buffer, reducing inference latency from >500ms down to \textbf{$<1.8\text{ ms}$}.
     \item \textbf{Infinite Vocabulary Reach:} Users can spell any word, proper noun, Indian name, or medical term character-by-character, which a downstream software layer can assemble into full sentences.
     \item \textbf{Dialect Consistency:} Standard ISL/ASL fingerspelling hand postures exhibit consistent spatial geometry, eliminating the cross-regional dialect clashes that collapsed baseline accuracy.
 \end{enumerate}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/fig_08_class_taxonomy_grid.png}
+    \caption{SignSpeak 35-Class Spatial Taxonomy Grid: 26 English Alphabets (`A' through `Z') and 9 Digits (`1' through `9') enabling infinite open-ended vocabulary construction.}
+    \label{fig:taxonomy_grid}
+\end{figure}
 
 \begin{figure}[htbp]
     \centering
@@ -62,6 +69,6 @@ When only one hand is visible in the frame (the standard case during single-hand
 This mathematical symmetry guarantees that the neural network receives an identical feature representation regardless of whether the user signs with their left or right hand.
 
 \section{Multi-Core Dataset Harvesting and Automated QC Filtering}
-To train our classifier on a comprehensive baseline, we developed an automated multi-threaded harvesting pipeline (\texttt{prototype/download\_and\_extract\_isl\_letters.py}) that harvested and merged 129,773 raw sign alphabet images across three public repositories: Kaggle ISL, Kaggle ASL, and GitHub ISL.
+To train our classifier on a comprehensive baseline, we developed an automated multi-threaded harvesting pipeline (\texttt{download\_and\_extract\_isl\_letters.py}) that harvested and merged 129,773 raw sign alphabet images across three public repositories: Kaggle ISL, Kaggle ASL, and GitHub ISL.
 
 Because public image datasets contain blurred photos, occluded fingers, and empty backgrounds, we deployed \textbf{12 parallel CPU worker processes} running MediaPipe Hands with an automated quality threshold ($\ge 0.40$ detection confidence). The pipeline discarded 22,256 defective images, outputting \textbf{107,517 clean, validated 126-dimensional hand landmark vectors} stored in structured JSON format.

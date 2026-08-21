@@ -2,7 +2,7 @@
 \label{Chapter 6}
 
 \section{The Breakthrough: Closing the Two-Way Conversational Loop}
-During our early user testing, we observed a fundamental limitation of almost all sign language apps: they are **one-way megaphones**. They allow the deaf user to speak, but offer no mechanism for the deaf user to understand the hearing partner's verbal reply without juggling separate speech-to-text apps on a phone.
+During our early user testing, we observed a fundamental limitation of almost all sign language apps: they are \textbf{one-way megaphones}. They allow the deaf user to speak, but offer no mechanism for the deaf user to understand the hearing partner's verbal reply without juggling separate speech-to-text apps on a phone.
 
 We engineered a **Bidirectional Conversational Loop** (illustrated in Figure~\ref{fig:twoway_loop}):
 
@@ -26,7 +26,15 @@ We engineered a **Bidirectional Conversational Loop** (illustrated in Figure~\re
 \end{enumerate}
 
 \section{Camera-First Spacious Assistive UI/UX Overhaul}
-In Version 3.0/3.1, we redesigned the desktop interface around a calm, camera-first assistive workspace:
+In Version 3.0/3.1, we redesigned the desktop interface around a calm, camera-first assistive workspace (wireframed in Figure~\ref{fig:ui_wireframe}):
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/fig_11_ui_wireframe_hierarchy.png}
+    \caption{SignSpeak Universal Workspace UI/UX Wireframe: 60\% Hero Camera Viewport with status overlays, accessible touch controls, predictive autocomplete strip, and collapsible progressive drawer.}
+    \label{fig:ui_wireframe}
+\end{figure}
+
 \begin{itemize}
     \item \textbf{Hero Video Surface (60\% Main Viewport):} The camera feed occupies the visual center with aspect-ratio preservation and clean translucent live status overlays (\texttt{● Hand Detected}).
     \item \textbf{Strict Visual Hierarchy:} Structured vertically: \texttt{DETECTED SIGN} (52px tile + 0.8s hold bar) $\longrightarrow$ \texttt{CURRENT WORD} (26px text + 3 autocomplete chips) $\longrightarrow$ \texttt{SENTENCE} (17px text + voice dropdown + prominent Speak button).

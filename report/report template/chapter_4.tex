@@ -25,7 +25,7 @@ The network architecture comprises three dense processing blocks and a linear cl
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/fig_04_training_curves.png}
+    \includegraphics[width=0.92\textwidth]{figures/fig_04_training_curves.png}
     \caption{CUDA GPU training and validation curves over 200 epochs on NVIDIA RTX 4050: Top-1 Accuracy reaching 99.89\% (Train) and 99.67\% (Val) alongside smooth Cosine Annealing loss convergence.}
     \label{fig:training_curves}
 \end{figure}
@@ -43,10 +43,17 @@ The baseline model was trained over 200 epochs on an \textbf{NVIDIA GeForce RTX 
 We exported the trained model to an optimized \textbf{556 KB ONNX graph binary} (\texttt{isl\_letter\_classifier.onnx}), executing in \textbf{$<1.8\text{ ms}$ per frame} on CPU.
 
 \section{The Inter-User Anatomical Variance Challenge}
-While our baseline model achieved 99.70\% accuracy on public benchmarks, we encountered a classic machine learning generalization hurdle when we tested it on our own hands: **inter-user anatomical variance**. Variations in finger length ratios, knuckle flexibility, and resting hand posture caused slight recognition drops for specific subtle letters (such as `R', `U', and `V').
+While our baseline model achieved 99.70\% accuracy on public benchmarks, we encountered a classic machine learning generalization hurdle when we tested it on our own hands: \textbf{inter-user anatomical variance}. Variations in finger length ratios, knuckle flexibility, and resting hand posture caused slight recognition drops for specific subtle letters (such as `R', `U', and `V').
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.88\textwidth]{figures/gallery_photo_2.jpg}
+    \caption{Experimental Snapshot: Live session recording personalized sign landmarks in the custom PyQt6 Sign Recorder Studio (left) and executing 8-second GPU co-training on the NVIDIA RTX 4050 GPU (right), achieving 99.92\% validation accuracy.}
+    \label{fig:live_recording_studio}
+\end{figure}
 
 \section{Building Our Own Sign Recorder Studio GUI}
-Rather than manually scraping more generic images, we built an interactive desktop application (\texttt{prototype/sign\_recorder\_studio.py}) to capture our own personal sign geometry:
+Rather than manually scraping more generic images, we built an interactive desktop application (\texttt{prototype/sign\_recorder\_studio.py}) shown in Figure~\ref{fig:live_recording_studio}:
 \begin{itemize}
     \item \textbf{3-Second Red Preparation Window:} Gives the signer time to position their hand in front of the lens.
     \item \textbf{3-Second Green Active Recording Window:} Automatically captures 90 continuous 126-dimensional landmark vectors at 30 FPS.
@@ -66,4 +73,4 @@ To maximize generalization and prevent overfitting to a single camera angle, our
 This pipeline synthesized a master dataset of \textbf{246,104 augmented samples}.
 
 \section{8-Second GPU Co-Training and Zero-Forgetting Fine-Tuner}
-Our fine-tuning engine (\texttt{prototype/fine_tune_engine.py}) employs a **co-training mini-batch strategy** blending 20\% user-recorded augmented vectors with 80\% global baseline vectors. Executing on the RTX 4050 GPU, fine-tuning completes in **~8 seconds**, elevating live validation accuracy to **99.84\%--99.96\%** with zero catastrophic forgetting of the global sign alphabet.
+Our fine-tuning engine (\texttt{prototype/fine_tune_engine.py}) employs a \textbf{co-training mini-batch strategy} blending 20\% user-recorded augmented vectors with 80\% global baseline vectors. Executing on the RTX 4050 GPU, fine-tuning completes in \textbf{~8 seconds}, elevating live validation accuracy to \textbf{99.84\%--99.96\%} with zero catastrophic forgetting of the global sign alphabet.

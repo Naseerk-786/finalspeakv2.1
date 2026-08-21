@@ -19,15 +19,29 @@ To ensure that compute-heavy tasks (neural voice synthesis, translation, grammar
     \item \textbf{\texttt{SpeechToTextThread}:} Streams background microphone audio at 16kHz mono via \texttt{sounddevice}, packaging PCM audio frames for Whisper AI transcription.
 \end{enumerate}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.88\textwidth]{figures/gallery_photo_1.png}
+    \caption{Live Experimental Snapshot: Real-time execution of the SignSpeak desktop application. The student signs the ISL letter `T' (recognized at 93\% confidence), while the active Word Builder constructs the word `CU' with zero camera frame drops.}
+    \label{fig:live_desktop_app}
+\end{figure}
+
 \section{The 0.8s Steady-Hold Dwell Stabilizer with Hysteresis Lock}
 A major ergonomic flaw in conventional sign recognition tools is the requirement for manual mouse clicks or continuous spacebar tapping to capture each letter. This causes severe physical fatigue.
 
-We engineered a **Hands-Free Steady-Hold Dwell Stabilizer**:
+We engineered a **Hands-Free Steady-Hold Dwell Stabilizer** (modeled as a Finite State Machine in Figure~\ref{fig:dwell_fsm}):
 \begin{itemize}
     \item \textbf{0.80s Hold Threshold:} When a user holds a recognizable sign steady with $\ge 50\%$ confidence, an on-screen green progress bar fills smoothly over **0.80 seconds**.
     \item \textbf{Audio Feedback Confirmation:} When the dwell reaches 100\%, the letter is automatically committed into the active word builder, accompanied by a soft 35ms audio tick (1250 Hz).
     \item \textbf{Anti-Duplication Hysteresis Lock:} Following capture, an internal state lock prevents the letter from repeating until the user either changes their handshape or lowers their hand, completely eliminating unintentional letter stutter.
 \end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.88\textwidth]{figures/fig_09_dwell_fsm_diagram.png}
+    \caption{Finite State Machine (FSM) diagram of the 0.8s Steady-Hold Dwell Stabilizer showing transition from IDLE to DWELLING, CAPTURE EVENT, and the anti-duplication HYSTERESIS LOCK.}
+    \label{fig:dwell_fsm}
+\end{figure}
 
 \section{One-Euro Signal Filtering}
 To eliminate high-frequency coordinate jitter caused by webcam sensor noise, we implemented an adaptive **One-Euro Filter** on all 21 keypoints:
@@ -58,8 +72,15 @@ To bridge the gap between telegraphic sign glosses (e.g., \textit{``ME WATER DRI
     \item \textbf{Auto-Polish on Speak:} Automatically converts sign syntax right before voice synthesis when enabled.
 \end{itemize}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/fig_10_multilingual_voice_pipeline.png}
+    \caption{SignSpeak AI Linguistic Pipeline: Transforming raw telegraphic sign glosses into fluent English sentences via 1-Click Polish (\texttt{Ctrl+P}) and synthesizing 8 Indian regional neural speech voices (\texttt{Ctrl+T} / \texttt{Enter}).}
+    \label{fig:multilingual_pipeline}
+\end{figure}
+
 \section{Multilingual Indian Regional Speech Engine (8 Languages)}
-To empower signers across India, we built a multilingual regional speech engine supporting **8 languages**: English, Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, and Gujarati.
+To empower signers across India, we built a multilingual regional speech engine (diagrammed in Figure~\ref{fig:multilingual_pipeline}) supporting **8 languages**: English, Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, and Gujarati.
 \begin{itemize}
     \item \textbf{1-Click Translate (\texttt{Ctrl + T}):} Translates the signed sentence into the selected Indian script with instant visual and audio feedback.
     \item \textbf{Dynamic Regional Speak (\texttt{Enter}):} The Speak button dynamically updates (e.g., \texttt{[ 🔊 Speak in Hindi  Enter ]}) and automatically translates and vocalizes in the target native voice with one click.
