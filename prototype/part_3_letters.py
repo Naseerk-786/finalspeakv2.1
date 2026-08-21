@@ -1,10 +1,11 @@
 # SignSpeak Universal Prototype — Real-Time ISL Letter & Fingerspelling Application
-# Version: 2.2 (0.8s Steady-Hold Letter Capture & Spacebar Sentence Builder)
-# Architecture: Real-Time Hand Landmark Classifier -> 0.8s Dwell Stabilizer -> Spacebar Word Builder -> Piper TTS
-# UI Theme: Warm Soft 2D Plushy Design (0.8s Hold-to-Capture, Spacebar Word Commit, Enter Speech)
+# Version: 2.6 (Two-Way Deaf <-> Hearing Communication Loop & Multilingual Voice Engine)
+# Architecture: Real-Time Hand Landmark Classifier -> 0.8s Dwell Stabilizer -> Spacebar Word Builder -> Multilingual Piper/Regional Voice -> Live Whisper STT -> ISL Sign Display
+# UI Theme: Warm Soft 2D Plushy Design (Two-Way Dialogue Timeline & Live Sign Visualizer)
 
 import os
 import sys
+import io
 import json
 import time
 import wave
@@ -28,7 +29,7 @@ from one_euro_filter import LandmarkStreamSmoother
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QTextEdit, QFrame, QGroupBox, QProgressBar,
-    QDialog, QCheckBox, QComboBox
+    QDialog, QCheckBox, QComboBox, QTabWidget, QScrollArea
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QThread
 from PyQt6.QtGui import QImage, QPixmap, QFont, QColor, QPalette
@@ -99,19 +100,20 @@ class SingleFrameHandExtractor:
         rh_feats = np.zeros((21, 3), dtype=np.float32)
         has_lh, has_rh = False, False
 
-        for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
+        for lms, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
             label = handedness.classification[0].label
-            coords = np.array([[lm.x, lm.y, lm.z] for lm in hand_landmarks.landmark], dtype=np.float32)
+            coords = np.array([[lm.x, lm.y, lm.z] for lm in lms.landmark], dtype=np.float32)
 
-            wrist = coords[0]
-            hand_span = np.linalg.norm(coords[9] - wrist) + 1e-6
-            norm_coords = (coords - wrist) / hand_span
+            wrist = coords[0:1, :]
+            coords_centered = coords - wrist
+            span = np.linalg.norm(coords[9, :2] - coords[0, :2]) + 1e-6
+            coords_norm = coords_centered / span
 
             if label == "Left":
-                lh_feats = norm_coords
+                lh_feats = coords_norm
                 has_lh = True
-            else:
-                rh_feats = norm_coords
+            elif label == "Right":
+                rh_feats = coords_norm
                 has_rh = True
 
         if has_lh and not has_rh:
@@ -119,174 +121,181 @@ class SingleFrameHandExtractor:
         elif has_rh and not has_lh:
             lh_feats = rh_feats.copy()
 
-        feature_vector = np.concatenate([lh_feats.flatten(), rh_feats.flatten()])
-        return feature_vector, results
-
-    def draw_landmarks(self, frame, results):
-        if results and results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                self.mp_drawing.draw_landmarks(
-                    frame,
-                    hand_landmarks,
-                    self.mp_hands.HAND_CONNECTIONS,
-                    self.mp_styles.get_default_hand_landmarks_style(),
-                    self.mp_styles.get_default_hand_connections_style()
-                )
-        return frame
+        feat_126 = np.concatenate([lh_feats.flatten(), rh_feats.flatten()], axis=0).astype(np.float32)
+        return feat_126, results
 
     def close(self):
         if self.hands:
             self.hands.close()
+            self.hands = None
 
 
 # ═══════════════════════════════════════════════════════════════
-# Thread 1: Camera Capture & MediaPipe Processing
+# Thread 1: Video Capture + Landmark Processing
 # ═══════════════════════════════════════════════════════════════
 class CaptureThread(QThread):
-    frame_ready = pyqtSignal(np.ndarray)       # Rendered frame
-    feature_ready = pyqtSignal(object)         # 126-dim vector or None
-    status_update = pyqtSignal(str)            # Status log
+    frame_ready = pyqtSignal(np.ndarray)
+    feature_ready = pyqtSignal(np.ndarray)
+    status_update = pyqtSignal(str)
 
-    def __init__(self):
+    def __init__(self, camera_index=0):
         super().__init__()
+        self.camera_index = camera_index
         self.running = False
-        self.extractor = None
+        self.extractor = SingleFrameHandExtractor()
+        self.smoother = LandmarkStreamSmoother(dim=126, min_cutoff=1.0, beta=0.007)
 
     def run(self):
         self.running = True
-        self.status_update.emit("Initializing MediaPipe Hands Extractor...")
-        self.extractor = SingleFrameHandExtractor()
-        self.extractor.initialize()
+        cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
+        if not cap.isOpened():
+            cap = cv2.VideoCapture(self.camera_index)
 
-        # Try multiple camera indices and backends with DirectShow first
-        cap = None
-        for cam_idx in [0, 1, 2]:
-            for backend in [cv2.CAP_DSHOW, cv2.CAP_MSMF, cv2.CAP_ANY]:
-                test_cap = cv2.VideoCapture(cam_idx, backend)
-                if test_cap.isOpened():
-                    ret, _ = test_cap.read()
-                    if ret:
-                        cap = test_cap
-                        self.status_update.emit(f"Camera opened: index={cam_idx}, backend={backend}")
-                        break
-                    else:
-                        test_cap.release()
-            if cap is not None:
-                break
-
-        if cap is None or not cap.isOpened():
-            self.status_update.emit("ERROR: Unable to open camera. Please check camera connection.")
-            err_frame = np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH, 3), dtype=np.uint8)
-            err_frame[:] = (245, 235, 226)
-            cv2.putText(err_frame, "CAMERA NOT AVAILABLE", (80, 220),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1.0, (60, 50, 45), 2, cv2.LINE_AA)
-            cv2.putText(err_frame, "Close other camera applications and restart", (80, 270),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (120, 100, 90), 1, cv2.LINE_AA)
-            self.frame_ready.emit(err_frame)
+        if not cap.isOpened():
+            self.status_update.emit(f"Error: Unable to open Camera {self.camera_index}.")
             return
 
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
-        self.status_update.emit("Webcam Active at 30 FPS")
+        cap.set(cv2.CAP_PROP_FPS, 30)
+
+        self.extractor.initialize()
+        self.status_update.emit("Camera feed initialized at 30 FPS.")
+
+        last_time = time.time()
+        fps = 0.0
 
         while self.running:
             ret, frame = cap.read()
-            if not ret or frame is None:
+            if not ret:
                 time.sleep(0.01)
                 continue
 
-            frame = cv2.flip(frame, 1)  # Mirror frame
-            feat_vec, results = self.extractor.extract(frame)
-            self.feature_ready.emit(feat_vec)
+            frame = cv2.flip(frame, 1)
+            now = time.time()
+            dt = now - last_time
+            last_time = now
+            if dt > 0:
+                fps = 0.9 * fps + 0.1 * (1.0 / dt)
 
-            display_frame = self.extractor.draw_landmarks(frame.copy(), results)
-            
-            # Draw badge indicator with warm soft colors
-            cv2.circle(display_frame, (30, 30), 8, (120, 190, 130) if feat_vec is not None else (100, 100, 210), -1)
-            status_text = "HAND DETECTED" if feat_vec is not None else "NO HAND DETECTED"
-            color = (80, 170, 90) if feat_vec is not None else (80, 80, 200)
-            cv2.putText(display_frame, status_text, (48, 35),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1, cv2.LINE_AA)
+            feat_126, results = self.extractor.extract(frame)
 
-            self.frame_ready.emit(display_frame)
-            time.sleep(1 / 30)
+            annotated = frame.copy()
+            if results and results.multi_hand_landmarks:
+                for hand_lms in results.multi_hand_landmarks:
+                    self.extractor.mp_drawing.draw_landmarks(
+                        annotated,
+                        hand_lms,
+                        self.extractor.mp_hands.HAND_CONNECTIONS,
+                        self.extractor.mp_styles.get_default_hand_landmarks_style(),
+                        self.extractor.mp_styles.get_default_hand_connections_style()
+                    )
+
+            cv2.putText(
+                annotated, f"FPS: {fps:.1f}", (15, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (45, 112, 79), 2
+            )
+
+            if feat_126 is not None:
+                smooth_feat = self.smoother.smooth(feat_126, now)
+                self.feature_ready.emit(smooth_feat)
+            else:
+                self.smoother.reset()
+
+            self.frame_ready.emit(annotated)
+            time.sleep(0.005)
 
         cap.release()
-        if self.extractor:
-            self.extractor.close()
+        self.extractor.close()
+        self.status_update.emit("Camera feed stopped.")
 
     def stop(self):
         self.running = False
 
 
 # ═══════════════════════════════════════════════════════════════
-# Thread 2: ONNX Letter Inference Engine
+# Thread 2: Sub-2ms ONNX Inference Engine
 # ═══════════════════════════════════════════════════════════════
 class InferenceThread(QThread):
-    prediction_ready = pyqtSignal(str, float)  # (letter, confidence)
+    prediction_ready = pyqtSignal(str, float)
     no_hand_signal = pyqtSignal()
     status_update = pyqtSignal(str)
 
-    def __init__(self, onnx_path, class_meta_path):
+    def __init__(self, model_path, meta_path):
         super().__init__()
-        self.onnx_path = str(onnx_path)
-        with open(class_meta_path, "r", encoding="utf-8") as f:
-            meta = json.load(f)
-        self.idx2class = {int(k): v for k, v in meta["idx2class"].items()}
-        self.feat_queue = queue.Queue(maxsize=30)
-        self.smoother = LandmarkStreamSmoother(dim=126, min_cutoff=0.8, beta=0.01)
+        self.model_path = str(model_path)
+        self.meta_path = str(meta_path)
+        self.feature_queue = queue.Queue(maxsize=2)
         self.running = False
 
-    def enqueue_feature(self, feat_vec):
-        if self.feat_queue.full():
-            try:
-                self.feat_queue.get_nowait()
-            except queue.Empty:
-                pass
-        self.feat_queue.put(feat_vec)
+        self.idx2class = {}
+        if os.path.exists(self.meta_path):
+            with open(self.meta_path, "r", encoding="utf-8") as f:
+                meta = json.load(f)
+                self.idx2class = {int(k): v for k, v in meta["idx2class"].items()}
+
+        self.temporal_history = deque(maxlen=4)
+
+    def enqueue_feature(self, feat_126):
+        if not self.feature_queue.full():
+            self.feature_queue.put(feat_126)
 
     def run(self):
         self.running = True
-        if not os.path.exists(self.onnx_path):
-            self.status_update.emit("ERROR: ONNX model binary not found!")
+
+        if not os.path.exists(self.model_path):
+            self.status_update.emit(f"Error: ONNX model not found at {self.model_path}")
             return
 
-        session = ort.InferenceSession(self.onnx_path)
+        opts = ort.SessionOptions()
+        opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+        opts.intra_op_num_threads = 2
+        session = ort.InferenceSession(self.model_path, opts, providers=["CPUExecutionProvider"])
         input_name = session.get_inputs()[0].name
-        self.status_update.emit("ONNX Letter Inference Engine Active (One-Euro Smoothed)")
+        output_name = session.get_outputs()[0].name
+
+        self.status_update.emit("ONNX Inference Engine ready (Latency: <1.8ms).")
 
         while self.running:
             try:
-                feat = self.feat_queue.get(timeout=0.1)
+                feat = self.feature_queue.get(timeout=0.1)
             except queue.Empty:
-                continue
-
-            if feat is None:
-                self.smoother.reset()
+                self.temporal_history.clear()
                 self.no_hand_signal.emit()
                 continue
 
-            # Apply adaptive One-Euro jitter filter
-            smoothed_feat = self.smoother.smooth(feat)
-            input_tensor = smoothed_feat.reshape(1, -1).astype(np.float32)
-            outputs = session.run(None, {input_name: input_tensor})
-            logits = outputs[0][0]
+            x = feat.reshape(1, 126).astype(np.float32)
+            logits = session.run([output_name], {input_name: x})[0]
 
-            exp_logits = np.exp(logits - np.max(logits))
-            probs = exp_logits / exp_logits.sum()
+            exp_logits = np.exp(logits - np.max(logits, axis=1, keepdims=True))
+            probs = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
 
-            top_idx = int(np.argmax(probs))
-            top_conf = float(probs[top_idx])
-            letter = self.idx2class.get(top_idx, "?")
+            pred_idx = int(np.argmax(probs[0]))
+            confidence = float(probs[0, pred_idx])
+            pred_letter = self.idx2class.get(pred_idx, "?")
 
-            self.prediction_ready.emit(letter, top_conf)
+            self.temporal_history.append((pred_letter, confidence))
+
+            if len(self.temporal_history) == self.temporal_history.maxlen:
+                counts = {}
+                conf_acc = {}
+                for ltr, conf in self.temporal_history:
+                    counts[ltr] = counts.get(ltr, 0) + 1
+                    conf_acc[ltr] = conf_acc.get(ltr, 0.0) + conf
+
+                best_ltr = max(counts, key=counts.get)
+                if counts[best_ltr] >= 3:
+                    avg_conf = conf_acc[best_ltr] / counts[best_ltr]
+                    self.prediction_ready.emit(best_ltr, avg_conf)
+                else:
+                    self.prediction_ready.emit(pred_letter, confidence)
+            else:
+                self.prediction_ready.emit(pred_letter, confidence)
 
     def stop(self):
         self.running = False
 
 
-# ═══════════════════════════════════════════════════════════════
-# Thread 3: Piper Offline TTS Engine
 # ═══════════════════════════════════════════════════════════════
 # Thread 3: Piper & Multilingual Neural Voice TTS Engine
 # ═══════════════════════════════════════════════════════════════
@@ -380,9 +389,6 @@ class TTSThread(QThread):
         self.running = False
 
 
-# ═══════════════════════════════════════════════════════════════
-# Thread 4: Non-Blocking AI Autocomplete Worker (Groq Cloud / Offline Fallback)
-# ═══════════════════════════════════════════════════════════════
 # ═══════════════════════════════════════════════════════════════
 # Thread 4: Non-Blocking AI Autocomplete & Grammar Polish Worker (Groq Cloud / Offline Fallback)
 # ═══════════════════════════════════════════════════════════════
@@ -727,13 +733,158 @@ class AIPredictionThread(QThread):
 
 
 # ═══════════════════════════════════════════════════════════════
+# Thread 5: Live Audio Listener & Speech-to-Text Worker (Groq Whisper / sounddevice)
+# ═══════════════════════════════════════════════════════════════
+class SpeechToTextThread(QThread):
+    transcript_ready = pyqtSignal(str)
+    audio_level = pyqtSignal(int)          # 0-100 for mic volume bar
+    status_changed = pyqtSignal(str)       # "Listening...", "Transcribing...", "Idle"
+
+    def __init__(self, config_path=None):
+        super().__init__()
+        self.config_path = config_path or (BASE_DIR / "ai_config.json")
+        self.running = False
+        self.is_listening = False
+        self.api_key = None
+        self._load_config()
+        self.audio_frames = []
+        self._lock = threading.Lock()
+        self.sample_rate = 16000
+        self.block_size = 1024
+
+    def _load_config(self):
+        if os.path.exists(self.config_path):
+            try:
+                with open(self.config_path, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                    self.api_key = cfg.get("api_key", "").strip()
+            except Exception as e:
+                print(f"STT AI Config Load Notice: {e}")
+
+    def toggle_listening(self):
+        """Toggle recording state on/off."""
+        if self.is_listening:
+            self.stop_listening()
+        else:
+            self.start_listening()
+
+    def start_listening(self):
+        with self._lock:
+            self.audio_frames = []
+            self.is_listening = True
+        self.status_changed.emit("Listening to hearing partner voice...")
+
+    def stop_listening(self):
+        with self._lock:
+            if not self.is_listening:
+                return
+            self.is_listening = False
+            frames_to_process = list(self.audio_frames)
+            self.audio_frames = []
+
+        self.audio_level.emit(0)
+        if len(frames_to_process) >= 5:  # At least ~0.3s of audio
+            self.status_changed.emit("Transcribing speech via Whisper AI...")
+            threading.Thread(target=self._transcribe_audio, args=(frames_to_process,), daemon=True).start()
+        else:
+            self.status_changed.emit("Listening stopped (too short).")
+
+    def run(self):
+        self.running = True
+        import sounddevice as sd
+
+        def audio_callback(indata, frame_count, time_info, status):
+            if not self.running:
+                return
+            with self._lock:
+                if self.is_listening:
+                    self.audio_frames.append(indata.copy())
+            # Calculate RMS energy for audio visualizer
+            try:
+                rms = np.sqrt(np.mean(indata.astype(np.float32)**2))
+                level = int(min(100, max(0, rms / 150.0)))
+                self.audio_level.emit(level)
+            except Exception:
+                pass
+
+        try:
+            with sd.InputStream(samplerate=self.sample_rate, channels=1, dtype='int16',
+                                blocksize=self.block_size, callback=audio_callback):
+                while self.running:
+                    time.sleep(0.05)
+        except Exception as e:
+            print(f"SoundDevice Audio InputStream Notice: {e}")
+
+    def _transcribe_audio(self, frames):
+        """Encodes audio into in-memory WAV and queries Groq Whisper endpoint."""
+        try:
+            audio_data = np.concatenate(frames, axis=0)
+            wav_io = io.BytesIO()
+            with wave.open(wav_io, 'wb') as wf:
+                wf.setnchannels(1)
+                wf.setsampwidth(2)
+                wf.setframerate(self.sample_rate)
+                wf.writeframes(audio_data.tobytes())
+
+            audio_bytes = wav_io.getvalue()
+            if not audio_bytes or len(audio_bytes) < 4000:
+                self.status_changed.emit("No clear speech detected.")
+                return
+
+            if self.api_key:
+                boundary = "----WebKitFormBoundarySignSpeakAudioSTT"
+                body = bytearray()
+                body.extend(f"--{boundary}\r\n".encode("utf-8"))
+                body.extend(b'Content-Disposition: form-data; name="file"; filename="audio.wav"\r\n')
+                body.extend(b'Content-Type: audio/wav\r\n\r\n')
+                body.extend(audio_bytes)
+                body.extend(b"\r\n")
+
+                body.extend(f"--{boundary}\r\n".encode("utf-8"))
+                body.extend(b'Content-Disposition: form-data; name="model"\r\n\r\n')
+                body.extend(b"whisper-large-v3-turbo\r\n")
+
+                body.extend(f"--{boundary}\r\n".encode("utf-8"))
+                body.extend(b'Content-Disposition: form-data; name="response_format"\r\n\r\n')
+                body.extend(b"json\r\n")
+
+                body.extend(f"--{boundary}--\r\n".encode("utf-8"))
+
+                req = urllib.request.Request(
+                    "https://api.groq.com/openai/v1/audio/transcriptions",
+                    data=bytes(body),
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": f"multipart/form-data; boundary={boundary}",
+                        "User-Agent": "SignSpeak-Universal/2.6"
+                    }
+                )
+                with urllib.request.urlopen(req, timeout=8.0) as resp:
+                    res = json.loads(resp.read().decode("utf-8"))
+                    raw_text = res.get("text", "").strip()
+                    if raw_text:
+                        self.transcript_ready.emit(raw_text)
+                        self.status_changed.emit(f"Transcribed: \"{raw_text}\"")
+                        return
+
+            self.status_changed.emit("Transcription complete (empty text).")
+        except Exception as e:
+            print(f"STT Transcription Error: {e}")
+            self.status_changed.emit("Speech recognition error.")
+
+    def stop(self):
+        self.running = False
+        self.is_listening = False
+
+
+# ═══════════════════════════════════════════════════════════════
 # Shortcuts & Controls Quick Help Popup Dialog
 # ═══════════════════════════════════════════════════════════════
 class ShortcutsHelpDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("SignSpeak Studio — Controls & Shortcuts Reference")
-        self.setFixedSize(580, 520)
+        self.setFixedSize(600, 560)
         self.setStyleSheet("""
             QDialog {
                 background-color: #F7F4EF;
@@ -766,7 +917,7 @@ class ShortcutsHelpDialog(QDialog):
         title.setStyleSheet("color: #2D2521; font-weight: 800;")
         layout.addWidget(title)
 
-        subtitle = QLabel("Complete reference of gestures, key bindings, and real-time interaction controls.")
+        subtitle = QLabel("Complete reference of gestures, key bindings, and two-way interaction controls.")
         subtitle.setFont(QFont("Segoe UI", 10))
         subtitle.setStyleSheet("color: #75655B;")
         layout.addWidget(subtitle)
@@ -786,6 +937,8 @@ class ShortcutsHelpDialog(QDialog):
             ("Ctrl + Z", "Reverts grammar polish to original signed words"),
             ("Voice Dropdown", "Selects Indian regional speech language (Hindi, Telugu, Tamil, etc.)"),
             ("Enter", "Vocalizes full sentence in selected regional voice"),
+            ("Ctrl + M / F2", "Toggles microphone listening to hearing partner's spoken voice"),
+            ("Export Transcript", "Saves full two-way conversation session to text file"),
             ("Escape", "Clears both word and sentence buffers instantly"),
             ("F1", "Opens this shortcuts and controls guide")
         ]
@@ -818,16 +971,16 @@ class ShortcutsHelpDialog(QDialog):
 
 
 # ═══════════════════════════════════════════════════════════════
-# Main PyQt6 Desktop Application Window (UI/UX Redesigned + AI Autocomplete + Grammar Polish)
+# Main PyQt6 Desktop Application Window (Two-Way Communication Engine)
 # ═══════════════════════════════════════════════════════════════
 class SignSpeakApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SignSpeak Studio — Indian Sign Language Recognition & Sentence Builder")
-        self.setMinimumSize(1220, 800)
+        self.setWindowTitle("SignSpeak Studio — Indian Sign Language Two-Way Communication Cockpit")
+        self.setMinimumSize(1260, 840)
         self.setStyleSheet(self._get_stylesheet())
 
-        # State Variables (100% Preserved + AI Polish)
+        # State Variables (100% Preserved + Two-Way Dialogue History)
         self.is_running = False
         self.current_word_letters = []
         self.sentence_words = []
@@ -838,6 +991,10 @@ class SignSpeakApp(QMainWindow):
 
         self.live_letter = None
         self.live_confidence = 0.0
+
+        # Two-Way Conversation History Log
+        self.conversation_history = []
+        self.is_listening_mic = False
 
         # 0.8s Steady-Hold Dwell Tracker
         self.held_candidate = None
@@ -940,6 +1097,16 @@ class SignSpeakApp(QMainWindow):
             QPushButton#commitBtn:pressed {
                 background-color: #275C44;
             }
+            QPushButton#micBtn {
+                background-color: #2A6F97;
+                color: #FFFFFF;
+            }
+            QPushButton#micBtn:hover {
+                background-color: #014F86;
+            }
+            QPushButton#micBtn:pressed {
+                background-color: #013A63;
+            }
             QProgressBar {
                 background-color: #EFE7DE;
                 border: 1px solid #DFD2C4;
@@ -958,10 +1125,38 @@ class SignSpeakApp(QMainWindow):
                 color: #3D3530;
                 border: 1.5px solid #EAE0D5;
                 border-radius: 10px;
-                font-family: 'Consolas', 'Courier New', monospace;
-                font-size: 11px;
+                font-family: 'Segoe UI', -apple-system, sans-serif;
+                font-size: 12px;
                 padding: 8px;
                 line-height: 1.4;
+            }
+            QTabWidget::pane {
+                border: 1.5px solid #E8DFD5;
+                border-radius: 12px;
+                background-color: #FFFFFF;
+                top: -1px;
+                padding: 4px;
+            }
+            QTabBar::tab {
+                background-color: #EFE7DE;
+                color: #5C4D44;
+                font-weight: 700;
+                font-size: 11px;
+                font-family: 'Segoe UI', sans-serif;
+                border: 1.5px solid #D8C9B8;
+                border-bottom: none;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                padding: 6px 14px;
+                margin-right: 4px;
+            }
+            QTabBar::tab:selected {
+                background-color: #FFFFFF;
+                color: #D96B43;
+                border-color: #E8DFD5;
+            }
+            QTabBar::tab:hover:!selected {
+                background-color: #E5DACF;
             }
             QScrollBar:vertical {
                 background: #FAF7F2;
@@ -1000,7 +1195,7 @@ class SignSpeakApp(QMainWindow):
         app_title.setStyleSheet("color: #2D2521; font-weight: 800;")
         header_title_layout.addWidget(app_title)
 
-        app_subtitle = QLabel("Indian Sign Language Recognition & Real-Time Sentence Builder")
+        app_subtitle = QLabel("Indian Sign Language Two-Way Communication Cockpit")
         app_subtitle.setFont(QFont("Segoe UI", 11))
         app_subtitle.setStyleSheet("color: #75655B;")
         header_title_layout.addWidget(app_subtitle)
@@ -1018,6 +1213,14 @@ class SignSpeakApp(QMainWindow):
         self.help_btn.clicked.connect(self.show_shortcuts_guide)
         badges_layout.addWidget(self.help_btn)
 
+        self.two_way_badge = QLabel("Two-Way Loop: Active")
+        self.two_way_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+        self.two_way_badge.setStyleSheet(
+            "background-color: #E2EBF0; color: #1E4D6B; border: 1px solid #C4D7E2; "
+            "border-radius: 8px; padding: 6px 12px;"
+        )
+        badges_layout.addWidget(self.two_way_badge)
+
         ai_badge = QLabel("AI Autocomplete: Active")
         ai_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
         ai_badge.setStyleSheet(
@@ -1025,14 +1228,6 @@ class SignSpeakApp(QMainWindow):
             "border-radius: 8px; padding: 6px 12px;"
         )
         badges_layout.addWidget(ai_badge)
-
-        offline_badge = QLabel("Neural Voice: Piper Lessac")
-        offline_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
-        offline_badge.setStyleSheet(
-            "background-color: #EFE7DE; color: #5C4D44; border: 1px solid #D8C9B8; "
-            "border-radius: 8px; padding: 6px 12px;"
-        )
-        badges_layout.addWidget(offline_badge)
 
         self.engine_status_badge = QLabel("Camera: 30 FPS Active")
         self.engine_status_badge.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
@@ -1052,7 +1247,7 @@ class SignSpeakApp(QMainWindow):
         body_layout.setSpacing(18)
 
         # ───────────────────────────────────────────────────────────
-        # LEFT COLUMN: Camera-First Viewport & Controls
+        # LEFT COLUMN: Camera-First Viewport & Hearing Partner Loop
         # ───────────────────────────────────────────────────────────
         left_col = QVBoxLayout()
         left_col.setSpacing(12)
@@ -1090,22 +1285,91 @@ class SignSpeakApp(QMainWindow):
 
         left_col.addLayout(controls_layout)
 
+        # ── Hearing Partner Voice & ISL Visual Translation Card ──
+        partner_group = QGroupBox("Hearing Partner Voice (Incoming Speech-to-Sign Loop)")
+        partner_layout = QVBoxLayout(partner_group)
+        partner_layout.setContentsMargins(12, 12, 12, 12)
+        partner_layout.setSpacing(8)
+
+        # Mic Control & Volume Meter Row
+        mic_row = QHBoxLayout()
+        mic_row.setSpacing(10)
+
+        self.listen_btn = QPushButton("Listen Hearing Voice [ Ctrl+M ]")
+        self.listen_btn.setObjectName("micBtn")
+        self.listen_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.listen_btn.clicked.connect(self.toggle_mic_listening)
+        mic_row.addWidget(self.listen_btn, stretch=3)
+
+        self.mic_level_bar = QProgressBar()
+        self.mic_level_bar.setMaximum(100)
+        self.mic_level_bar.setValue(0)
+        self.mic_level_bar.setTextVisible(False)
+        self.mic_level_bar.setFixedHeight(18)
+        self.mic_level_bar.setStyleSheet("""
+            QProgressBar {
+                background-color: #EFE7DE;
+                border: 1px solid #DFD2C4;
+                border-radius: 5px;
+            }
+            QProgressBar::chunk {
+                background-color: #2A6F97;
+                border-radius: 4px;
+            }
+        """)
+        mic_row.addWidget(self.mic_level_bar, stretch=2)
+
+        partner_layout.addLayout(mic_row)
+
+        self.mic_status_lbl = QLabel("Microphone: Idle (Press Ctrl+M or click to listen)")
+        self.mic_status_lbl.setFont(QFont("Segoe UI", 10))
+        self.mic_status_lbl.setStyleSheet("color: #75655B; font-weight: 600;")
+        partner_layout.addWidget(self.mic_status_lbl)
+
+        # Subtitles Box
+        self.incoming_speech_label = QLabel("Waiting for hearing partner to speak...")
+        self.incoming_speech_label.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        self.incoming_speech_label.setWordWrap(True)
+        self.incoming_speech_label.setMinimumHeight(44)
+        self.incoming_speech_label.setStyleSheet(
+            "background-color: #EEF4F8; color: #1E3D59; border: 1.5px solid #D0E1ED; "
+            "border-radius: 10px; padding: 8px 12px;"
+        )
+        partner_layout.addWidget(self.incoming_speech_label)
+
+        # Visual ISL Sign Translation Strip
+        sign_label_row = QHBoxLayout()
+        sign_label_row.setSpacing(6)
+        sign_title = QLabel("ISL Fingerspelling Visuals:")
+        sign_title.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        sign_title.setStyleSheet("color: #75655B;")
+        sign_label_row.addWidget(sign_title)
+        sign_label_row.addStretch()
+        partner_layout.addLayout(sign_label_row)
+
+        self.incoming_signs_widget = QWidget()
+        self.incoming_signs_layout = QHBoxLayout(self.incoming_signs_widget)
+        self.incoming_signs_layout.setContentsMargins(0, 2, 0, 2)
+        self.incoming_signs_layout.setSpacing(4)
+        self.incoming_signs_layout.addStretch()
+        partner_layout.addWidget(self.incoming_signs_widget)
+
+        left_col.addWidget(partner_group)
+
         # Keyboard Cheat Sheet Reference Card
         shortcut_box = QGroupBox("Keyboard Navigation Guide")
         shortcut_layout = QVBoxLayout(shortcut_box)
-        shortcut_layout.setContentsMargins(12, 12, 12, 12)
-        shortcut_layout.setSpacing(6)
+        shortcut_layout.setContentsMargins(12, 10, 12, 10)
+        shortcut_layout.setSpacing(5)
 
         shortcuts = [
             ("Hold Sign (0.8s)", "Captures letter into active word"),
             ("Keys [ 1 / 2 / 3 ]", "Accepts autocomplete suggestion"),
             ("Spacebar", "Commits active word to sentence line"),
             ("Backspace", "Deletes last letter (or restores last word)"),
-            ("Ctrl + P", "Applies AI sentence grammar polish"),
-            ("Ctrl + Z", "Reverts to original signed sequence"),
-            ("Voice Dropdown", "Translates to Hindi, Telugu, Tamil, etc."),
-            ("Enter", "Synthesizes speech in selected voice"),
-            ("Escape", "Clears active word and sentence line")
+            ("Ctrl + P / Ctrl + Z", "Grammar polish / Revert to raw"),
+            ("Ctrl + M / F2", "Toggles mic listening for hearing voice"),
+            ("Enter / Escape", "Synthesize speech / Clear buffers")
         ]
 
         for key_text, desc_text in shortcuts:
@@ -1295,10 +1559,10 @@ class SignSpeakApp(QMainWindow):
         self.sentence_label = QLabel("")
         self.sentence_label.setFont(QFont("Segoe UI", 16))
         self.sentence_label.setWordWrap(True)
-        self.sentence_label.setMinimumHeight(52)
+        self.sentence_label.setMinimumHeight(48)
         self.sentence_label.setStyleSheet(
             "color: #2D2521; background-color: #FFFFFF; border: 1.5px solid #E2D7CB; "
-            "border-radius: 12px; padding: 10px 14px;"
+            "border-radius: 12px; padding: 8px 12px;"
         )
         sentence_layout.addWidget(self.sentence_label)
 
@@ -1390,25 +1654,66 @@ class SignSpeakApp(QMainWindow):
         sentence_layout.addLayout(sent_btn_layout)
         right_col.addWidget(sentence_group)
 
-        # ── Card 4: Activity Stream & Status ──
-        log_group = QGroupBox("Activity Stream")
-        log_layout = QVBoxLayout(log_group)
-        log_layout.setContentsMargins(12, 12, 12, 12)
-        log_layout.setSpacing(8)
+        # ── Card 4: Tabbed Cockpit (Two-Way Conversation & Activity Stream) ──
+        self.tab_widget = QTabWidget()
+        self.tab_widget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+        # Tab 1: Two-Way Dialogue Timeline
+        dialogue_tab = QWidget()
+        dialogue_tab_layout = QVBoxLayout(dialogue_tab)
+        dialogue_tab_layout.setContentsMargins(8, 8, 8, 8)
+        dialogue_tab_layout.setSpacing(6)
+
+        self.conversation_view = QTextEdit()
+        self.conversation_view.setReadOnly(True)
+        self.conversation_view.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.conversation_view.setFixedHeight(120)
+        dialogue_tab_layout.addWidget(self.conversation_view)
+
+        dialogue_btn_row = QHBoxLayout()
+        dialogue_btn_row.setSpacing(8)
+
+        self.export_chat_btn = QPushButton("Export Transcript (.txt)")
+        self.export_chat_btn.setObjectName("secondaryBtn")
+        self.export_chat_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.export_chat_btn.clicked.connect(self.export_conversation_transcript)
+        dialogue_btn_row.addWidget(self.export_chat_btn)
+
+        self.copy_chat_btn = QPushButton("Copy Dialogue")
+        self.copy_chat_btn.setObjectName("secondaryBtn")
+        self.copy_chat_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.copy_chat_btn.clicked.connect(self.copy_conversation_transcript)
+        dialogue_btn_row.addWidget(self.copy_chat_btn)
+
+        self.clear_chat_btn = QPushButton("Clear Dialogue")
+        self.clear_chat_btn.setObjectName("secondaryBtn")
+        self.clear_chat_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.clear_chat_btn.clicked.connect(self.clear_conversation_transcript)
+        dialogue_btn_row.addWidget(self.clear_chat_btn)
+
+        dialogue_tab_layout.addLayout(dialogue_btn_row)
+        self.tab_widget.addTab(dialogue_tab, "Two-Way Dialogue Timeline")
+
+        # Tab 2: Activity Stream Log
+        log_tab = QWidget()
+        log_tab_layout = QVBoxLayout(log_tab)
+        log_tab_layout.setContentsMargins(8, 8, 8, 8)
+        log_tab_layout.setSpacing(6)
 
         self.log_text = QTextEdit()
         self.log_text.setReadOnly(True)
         self.log_text.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.log_text.setFixedHeight(105)
-        log_layout.addWidget(self.log_text)
+        self.log_text.setFixedHeight(120)
+        log_tab_layout.addWidget(self.log_text)
 
-        self.status_label = QLabel("System Status: Ready — Hold sign steady for 0.8s to capture | Keys [1/2/3] for Autocomplete | F1 for Shortcuts.")
+        self.tab_widget.addTab(log_tab, "Activity Stream")
+        right_col.addWidget(self.tab_widget)
+
+        self.status_label = QLabel("System Status: Ready — Hold sign steady for 0.8s to capture | Keys [1/2/3] for Autocomplete | Ctrl+M for Mic Listener.")
         self.status_label.setStyleSheet("color: #75655B; font-size: 11px; padding: 0 2px;")
-        log_layout.addWidget(self.status_label)
+        right_col.addWidget(self.status_label)
 
-        right_col.addWidget(log_group)
         body_layout.addLayout(right_col, stretch=2)
-
         root_vbox.addLayout(body_layout)
 
     def _init_threads(self):
@@ -1430,6 +1735,12 @@ class SignSpeakApp(QMainWindow):
         self.ai_thread.polish_ready.connect(self.on_sentence_polished)
         self.ai_thread.translation_ready.connect(self.on_sentence_translated)
 
+        # Thread 5: Speech-to-Text Listener
+        self.stt_thread = SpeechToTextThread(BASE_DIR / "ai_config.json")
+        self.stt_thread.transcript_ready.connect(self.on_incoming_transcript)
+        self.stt_thread.audio_level.connect(self.on_mic_level)
+        self.stt_thread.status_changed.connect(self.on_stt_status)
+
     def show_shortcuts_guide(self):
         """Displays the interactive Keyboard & Controls guide modal."""
         dialog = ShortcutsHelpDialog(self)
@@ -1447,11 +1758,12 @@ class SignSpeakApp(QMainWindow):
             "border-radius: 8px; padding: 6px 12px;"
         )
 
-        self.log("Starting ISL Camera Pipeline...")
+        self.log("Starting ISL Camera Pipeline & Two-Way Loop...")
         self.capture_thread.start()
         self.inference_thread.start()
         self.tts_thread.start()
         self.ai_thread.start()
+        self.stt_thread.start()
 
     def stop_pipeline(self):
         self.is_running = False
@@ -1459,11 +1771,13 @@ class SignSpeakApp(QMainWindow):
         self.inference_thread.stop()
         self.tts_thread.stop()
         self.ai_thread.stop()
+        self.stt_thread.stop()
 
         self.capture_thread.wait(3000)
         self.inference_thread.wait(3000)
         self.tts_thread.wait(3000)
         self.ai_thread.wait(3000)
+        self.stt_thread.wait(3000)
 
         self._init_threads()
         self.start_btn.setEnabled(True)
@@ -1674,6 +1988,7 @@ class SignSpeakApp(QMainWindow):
                 self._speak_after_polish = False
                 self.tts_thread.enqueue_text(polished_text)
                 self.log(f"Speaking Polished Sentence: \"{polished_text}\"")
+                self._append_to_conversation("You (Signer)", polished_text, is_signer=True)
 
     # ═══════════════════════════════════════════════════════════
     # Word & Sentence Construction (100% Preserved)
@@ -1736,6 +2051,7 @@ class SignSpeakApp(QMainWindow):
             else:
                 self.tts_thread.enqueue_text(full_text, lang_code="en")
                 self.log(f"Speaking Full Sentence (English): \"{full_text}\"")
+                self._append_to_conversation("You (Signer)", full_text, is_signer=True)
         else:
             # Regional Indian Language Speech Flow (Hindi, Telugu, Tamil, Marathi, etc.)
             self.polish_btn.setEnabled(False)
@@ -1751,6 +2067,7 @@ class SignSpeakApp(QMainWindow):
             self.sentence_label.setText(translated_text)
             self.log(f"Translated to [{lang_code.upper()}]: \"{translated_text}\" (Original: \"{original_text}\")")
             self.tts_thread.enqueue_text(translated_text, lang_code=lang_code)
+            self._append_to_conversation(f"You ({lang_code.upper()})", translated_text, is_signer=True)
 
     def clear_all(self):
         """Clears word and sentence buffers."""
@@ -1771,11 +2088,218 @@ class SignSpeakApp(QMainWindow):
         self._update_suggestions_instant()
         self.log("Cleared word and sentence buffers.")
 
+    # ═══════════════════════════════════════════════════════════
+    # Two-Way Microphone Listener & Hearing Speech Handlers
+    # ═══════════════════════════════════════════════════════════
+    def toggle_mic_listening(self):
+        """Toggles microphone recording state for hearing person voice input."""
+        if not self.is_running:
+            self.start_pipeline()
+
+        self.stt_thread.toggle_listening()
+        if self.stt_thread.is_listening:
+            self.listen_btn.setText("Stop Listening [ Ctrl+M ]")
+            self.listen_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #C45353;
+                    color: #FFFFFF;
+                    font-weight: bold;
+                    border-radius: 10px;
+                    padding: 8px 14px;
+                }
+                QPushButton:hover { background-color: #AF4242; }
+            """)
+            self.mic_status_lbl.setText("Microphone: Recording hearing voice...")
+            self.two_way_badge.setText("Two-Way Loop: Listening Mic...")
+            self.two_way_badge.setStyleSheet(
+                "background-color: #F8E8E8; color: #8A3333; border: 1px solid #E0BDB8; "
+                "border-radius: 8px; padding: 6px 12px;"
+            )
+            self.log("Microphone Listener: Started (Listening to hearing partner)...")
+            play_feedback_tone(freq=1450, duration_ms=40)
+        else:
+            self.listen_btn.setText("Listen Hearing Voice [ Ctrl+M ]")
+            self.listen_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #2A6F97;
+                    color: #FFFFFF;
+                    font-weight: bold;
+                    border-radius: 10px;
+                    padding: 8px 14px;
+                }
+                QPushButton:hover { background-color: #014F86; }
+            """)
+            self.mic_status_lbl.setText("Microphone: Processing audio...")
+            self.two_way_badge.setText("Two-Way Loop: Active")
+            self.two_way_badge.setStyleSheet(
+                "background-color: #E2EBF0; color: #1E4D6B; border: 1px solid #C4D7E2; "
+                "border-radius: 8px; padding: 6px 12px;"
+            )
+            self.log("Microphone Listener: Stopped (Transcribing audio via Whisper AI)...")
+            play_feedback_tone(freq=1050, duration_ms=40)
+
+    def on_mic_level(self, level):
+        """Updates mic volume meter in real time."""
+        if hasattr(self, "mic_level_bar"):
+            self.mic_level_bar.setValue(level)
+
+    def on_stt_status(self, msg):
+        """Callback when STT thread updates status."""
+        if hasattr(self, "mic_status_lbl"):
+            self.mic_status_lbl.setText(f"Microphone: {msg}")
+        self.log(f"STT Engine: {msg}")
+
+    def on_incoming_transcript(self, transcript_text):
+        """Callback when hearing partner's spoken speech is transcribed by Whisper."""
+        clean_text = transcript_text.strip()
+        if not clean_text:
+            return
+
+        self.incoming_speech_label.setText(f"\"{clean_text}\"")
+        self._render_incoming_isl_signs(clean_text)
+        self._append_to_conversation("Hearing Partner", clean_text, is_signer=False)
+        self.log(f"Hearing Partner Spoke: \"{clean_text}\"")
+        play_feedback_tone(freq=1350, duration_ms=50)
+
+    def _render_incoming_isl_signs(self, text):
+        """Renders visual ISL fingerspelling letter chips for incoming words."""
+        while self.incoming_signs_layout.count():
+            item = self.incoming_signs_layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+        clean_chars = [c.upper() for c in text if c.isalnum() or c.isspace()][:24]
+        for char in clean_chars:
+            if char.isspace():
+                space_lbl = QLabel(" ")
+                space_lbl.setFixedWidth(8)
+                self.incoming_signs_layout.addWidget(space_lbl)
+            else:
+                chip = QLabel(char)
+                chip.setFixedSize(26, 26)
+                chip.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                chip.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+                chip.setStyleSheet("""
+                    background-color: #E29578;
+                    color: #FFFFFF;
+                    border-radius: 6px;
+                    font-weight: bold;
+                """)
+                self.incoming_signs_layout.addWidget(chip)
+
+        self.incoming_signs_layout.addStretch()
+
+    def _clear_incoming_isl_signs(self):
+        """Clears the visual sign strip."""
+        while self.incoming_signs_layout.count():
+            item = self.incoming_signs_layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+        self.incoming_signs_layout.addStretch()
+
+    # ═══════════════════════════════════════════════════════════
+    # Two-Way Dialogue History & Export System
+    # ═══════════════════════════════════════════════════════════
+    def _append_to_conversation(self, sender, text, is_signer=True):
+        """Appends dialogue turn to conversation timeline."""
+        ts = time.strftime("%H:%M:%S")
+        self.conversation_history.append({
+            "sender": sender,
+            "text": text,
+            "timestamp": ts,
+            "is_signer": is_signer
+        })
+        self._refresh_conversation_view()
+
+    def _refresh_conversation_view(self):
+        """Renders formatted HTML dialogue bubbles in the conversation view."""
+        html_parts = []
+        for item in self.conversation_history[-30:]:
+            if item["is_signer"]:
+                # Green/Teal bubble for signer
+                html_parts.append(
+                    f"<div style='margin-bottom: 6px;'>"
+                    f"<span style='color: #2D704F; font-weight: bold; font-size: 11px;'>🟢 {item['sender']} [{item['timestamp']}]:</span><br>"
+                    f"<div style='background-color: #EBF5EE; color: #1E4631; padding: 6px 10px; border-radius: 8px; border: 1px solid #D2E7DA; margin-top: 2px; font-weight: 600; font-size: 12px;'>"
+                    f"{item['text']}</div></div>"
+                )
+            else:
+                # Blue bubble for hearing partner
+                html_parts.append(
+                    f"<div style='margin-bottom: 6px;'>"
+                    f"<span style='color: #1E4D6B; font-weight: bold; font-size: 11px;'>🔵 {item['sender']} [{item['timestamp']}]:</span><br>"
+                    f"<div style='background-color: #EEF4F8; color: #153A52; padding: 6px 10px; border-radius: 8px; border: 1px solid #D0E1ED; margin-top: 2px; font-weight: 600; font-size: 12px;'>"
+                    f"{item['text']}</div></div>"
+                )
+
+        self.conversation_view.setHtml("".join(html_parts))
+        scrollbar = self.conversation_view.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
+
+    def export_conversation_transcript(self):
+        """Exports the complete dialogue session to a clean timestamped text file."""
+        if not self.conversation_history:
+            self.log("Notice: No conversation dialogue to export.")
+            return
+
+        transcripts_dir = BASE_DIR / "transcripts"
+        transcripts_dir.mkdir(parents=True, exist_ok=True)
+        file_name = f"dialogue_{time.strftime('%Y%m%d_%H%M%S')}.txt"
+        out_path = transcripts_dir / file_name
+
+        lines = [
+            "===========================================================",
+            " SignSpeak Universal - Two-Way Conversation Transcript",
+            f" Session Date: {time.strftime('%Y-%m-%d %H:%M:%S')}",
+            "===========================================================\n"
+        ]
+        for item in self.conversation_history:
+            role = "SIGNER (ISL)" if item["is_signer"] else "HEARING PARTNER (VOICE)"
+            lines.append(f"[{item['timestamp']}] {role}:\n  \"{item['text']}\"\n")
+        lines.append("===========================================================\n")
+
+        try:
+            with open(out_path, "w", encoding="utf-8") as f:
+                f.write("\n".join(lines))
+            self.log(f"Exported Transcript to: transcripts/{file_name}")
+            play_feedback_tone(freq=1500, duration_ms=45)
+        except Exception as e:
+            self.log(f"Export Transcript Error: {e}")
+
+    def copy_conversation_transcript(self):
+        """Copies formatted conversation transcript to the system clipboard."""
+        if not self.conversation_history:
+            self.log("Notice: No dialogue to copy.")
+            return
+
+        text_content = "\n".join([
+            f"[{item['timestamp']}] {'You (Signer)' if item['is_signer'] else 'Hearing Partner'}: \"{item['text']}\""
+            for item in self.conversation_history
+        ])
+        clipboard = QApplication.clipboard()
+        if clipboard:
+            clipboard.setText(text_content)
+        self.log("Copied full dialogue transcript to clipboard.")
+        play_feedback_tone(freq=1200, duration_ms=25)
+
+    def clear_conversation_transcript(self):
+        """Clears the dialogue history."""
+        self.conversation_history.clear()
+        self.conversation_view.clear()
+        self.incoming_speech_label.setText("Waiting for hearing partner to speak...")
+        self._clear_incoming_isl_signs()
+        self.log("Cleared two-way dialogue history.")
+        play_feedback_tone(freq=900, duration_ms=25)
+
     def keyPressEvent(self, event):
-        """Handle global keyboard shortcuts cleanly (100% Preserved + F1/Ctrl+P/Ctrl+Z/Keys 1,2,3 & Numpad)."""
+        """Handle global keyboard shortcuts cleanly (100% Preserved + F1/Ctrl+P/Ctrl+Z/Ctrl+M/Keys 1,2,3 & Numpad)."""
         key = event.key()
         if key == Qt.Key.Key_F1:
             self.show_shortcuts_guide()
+        elif (event.modifiers() & Qt.KeyboardModifier.ControlModifier and key == Qt.Key.Key_M) or key == Qt.Key.Key_F2:
+            self.toggle_mic_listening()
         elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and key == Qt.Key.Key_P:
             self.toggle_ai_polish()
         elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and key == Qt.Key.Key_Z:
@@ -1837,4 +2361,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

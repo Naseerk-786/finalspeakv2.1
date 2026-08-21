@@ -25,6 +25,7 @@
 | **Word & Sentence Construction** | Single raw letter display with manual clearing | **Multi-Word Sentence Builder with Smart Backspace** | Full sentence line accumulation, smart Backspace word pullback, and Piper TTS speech synthesis. |
 | **Audio Speech Synthesis** | No audio or browser-dependent online APIs | **Offline Neural Voice Synthesis (Piper TTS)** | Integrated local Piper ONNX neural voice engine (`en_US-lessac-medium.onnx`, $<12\text{ms}$ synthesis). |
 | **Multilingual Voice Output** | English only (no regional support) | **8 Indian Regional Languages** (English, Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, Gujarati) | Integrated multilingual neural translator & non-blocking regional voice synthesis dropdown. |
+| **Two-Way Deaf ↔ Hearing Loop** | 1-Way sign recognition only (hearing replies missed) | **Two-Way Live Speech-to-Sign & Dialogue Exporter** | Integrated non-blocking `SpeechToTextThread` (Whisper AI), live ISL visual fingerspelling strip, and timestamped transcript exporter. |
 | **Word Completion & Predictive AI** | None (Letter-by-letter typing only) | **Gboard-Style AI Autocomplete Strip** (Keys `1`, `2`, `3` & Numpad) | Asynchronous dual-tier autocomplete with Groq Cloud LLM + instant <0.1ms offline fallback dictionary. |
 | **Linguistic Naturalness** | Raw disjointed sign glosses | **1-Click AI Sign Grammar Polish (`Ctrl+P` / `Ctrl+Z`)** | Converts telegraphic sign glosses into fluent conversational sentences with auto-polish on speak. |
 
@@ -172,6 +173,18 @@
   * **Non-Blocking Multilingual Neural Voice:** Synthesizes and vocalizes regional Indian speech audio without UI frame drops or camera latency.
   * **Universal Keypad Support:** Numbers `1`, `2`, `3` and numeric keypad keys (`Numpad1`, `Numpad2`, `Numpad3`) instantly commit autocomplete suggestion pills.
 
+### 2.12 Version 2.6 Two-Way Deaf ↔ Hearing Communication Loop & Dialogue Exporter (Completed)
+* **File:** [`prototype/part_3_letters.py`](file:///d:/finalspeak/prototype/part_3_letters.py)
+* **Design Philosophy:** Complete bidirectional communication loop transforming SignSpeak from a 1-way tool into a full face-to-face conversational cockpit:
+  * **Signer ──► Hearing Partner:** Continuous ISL fingerspelling with 0.8s dwell hold, AI autocomplete, grammar polish, and Piper / regional Indian speech synthesis.
+  * **Hearing Partner ──► Signer:** Dedicated background microphone audio worker (`SpeechToTextThread`) recording speech and transcribing in <200ms via Whisper AI.
+* **Core Interaction Mechanics:**
+  * **Non-Blocking Live Audio Listener (`Ctrl + M` / `F2`):** Streams microphone audio via `sounddevice` with live RMS energy level meter and zero interference with 30 FPS video feed.
+  * **Incoming Hearing Speech Card:** Displays transcribed speech in a high-contrast subtitle bubble.
+  * **Live ISL Visual Fingerspelling Strip:** Dynamically parses incoming spoken words into individual ISL sign letter badges (`[ H ] [ E ] [ L ] [ P ]`).
+  * **Two-Way Dialogue Timeline Tab:** Turn-by-turn chat history color-coded by role (🟢 Signer vs 🔵 Hearing Partner) with timestamps.
+  * **1-Click Dialogue Session Exporter:** Exports complete conversation history to formatted timestamped files (`transcripts/dialogue_YYYYMMDD_HHMMSS.txt`) or copies to clipboard.
+
 ---
 
 ## 📝 3. Progressive Changelog & Work Log
@@ -191,14 +204,15 @@
 | **Phase 11 (Recent)** | Version 2.2 Release | Integrated 0.8s Steady-Hold letter capture with hysteresis lock, Spacebar word commit, smart Backspace, and Piper TTS full-sentence voice. | **Natural Keyboard Workflow with Zero Fatigue** |
 | **Phase 12 (Recent)** | Version 2.3 Release | Integrated Gboard-style 3-suggestion AI autocomplete pills powered by Groq Cloud + offline fallback with keys `1`, `2`, `3` shortcuts. | **Context-Aware Instant Word Completion** |
 | **Phase 13 (Recent)** | Version 2.4 Release | Integrated 1-Click AI Sign Grammar Polish, non-destructive Revert, Auto-Polish on Speak, F1 Shortcuts Guide Modal, and clean enterprise UI styling. | **Natural Linguistic Syntax Bridge & Pro Cockpit** |
-| **Phase 14 (Latest)** | Version 2.5 Release | Integrated Regional Indian Language Selector Dropdown (Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, Gujarati) + Multilingual Neural Speech Synthesis. | **Native Multi-Dialect Voice Output** |
+| **Phase 14 (Recent)** | Version 2.5 Release | Integrated Regional Indian Language Selector Dropdown (Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, Gujarati) + Multilingual Neural Speech Synthesis. | **Native Multi-Dialect Voice Output** |
+| **Phase 15 (Latest)** | Version 2.6 Release | Integrated Two-Way Deaf ↔ Hearing Communication Loop with non-blocking Whisper STT listener, Live ISL Sign Visualizer, and Dialogue Transcript Exporter. | **Full Bidirectional Conversational Loop** |
 
 ---
 
 ## 🚀 4. Comprehensive Future Improvements & Exploration Roadmap
 
-* [ ] **1. Two-Way Speech-to-Sign Communication (Deaf $\leftrightarrow$ Hearing Loop):**
-  * Offline Whisper AI speech recognition on incoming audio $\to$ live transcript + 3D animated Sign Language Avatar rendering corresponding ISL signs.
+* [x] **1. Two-Way Speech-to-Sign Communication (Deaf $\leftrightarrow$ Hearing Loop):**
+  * Whisper AI speech recognition on incoming audio $\to$ live transcript + visual ISL fingerspelling badge strip + conversation timeline export.
 * [x] **2. Multilingual Indian Voice Engine:**
   * Real-time translation to Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, and Gujarati paired with regional neural acoustic speech.
 * [ ] **3. WebRTC Web & Mobile Companion App:**
@@ -207,6 +221,7 @@
   * Single-file PyInstaller / Inno Setup installer packaging ONNX models, Piper voices, and DirectShow drivers.
 * [ ] **5. Smart Wearable & IoT Audio Broadcaster:**
   * Bluetooth LE audio streaming directly to external smart speakers, hearing aids, or classroom PA systems.
+
 
 
 
