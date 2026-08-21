@@ -11,12 +11,24 @@ import wave
 import tempfile
 import queue
 import threading
+import ctypes
+import re
+import urllib.request
+import urllib.parse
 import numpy as np
 from pathlib import Path
 from collections import deque
 
 # Ensure prototype folder is in python path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+# Safe UTF-8 console output on Windows
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 import cv2
 import mediapipe as mp
@@ -926,6 +938,7 @@ class ShortcutsHelpDialog(QDialog):
             ("Spacebar", "Commits active word into full spoken sentence"),
             ("Backspace", "Deletes last letter (or restores previous word for editing)"),
             ("Ctrl + P / Ctrl + Z", "AI grammar polish / Revert to raw sign gloss"),
+            ("Ctrl + T", "Translates current sentence into selected Indian language"),
             ("Voice Dropdown", "Selects Indian regional speech voice (Hindi, Telugu, Tamil, etc.)"),
             ("Enter", "Vocalizes complete sentence in selected regional voice"),
             ("Ctrl + M / F2", "Toggles microphone listening to hearing partner voice"),
@@ -978,6 +991,7 @@ class SignSpeakApp(QMainWindow):
         self.raw_sentence_words = []
         self.is_polished = False
         self._speak_after_polish = False
+        self._speak_after_translate = False
         self.current_suggestions = ["HELLO", "PLEASE", "THANK YOU"]
 
         self.live_letter = None
@@ -1542,7 +1556,7 @@ class SignSpeakApp(QMainWindow):
         )
         sentence_layout.addWidget(self.sentence_label)
 
-        # Language & Polish Controls
+        # Language, Translate & Polish Controls
         voice_controls_row = QHBoxLayout()
         voice_controls_row.setSpacing(8)
 
@@ -1561,7 +1575,15 @@ class SignSpeakApp(QMainWindow):
         ]
         for code, label in self.languages:
             self.language_combo.addItem(label, code)
+        self.language_combo.currentIndexChanged.connect(self._on_language_changed)
         voice_controls_row.addWidget(self.language_combo, stretch=3)
+
+        self.translate_btn = QPushButton("Translate [ Ctrl+T ]")
+        self.translate_btn.setObjectName("secondaryBtn")
+        self.translate_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.translate_btn.setFixedHeight(36)
+        self.translate_btn.clicked.connect(self.translate_current_sentence)
+        voice_controls_row.addWidget(self.translate_btn, stretch=2)
 
         self.polish_btn = QPushButton("Polish [ Ctrl+P ]")
         self.polish_btn.setObjectName("secondaryBtn")
@@ -1946,6 +1968,36 @@ class SignSpeakApp(QMainWindow):
         self._trigger_ai_prediction()
 
     # ═══════════════════════════════════════════════════════════
+    def _on_language_changed(self, idx):
+        lang_code = self.language_combo.currentData() or "en"
+        lang_name = self.language_combo.currentText().split("(")[0].strip()
+        if lang_code == "en":
+            self.speak_btn.setText("Speak Sentence [ Enter ]")
+            self.translate_btn.setEnabled(False)
+        else:
+            self.speak_btn.setText(f"Speak in {lang_name} [ Enter ]")
+            self.translate_btn.setEnabled(True)
+
+    def translate_current_sentence(self):
+        if self.current_word_letters:
+            self.commit_word()
+
+        full_text = self.sentence_label.text().strip()
+        if not full_text:
+            return
+
+        lang_code = self.language_combo.currentData() or "en"
+        lang_name = self.language_combo.currentText().split("(")[0].strip()
+        if lang_code == "en":
+            return
+
+        self._speak_after_translate = False
+        self.translate_btn.setEnabled(False)
+        self.translate_btn.setText("Translating...")
+        self.log(f"Translating sentence to {lang_name}: \"{full_text}\"...")
+        self.ai_thread.enqueue_translate(full_text, lang_code, lang_name)
+
+    # ═══════════════════════════════════════════════════════════
     # 1-Click AI Sign Grammar Polish Engine
     # ═══════════════════════════════════════════════════════════
     def toggle_ai_polish(self):
@@ -1957,6 +2009,8 @@ class SignSpeakApp(QMainWindow):
             self.log(f"Restored Raw Sign Sequence: \"{' '.join(self.sentence_words)}\"")
             play_feedback_tone(freq=950, duration_ms=30)
         else:
+            if self.current_word_letters:
+                self.commit_word()
             full_text = self.sentence_label.text().strip()
             if not full_text:
                 return
@@ -2025,7 +2079,7 @@ class SignSpeakApp(QMainWindow):
             return
 
         lang_code = self.language_combo.currentData() or "en"
-        lang_name = self.language_combo.currentText()
+        lang_name = self.language_combo.currentText().split("(")[0].strip()
 
         if lang_code == "en":
             if self.auto_polish_checkbox.isChecked() and not self.is_polished:
@@ -2040,19 +2094,32 @@ class SignSpeakApp(QMainWindow):
                 self.log(f"Speaking Full Sentence (English): \"{full_text}\"")
                 self._append_to_conversation("You (Signer)", full_text, is_signer=True)
         else:
-            self.polish_btn.setEnabled(False)
-            self.polish_btn.setText("Translating...")
-            self.log(f"Translating to {lang_name}: \"{full_text}\"...")
-            self.ai_thread.enqueue_translate(full_text, lang_code, lang_name)
+            # Detect if text contains Latin / English alphabet that needs translation first
+            is_latin = any('A' <= c <= 'Z' or 'a' <= c <= 'z' for c in full_text)
+            if is_latin:
+                self._speak_after_translate = True
+                self.translate_btn.setEnabled(False)
+                self.translate_btn.setText("Translating...")
+                self.log(f"Translating to {lang_name} before speaking: \"{full_text}\"...")
+                self.ai_thread.enqueue_translate(full_text, lang_code, lang_name)
+            else:
+                self.tts_thread.enqueue_text(full_text, lang_code=lang_code)
+                self.log(f"Speaking Sentence in [{lang_code.upper()}]: \"{full_text}\"")
+                self._append_to_conversation(f"You ({lang_code.upper()})", full_text, is_signer=True)
 
     def on_sentence_translated(self, translated_text, lang_code, original_text):
+        self.translate_btn.setEnabled(True)
+        self.translate_btn.setText("Translate [ Ctrl+T ]")
         self.polish_btn.setEnabled(True)
         self.polish_btn.setText("Polish [ Ctrl+P ]")
         if translated_text:
             self.sentence_label.setText(translated_text)
             self.log(f"Translated to [{lang_code.upper()}]: \"{translated_text}\" (Original: \"{original_text}\")")
-            self.tts_thread.enqueue_text(translated_text, lang_code=lang_code)
-            self._append_to_conversation(f"You ({lang_code.upper()})", translated_text, is_signer=True)
+            play_feedback_tone(freq=1350, duration_ms=45)
+            if self._speak_after_translate:
+                self._speak_after_translate = False
+                self.tts_thread.enqueue_text(translated_text, lang_code=lang_code)
+                self._append_to_conversation(f"You ({lang_code.upper()})", translated_text, is_signer=True)
 
     def clear_all(self):
         self.current_word_letters.clear()
@@ -2259,6 +2326,8 @@ class SignSpeakApp(QMainWindow):
             self.toggle_mic_listening()
         elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and key == Qt.Key.Key_P:
             self.toggle_ai_polish()
+        elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and key == Qt.Key.Key_T:
+            self.translate_current_sentence()
         elif event.modifiers() & Qt.KeyboardModifier.ControlModifier and key == Qt.Key.Key_Z:
             if self.is_polished:
                 self.toggle_ai_polish()
