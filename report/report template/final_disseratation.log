@@ -1,0 +1,1462 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.10)  21 AUG 2026 10:28
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**./final_disseratation.tex
+(final_disseratation.tex
+LaTeX2e <2026-06-01>
+L3 programming layer <2026-06-18>
+(final_raitdisser.cls
+
+LaTeX Warning: You have requested document class `final_raitdisser',
+               but the document class provides `iitbaps'.
+
+Document Class: iitbaps 2007/06/25 IIT Bombay Annual Preogress Report Format
+Document Class `iitbaps' v0.5beta <13 August 07>
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/base\report
+.cls
+Document Class: report 2025/01/22 v1.4n Standard LaTeX document class
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/base\size12
+.clo
+File: size12.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count276
+\c@chapter=\count277
+\c@section=\count278
+\c@subsection=\count279
+\c@subsubsection=\count280
+\c@paragraph=\count281
+\c@subparagraph=\count282
+\c@figure=\count283
+\c@table=\count284
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen150
+)
+Two side is false
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/graphics\gr
+aphicx.sty
+Package: graphicx 2026-05-17 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/graphics\ke
+yval.sty
+Package: keyval 2026-05-17 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/graphics\gr
+aphics.sty
+Package: graphics 2026-05-17 v1.4h Standard LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/graphics\tr
+ig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cf
+g\graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 106.
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/graphics-de
+f\pdftex.def
+File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen151
+\Gin@req@width=\dimen152
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\ams
+math.sty
+Package: amsmath 2026/05/19 v2.18d AMS math features
+\@mathmargin=\skip51
+
+For additional information on amsmath, use the `?' option.
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\ams
+text.sty
+Package: amstext 2024/11/17 v2.01 AMS text
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\ams
+gen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks18
+\ex@=\dimen153
+))
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\ams
+bsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen154
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\ams
+opn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count285
+LaTeX Info: Redefining \frac on input line 233.
+\uproot@=\count286
+\leftroot@=\count287
+LaTeX Info: Redefining \overline on input line 398.
+LaTeX Info: Redefining \colon on input line 409.
+\classnum@=\count288
+\DOTSCASE@=\count289
+LaTeX Info: Redefining \ldots on input line 495.
+LaTeX Info: Redefining \dots on input line 498.
+LaTeX Info: Redefining \cdots on input line 619.
+\Mathstrutbox@=\box53
+\strutbox@=\box54
+LaTeX Info: Redefining \big on input line 721.
+LaTeX Info: Redefining \Big on input line 722.
+LaTeX Info: Redefining \bigg on input line 723.
+LaTeX Info: Redefining \Bigg on input line 724.
+\big@size=\dimen155
+LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
+\macc@depth=\count290
+LaTeX Info: Redefining \bmod on input line 904.
+LaTeX Info: Redefining \pmod on input line 909.
+LaTeX Info: Redefining \smash on input line 939.
+LaTeX Info: Redefining \relbar on input line 969.
+LaTeX Info: Redefining \Relbar on input line 970.
+\c@MaxMatrixCols=\count291
+\dotsspace@=\muskip17
+\c@parentequation=\count292
+\dspbrk@lvl=\count293
+\tag@help=\toks19
+\row@=\count294
+\column@=\count295
+\maxfields@=\count296
+\andhelp@=\toks20
+\eqnshift@=\dimen156
+\alignsep@=\dimen157
+\tagshift@=\dimen158
+\tagwidth@=\dimen159
+\totwidth@=\dimen160
+\lineht@=\dimen161
+\@envbody=\toks21
+\multlinegap=\skip52
+\multlinetaggap=\skip53
+\mathdisplay@stack=\toks22
+LaTeX Info: Redefining \[ on input line 2965.
+LaTeX Info: Redefining \] on input line 2966.
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\bo
+oktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen162
+\lightrulewidth=\dimen163
+\cmidrulewidth=\dimen164
+\belowrulesep=\dimen165
+\belowbottomsep=\dimen166
+\aboverulesep=\dimen167
+\abovetopsep=\dimen168
+\cmidrulesep=\dimen169
+\cmidrulekern=\dimen170
+\defaultaddspace=\dimen171
+\@cmidla=\count297
+\@cmidlb=\count298
+\@aboverulesep=\dimen172
+\@belowrulesep=\dimen173
+\@thisruleclass=\count299
+\@lastruleclass=\count300
+\@thisrulewidth=\dimen174
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/tools\array
+.sty
+Package: array 2026/02/24 v2.7b Tabular extension package (FMi)
+\col@sep=\dimen175
+\ar@mcellbox=\box55
+\extrarowheight=\dimen176
+\NC@list=\toks23
+\extratabsurround=\skip54
+\backup@length=\skip55
+\ar@cellbox=\box56
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/placeins\pl
+aceins.sty
+Package: placeins 2005/04/18  v 2.2
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/fancyhdr\fa
+ncyhdr.sty
+Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
+
+\f@nch@headwidth=\skip56
+\f@nch@offset@elh=\skip57
+\f@nch@offset@erh=\skip58
+\f@nch@offset@olh=\skip59
+\f@nch@offset@orh=\skip60
+\f@nch@offset@elf=\skip61
+\f@nch@offset@erf=\skip62
+\f@nch@offset@olf=\skip63
+\f@nch@offset@orf=\skip64
+\f@nch@height=\skip65
+\f@nch@footalignment=\skip66
+\f@nch@widthL=\skip67
+\f@nch@widthC=\skip68
+\f@nch@widthR=\skip69
+\@temptokenb=\toks24
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hy
+perref.sty
+Package: hyperref 2026-06-17 v7.01r Hypertext links for LaTeX
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ift
+ex.sty
+Package: iftex 2024/12/12 v1.0g TeX engine tests
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\k
+vsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinek
+eys\kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape
+\pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\l
+txcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmd
+s\pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr
+\infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+))
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hyc
+olor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\na
+meref.sty
+Package: nameref 2026-01-29 v2.58 Cross-referencing by name of section
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/refcount\re
+fcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/gettitles
+tring\gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\k
+voptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+))
+\c@section@level=\count301
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\et
+oolbox.sty
+Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count302
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/stringenc
+\stringenc.sty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
+)
+)
+\@linkdim=\dimen177
+\Hy@linkcounter=\count303
+\Hy@pagecounter=\count304
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd
+1enc.def
+File: pd1enc.def 2026-06-17 v7.01r Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\i
+ntcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+\Hy@SavedSpaceFactor=\count305
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pu
+enc.def
+File: puenc.def 2026-06-17 v7.01r Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Hyper figures OFF on input line 4199.
+Package hyperref Info: Link nesting OFF on input line 4204.
+Package hyperref Info: Hyper index ON on input line 4207.
+Package hyperref Info: Plain pages OFF on input line 4214.
+Package hyperref Info: Backreferencing OFF on input line 4219.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4466.
+\c@Hy@tempcnt=\count306
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
+\Urlmuskip=\muskip18
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4805.
+\XeTeXLinkMargin=\dimen178
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bi
+tset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/bigintcal
+c\bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+\Fld@menulength=\count307
+\Field@Width=\dimen179
+\Fld@charsize=\dimen180
+Package hyperref Info: Hyper figures OFF on input line 6091.
+Package hyperref Info: Link nesting OFF on input line 6096.
+Package hyperref Info: Hyper index ON on input line 6099.
+Package hyperref Info: backreferencing OFF on input line 6106.
+Package hyperref Info: Link coloring OFF on input line 6111.
+Package hyperref Info: Link coloring with OCG OFF on input line 6116.
+Package hyperref Info: PDF/A mode OFF on input line 6121.
+\Hy@abspage=\count308
+\c@Item=\count309
+\c@Hfootnote=\count310
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hp
+dftex.def
+File: hpdftex.def 2026-06-17 v7.01r Hyperref driver for pdfTeX
+\Fld@listcount=\count311
+\c@bookmark@seq@number=\count312
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilech
+eck\rerunfilecheck.sty
+Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/generic/uniquecou
+nter\uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+84.
+)
+\Hy@SectionHShift=\skip70
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l
+3backend-pdftex.def
+File: l3backend-pdftex.def 2026-02-18 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count313
+) (final_disseratation.aux (final_disser_prelude.aux)
+(chapter_1.aux) (chapter_2.aux) (chapter_3.aux) (chapter_4.aux) (chapter_5.aux)
+(chapter_6.aux))
+\openout1 = `final_disseratation.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/context/base/mkii
+\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count314
+\scratchdimen=\dimen181
+\scratchbox=\box57
+\nofMPsegments=\count315
+\nofMParguments=\count316
+\everyMPshowfont=\toks25
+\MPscratchCnt=\count317
+\MPscratchDim=\dimen182
+\MPnumerator=\count318
+\makeMPintoPDFobject=\count319
+\everyMPtoPDFconversion=\toks26
+)
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pk
+g\epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(C:\Users\Khaja Naseeruddin\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\ep
+stopdf-sys.cfg
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
+Package hyperref Info: Link coloring OFF on input line 36.
+ (final_disseratation.out) (final_disseratation.out)
+\@outlinefile=\write3
+\openout3 = `final_disseratation.out'.
+
+\openout2 = `final_disser_prelude.aux'.
+
+
+(final_disser_prelude.tex
+Package hyperref Info: Option `pageanchor' set `false' on input line 16.
+Package epstopdf Info: Source file: <logo.eps>
+(epstopdf)                    date: 2026-07-09 14:32:37
+(epstopdf)                    size: 633109 bytes
+(epstopdf)             Output file: <logo-eps-converted-to.pdf>
+(epstopdf)                    date: 2026-07-10 11:34:00
+(epstopdf)                    size: 40575 bytes
+(epstopdf)             Command: <miktex-epstopdf --outfile=logo-eps-converted-t
+o.pdf logo.eps>
+(epstopdf)             \includegraphics on input line 18.
+Package epstopdf Info: Output file is already uptodate.
+<logo-eps-converted-to.pdf, id=186, 772.8875pt x 326.21875pt>
+File: logo-eps-converted-to.pdf Graphic file (type pdf)
+<use logo-eps-converted-to.pdf>
+Package pdftex.def Info: logo-eps-converted-to.pdf  used on input line 18.
+(pdftex.def)             Requested size: 227.62204pt x 96.0744pt.
+ [1
+
+
+
+{C:/Users/Khaja Naseeruddin/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map} <
+./logo-eps-converted-to.pdf>]
+Package hyperref Info: Option `pageanchor' set `true' on input line 18.
+
+
+pdfTeX warning: pdflatex.exe (file ./logo.pdf): PDF inclusion: found PDF versio
+n <1.7>, but at most version <1.5> allowed
+<logo.pdf, id=195, 772.8875pt x 326.21875pt>
+File: logo.pdf Graphic file (type pdf)
+<use logo.pdf>
+Package pdftex.def Info: logo.pdf  used on input line 25.
+(pdftex.def)             Requested size: 199.16928pt x 84.06323pt.
+[1
+
+ <./logo.pdf>]
+Overfull \hbox (5.69604pt too wide) in paragraph at lines 61--72
+[][] 
+ []
+
+[2
+
+] [3] [4] [5
+
+] [6] (final_disseratation.toc [7
+
+]
+Overfull \hbox (3.16405pt too wide) in paragraph at lines 32--32
+ [] [][]\OT1/cmr/bx/n/12 Phase 5 & 6: Multi-Threading, Dwell Sta-bi-lizer and A
+I Lin-guis-tic Bridge[] []  
+ []
+
+)
+\tf@toc=\write4
+\openout4 = `final_disseratation.toc'.
+
+ [8] (final_disseratation.lof)
+\tf@lof=\write5
+\openout5 = `final_disseratation.lof'.
+
+ [9
+
+] (final_disseratation.lot)
+\tf@lot=\write6
+\openout6 = `final_disseratation.lot'.
+
+ [10
+
+] [11
+
+])
+\openout2 = `chapter_1.aux'.
+
+
+(chapter_1.tex
+Chapter 1.
+
+Overfull \hbox (8.08966pt too wide) in paragraph at lines 9--9
+[]\OT1/cmr/bx/n/17.28 Linguistic Char-ac-ter-is-tics of In-dian Sign Lan-guage 
+
+ []
+
+[1
+
+
+
+
+
+] [2]) [3]
+\openout2 = `chapter_2.aux'.
+
+ (chapter_2.tex
+Chapter 2.
+
+Overfull \hbox (57.08353pt too wide) in paragraph at lines 13--13
+[]\OT1/cmr/bx/n/17.28 Feature En-gi-neer-ing: 856-Dimensional Spatio-Temporal
+ []
+
+[4
+
+
+
+
+]
+! Undefined control sequence.
+l.16 ... Each input tensor $\mathbf{X} \in \mathbb
+                                                  {R}^{30 \times 856}$ was f...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 26.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 26.
+
+[5]
+Overfull \hbox (74.61462pt too wide) in paragraph at lines 39--49
+ [][] 
+ []
+
+) [6]
+\openout2 = `chapter_3.aux'.
+
+ (chapter_3.tex
+Chapter 3.
+[7
+
+
+
+
+]
+Overfull \hbox (7.01366pt too wide) in paragraph at lines 18--18
+[]\OT1/cmr/bx/n/17.28 Mathematical For-mu-la-tion of 126-Dimensional In-
+ []
+
+! Undefined control sequence.
+l.21 ...\mathbf{P}_i = (x_i, y_i, z_i) \in \mathbb
+                                                  {R}^3$ denote the 3D spati...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.42 ..._{\text{norm}, 20}^T \right]^T \in \mathbb
+                                                  {R}^{63}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[8]
+! Undefined control sequence.
+l.46 ... Left ($\mathbf{X}_{\text{LH}} \in \mathbb
+                                                  {R}^{63}$) and Right ($\ma...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.46 ...Right ($\mathbf{X}_{\text{RH}} \in \mathbb
+                                                  {R}^{63}$) hands, forming ...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.48 ...f{X}_{\text{RH}} \end{bmatrix} \in \mathbb
+                                                  {R}^{126}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+)
+Overfull \hbox (11.94725pt too wide) in paragraph at lines 60--47
+\OT1/cmr/m/n/12 dis-carded 22,256 de-fec-tive im-ages, out-putting \OT1/cmr/bx/
+n/12 107,517 clean, val-i-dated 126-dimensional
+ []
+
+[9]
+\openout2 = `chapter_4.aux'.
+
+ (chapter_4.tex
+Chapter 4.
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <17.28> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 4.
+
+Overfull \hbox (27.88959pt too wide) in paragraph at lines 4--4
+[]\OT1/cmr/bx/n/17.28 Deep Resid-ual MLP Topol-ogy (\OT1/cmtt/m/n/17.28 ISLLett
+erClassifier\OT1/cmr/bx/n/17.28 ) 
+ []
+
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <12> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 5.
+! Undefined control sequence.
+l.13     where $\mathbf{W}_1 \in \mathbb
+                                        {R}^{256 \times 126}$, and $\text{Si...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[10
+
+
+
+
+]
+! Undefined control sequence.
+l.29 ...t{where } q_k = (1 - \alpha) \cdot \mathbb
+                                                  {I}(y = k) + \frac{\alpha}{K}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[11]
+Overfull \hbox (5.75789pt too wide) in paragraph at lines 63--64
+[]\OT1/cmr/bx/n/12 3-Second Green Ac-tive Record-ing Win-dow: \OT1/cmr/m/n/12 A
+u-to-mat-i-cally streams and records
+ []
+
+[12]
+! Missing $ inserted.
+<inserted text> 
+                $
+l.80 ...ne (\texttt{prototype/fine_tune_engine.py}
+                                                  ) uses a **co-training min...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Extra }, or forgotten $.
+<recently read> \egroup 
+                        
+l.80 ...ne (\texttt{prototype/fine_tune_engine.py}
+                                                  ) uses a **co-training min...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+)
+! Missing $ inserted.
+<inserted text> 
+                $
+l.48 \include{chapter_4}
+                         % Chapter 4: Phase 3 & 4 - Deep Residual MLP, Studi...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (225.15811pt too wide) in paragraph at lines 80--48
+\OML/cmm/m/it/12 batchstrategy \OMS/cmsy/m/n/12 ^^C ^^C\OML/cmm/m/it/12 blendin
+g\OT1/cmr/m/n/12 20%\OML/cmm/m/it/12 user \OMS/cmsy/m/n/12 ^^@ \OML/cmm/m/it/12
+ recordedaugmentedvectorswith\OT1/cmr/m/n/12 80%\OML/cmm/m/it/12 globalbaseline
+vectors:ExecutingontheRTX\OT1/cmr/m/n/12 4050\OML/cmm/m/it/12 GPU; fine \OMS/cm
+sy/m/n/12 ^^@
+ []
+
+
+Overfull \hbox (10.23654pt too wide) in paragraph at lines 80--48
+\OML/cmm/m/it/12 tuningcompletesin \OMS/cmsy/m/n/12 ^^C ^^C \OT1/cmr/m/n/12 8\O
+ML/cmm/m/it/12 seconds \OMS/cmsy/m/n/12 ^^C ^^C\OML/cmm/m/it/12 ; elevatinglive
+validationaccuracyto \OMS/cmsy/m/n/12 ^^C ^^C\OT1/cmr/m/n/12 99\OML/cmm/m/it/12
+ :\OT1/cmr/m/n/12 84% \OMS/cmsy/m/n/12 ^^@ ^^@\OT1/cmr/m/n/12 99\OML/cmm/m/it/1
+2 :\OT1/cmr/m/n/12 96% \OMS/cmsy/m/n/12 ^^C
+ []
+
+[13]
+\openout2 = `chapter_5.aux'.
+
+ (chapter_5.tex
+Chapter 5.
+
+Overfull \hbox (5.59166pt too wide) in paragraph at lines 4--4
+[]\OT1/cmr/bx/n/17.28 Five-Thread Asyn-chronous De-cou-pled En-gine Ar-
+ []
+
+
+Overfull \hbox (32.58116pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 To guarantee that compute-intensive operations (such as audio 
+speech synthesis,
+ []
+
+
+Overfull \hbox (20.23116pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 neural translation, grammar polishing, and audio transcription
+) never degrade
+ []
+
+
+Overfull \hbox (38.75616pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 the 30 FPS camera feed or cause user interface freezing, **Sig
+nSpeak Universal**
+ []
+
+
+Overfull \hbox (1.70615pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 is architected across **five isolated asynchronous threads** c
+ommunicating
+ []
+
+
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 8--9
+[]\OT1/cmtt/m/n/12 CaptureThread: Executes DirectShow video capture at 30 FPS, 
+performs
+ []
+
+
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 8--9
+\OT1/cmtt/m/n/12 MediaPipe 3D landmark tracking, and extracts normalized 126-di
+mensional
+ []
+
+
+Overfull \hbox (49.60585pt too wide) in paragraph at lines 9--10
+[]\OT1/cmtt/m/n/12 InferenceThread: Performs sub-2ms ONNX letter inference on i
+ncoming vectors,
+ []
+
+
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 9--10
+\OT1/cmtt/m/n/12 passing predictions through a 4-frame consecutive temporal con
+firmation
+ []
+
+
+Overfull \hbox (6.38083pt too wide) in paragraph at lines 10--11
+[]\OT1/cmtt/m/n/12 SignSpeakApp (Main UI Thread): Manages the interactive Qt6 w
+orkspace,
+ []
+
+
+Overfull \hbox (6.38083pt too wide) in paragraph at lines 10--11
+\OT1/cmtt/m/n/12 the 0.8s dwell hold progress calculation, autocomplete chip re
+ndering,
+ []
+
+
+Overfull \hbox (152.8519pt too wide) in paragraph at lines 11--12
+[]\OT1/cmtt/m/n/12 TTSThread: Manages non-blocking local Piper neural voice syn
+thesis (en[]US-lessac-medium.onnx,
+ []
+
+[14
+
+
+
+
+]
+Overfull \hbox (6.38083pt too wide) in paragraph at lines 12--13
+[]\OT1/cmtt/m/n/12 SpeechToTextThread: Streams background microphone audio at 1
+6kHz mono
+ []
+
+
+Overfull \hbox (24.90584pt too wide) in paragraph at lines 12--13
+\OT1/cmtt/m/n/12 via sounddevice, packaging PCM audio frames for Whisper AI tra
+nscription. 
+ []
+
+
+Overfull \hbox (69.63118pt too wide) in paragraph at lines 16--17
+\OT1/cmtt/m/n/12 A critical usability flaw in traditional sign recognition soft
+ware is the requirement
+ []
+
+
+Overfull \hbox (26.40616pt too wide) in paragraph at lines 16--17
+\OT1/cmtt/m/n/12 for manual mouse clicking or constant spacebar tapping to capt
+ure each letter,
+ []
+
+
+Overfull \hbox (18.73083pt too wide) in paragraph at lines 20--21
+[]\OT1/cmtt/m/n/12 0.80s Hold Threshold: When a user holds a recognizable sign 
+steady with
+ []
+
+
+Overfull \hbox (3.5389pt too wide) in paragraph at lines 20--21
+\OMS/cmsy/m/n/12 ^^U \OT1/cmr/m/n/12 50%$ \OT1/cmtt/m/n/12 confidence, an on-sc
+reen green progress bar fills smoothly over
+ []
+
+
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 21--22
+[]\OT1/cmtt/m/n/12 Audio Feedback Confirmation: When the dwell reaches 100%, th
+e letter
+ []
+
+
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 21--22
+\OT1/cmtt/m/n/12 is automatically committed into the active word builder, accom
+panied by
+ []
+
+
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 22--23
+[]\OT1/cmtt/m/n/12 Anti-Duplication Hysteresis Lock: Following capture, an inte
+rnal state
+ []
+
+
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 22--23
+\OT1/cmtt/m/n/12 lock prevents the letter from repeating until the user either 
+changes
+ []
+
+
+Overfull \hbox (31.08084pt too wide) in paragraph at lines 22--23
+\OT1/cmtt/m/n/12 their handshape or lowers their hand, completely eliminating u
+nintentional
+ []
+
+
+Overfull \hbox (14.05615pt too wide) in paragraph at lines 26--27
+\OT1/cmtt/m/n/12 To eliminate high-frequency coordinate jitter caused by webcam
+ sensor noise,
+ []
+
+
+Overfull \hbox (69.91806pt too wide) in paragraph at lines 29--31
+\OT1/cmtt/m/n/12 During slow, stationary gestures, the cutoff frequency $\OML/c
+mm/m/it/12 f[]$ \OT1/cmtt/m/n/12 drops to $\OT1/cmr/m/n/12 1\OML/cmm/m/it/12 :\
+OT1/cmr/m/n/12 0[]$\OT1/cmtt/m/n/12 , eliminating
+ []
+
+
+Overfull \hbox (11.6793pt too wide) in paragraph at lines 29--31
+\OT1/cmtt/m/n/12 jitter completely. During rapid hand transitions, $\OML/cmm/m/
+it/12 f[]$ \OT1/cmtt/m/n/12 scales up dynamically,
+ []
+
+[15]
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 34--35
+[]\OT1/cmtt/m/n/12 Spacebar Word Commit: Commits the formed word into the spoke
+n sentence
+ []
+
+
+Overfull \hbox (18.73083pt too wide) in paragraph at lines 35--36
+[]\OT1/cmtt/m/n/12 Smart Backspace: Deletes the last character; if the active w
+ord builder
+ []
+
+
+Overfull \hbox (24.90584pt too wide) in paragraph at lines 35--36
+\OT1/cmtt/m/n/12 is empty, it intelligently pulls the previous word back from t
+he sentence
+ []
+
+
+Overfull \hbox (6.38083pt too wide) in paragraph at lines 36--37
+[]\OT1/cmtt/m/n/12 Escape Buffer Reset: Instantly clears both word and sentence
+ buffers. 
+ []
+
+
+Overfull \hbox (26.40616pt too wide) in paragraph at lines 40--41
+\OT1/cmtt/m/n/12 To accelerate communication, we built a **Gboard-Style AI Auto
+complete Strip**
+ []
+
+
+Overfull \hbox (7.88115pt too wide) in paragraph at lines 40--41
+\OT1/cmtt/m/n/12 displaying three clickable suggestion chips (e.g., [ 1 HELLO ]
+, [ 2 HELP ],
+ []
+
+
+Overfull \hbox (31.08084pt too wide) in paragraph at lines 42--43
+\OT1/cmtt/m/n/12 frequency dictionary with an asynchronous background Groq Clou
+d LLM worker
+ []
+
+
+Overfull \hbox (6.38083pt too wide) in paragraph at lines 43--44
+[]\OT1/cmtt/m/n/12 One-Touch Hotkeys (1, 2, 3): Pressing standard number keys o
+r numeric
+ []
+
+
+Overfull \hbox (38.35957pt too wide) in paragraph at lines 46--46
+[]\OT1/cmr/bx/n/17.28 1-Click AI Sign Gram-mar Pol-ish and Non-Destructive
+ []
+
+
+Overfull \hbox (3.70517pt too wide) in paragraph at lines 47--48
+\OT1/cmtt/m/n/12 To bridge the gap between telegraphic sign glosses (e.g., \OT1
+/cmtt/m/it/12 ``ME WATER DRINK
+ []
+
+
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 49--50
+[]\OT1/cmtt/m/n/12 Pressing Ctrl + P (or clicking Polish) automatically commits
+ any active
+ []
+
+
+Overfull \hbox (18.73083pt too wide) in paragraph at lines 49--50
+\OT1/cmtt/m/n/12 word and sends the full sentence to our background AI worker, 
+converting
+ []
+
+
+Overfull \hbox (42.00403pt too wide) in paragraph at lines 49--50
+\OT1/cmtt/m/n/12 the gloss into a fluent sentence (\OT1/cmtt/m/it/12 ``I want t
+o drink water.''\OT1/cmtt/m/n/12 ) in $\OMS/cmsy/m/n/12 ^^X \OT1/cmr/m/n/12 150
+[]$\OT1/cmtt/m/n/12 . 
+ []
+
+[16]
+Overfull \hbox (31.08084pt too wide) in paragraph at lines 50--51
+[]\OT1/cmtt/m/n/12 Ctrl + Z Revert: Non-destructively restores the exact origin
+al raw signed
+ []
+
+
+Overfull \hbox (6.38083pt too wide) in paragraph at lines 51--52
+[]\OT1/cmtt/m/n/12 Auto-Polish on Speak: Automatically converts sign syntax rig
+ht before
+ []
+
+
+Overfull \hbox (32.58116pt too wide) in paragraph at lines 55--56
+\OT1/cmtt/m/n/12 To empower signers across India, we built a multilingual regio
+nal speech engine
+ []
+
+
+Overfull \hbox (20.23116pt too wide) in paragraph at lines 55--56
+\OT1/cmtt/m/n/12 supporting **8 languages**: English, Hindi, Telugu, Tamil, Mar
+athi, Kannada,
+ []
+
+
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 57--58
+[]\OT1/cmtt/m/n/12 1-Click Translate (Ctrl + T): Translates the signed sentence
+ into the
+ []
+
+
+! LaTeX Error: Unicode character 🔊 (U+1F50A)
+               not set up for use with LaTeX.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.58 ...., \texttt{[ 🔊 Speak in Hindi  Enter ]}
+                                                  ) and automatically transl...
+
+You may provide a definition with
+\DeclareUnicodeCharacter 
+
+
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 58--59
+[]\OT1/cmtt/m/n/12 Dynamic Regional Speak (Enter): The Speak button dynamically
+ updates
+ []
+
+
+Overfull \hbox (43.43085pt too wide) in paragraph at lines 58--59
+\OT1/cmtt/m/n/12 (e.g., [  Speak in Hindi Enter ]) and automatically translates
+ and vocalizes
+ []
+
+) [17]
+\openout2 = `chapter_6.aux'.
+
+ (chapter_6.tex
+Chapter 6.
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 4.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\leftrightarrow' on input line 4.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 4.
+
+
+Overfull \hbox (20.23116pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 Existing automated sign language systems are universally one-w
+ay translators:
+ []
+
+
+Overfull \hbox (63.45618pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 they vocalize what the deaf user signs, but leave the deaf use
+r unable to understand
+ []
+
+
+Overfull \hbox (32.58116pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 the hearing partner's verbal response without juggling third-p
+arty mobile apps. 
+ []
+
+
+Overfull \hbox (7.18924pt too wide) in paragraph at lines 9--10
+[]\OT1/cmtt/m/n/12 Signer $[][]\OMS/cmsy/m/n/12 !$ \OT1/cmtt/m/n/12 Hearing Par
+tner (Forward Loop): Fingerspelling recognition
+ []
+
+
+Overfull \hbox (28.13948pt too wide) in paragraph at lines 9--10
+[][]\OMS/cmsy/m/n/12 !$ \OT1/cmtt/m/n/12 Dwell hold capture $[][]\OMS/cmsy/m/n/
+12 !$ \OT1/cmtt/m/n/12 AI autocomplete $[][]\OMS/cmsy/m/n/12 !$ \OT1/cmtt/m/n/1
+2 Grammar polish $[][]\OMS/cmsy/m/n/12 !$ \OT1/cmtt/m/n/12 Offline
+ []
+
+
+Overfull \hbox (7.5305pt too wide) in paragraph at lines 12--13
+[]\OT1/cmtt/m/n/12 The hearing partner speaks into the laptop microphone (Ctrl 
++ M or
+ []
+
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <8> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 13.
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <6> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 13.
+
+Overfull \hbox (7.5305pt too wide) in paragraph at lines 13--14
+[]\OT1/cmtt/m/n/12 SpeechToTextThread streams 16kHz audio in the background and
+ sends
+ []
+
+
+Overfull \hbox (50.75552pt too wide) in paragraph at lines 13--14
+\OT1/cmtt/m/n/12 packaged WAV buffers to Groq's whisper-large-v3-turbo endpoint
+, returning
+ []
+
+
+Overfull \hbox (69.28053pt too wide) in paragraph at lines 14--15
+[]\OT1/cmtt/m/n/12 Incoming Subtitles Card: Displays the transcribed speech in 
+a high-contrast
+ []
+
+[18
+
+
+
+
+]
+Overfull \hbox (1.3555pt too wide) in paragraph at lines 15--16
+[]\OT1/cmtt/m/n/12 Live ISL Visual Fingerspelling Badges: Dynamically parses sp
+oken
+ []
+
+
+Overfull \hbox (1.3555pt too wide) in paragraph at lines 15--16
+\OT1/cmtt/m/n/12 words into visual ISL sign letter badges (e.g., [ H ] [ E ] [ 
+L ]
+ []
+
+
+Overfull \hbox (32.23051pt too wide) in paragraph at lines 15--16
+\OT1/cmtt/m/n/12 [ P ]), allowing the deaf user to read both text and sign equi
+valents. 
+ []
+
+
+Overfull \hbox (7.5305pt too wide) in paragraph at lines 16--17
+[]\OT1/cmtt/m/n/12 Dialogue Timeline & Exporter: Logs turn-by-turn chat history
+ with
+ []
+
+
+Overfull \hbox (102.87254pt too wide) in paragraph at lines 16--17
+\OT1/cmtt/m/n/12 timestamps and provides 1-click export to transcripts/dialogue
+[]YYYYMMDD[]HHMMSS.txt
+ []
+
+
+Overfull \hbox (7.88115pt too wide) in paragraph at lines 21--22
+\OT1/cmtt/m/n/12 In Version 3.0/3.1, we completely restructured the desktop int
+erface from a
+ []
+
+
+Overfull \hbox (14.05615pt too wide) in paragraph at lines 21--22
+\OT1/cmtt/m/n/12 cluttered technical dashboard into a calm, camera-first assist
+ive workspace: 
+ []
+
+
+! LaTeX Error: Unicode character ● (U+25CF)
+               not set up for use with LaTeX.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.23 ...tatus overlays (\texttt{● Hand Detected}
+                                                  ).
+You may provide a definition with
+\DeclareUnicodeCharacter 
+
+
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 23--24
+[]\OT1/cmtt/m/n/12 Hero Video Surface (60% Main Viewport): The camera feed occu
+pies the
+ []
+
+
+Overfull \hbox (12.55583pt too wide) in paragraph at lines 23--24
+\OT1/cmtt/m/n/12 visual center with aspect-ratio preservation and clean translu
+cent live
+ []
+
+
+Overfull \hbox (0.20583pt too wide) in paragraph at lines 24--25
+[]\OT1/cmtt/m/n/12 Strict Visual Hierarchy: Structured vertically: DETECTED SIG
+N (52px
+ []
+
+
+Overfull \hbox (25.71425pt too wide) in paragraph at lines 24--25
+\OT1/cmtt/m/n/12 tile + 0.8s hold bar) $[][]\OMS/cmsy/m/n/12 !$ \OT1/cmtt/m/n/1
+2 CURRENT WORD (26px text + 3 autocomplete chips)
+ []
+
+
+Overfull \hbox (18.73083pt too wide) in paragraph at lines 25--26
+[]\OT1/cmtt/m/n/12 Accessible 44--52px Touch Targets: All interactive buttons a
+re enlarged
+ []
+
+
+Overfull \hbox (24.90584pt too wide) in paragraph at lines 26--27
+[]\OT1/cmtt/m/n/12 Progressive Disclosure Drawer: The conversation timeline and
+ diagnostics
+ []
+
+
+Overfull \hbox (24.90584pt too wide) in paragraph at lines 26--27
+\OT1/cmtt/m/n/12 are housed in a collapsible bottom drawer, maximizing camera s
+pace during
+ []
+
+
+Overfull \hbox (5.68364pt too wide) in paragraph at lines 29--29
+[]\OT1/cmr/bx/n/17.28 Quantitative Eval-u-a-tion and La-tency Bench-marks 
+ []
+
+
+Overfull \hbox (20.23116pt too wide) in paragraph at lines 30--31
+\OT1/cmtt/m/n/12 The complete system was evaluated across end-to-end execution 
+latency, memory
+ []
+
+
+Overfull \hbox (92.09924pt too wide) in paragraph at lines 57--73
+ [][] 
+ []
+
+[19] [20]
+Overfull \hbox (14.05615pt too wide) in paragraph at lines 76--77
+\OT1/cmtt/m/n/12 To enable seamless deployment on Windows laptops without requi
+ring Python or
+ []
+
+
+Overfull \hbox (26.40616pt too wide) in paragraph at lines 76--77
+\OT1/cmtt/m/n/12 CUDA installations, the application is packaged into a standal
+one distribution
+ []
+
+
+Overfull \hbox (72.34818pt too wide) detected at line 79
+[][][][]
+ []
+
+
+Overfull \hbox (38.75616pt too wide) in paragraph at lines 79--81
+\OT1/cmtt/m/n/12 The resulting bundle packages the 556 KB ONNX binary, offline 
+Piper voice model,
+ []
+
+
+Overfull \hbox (7.88115pt too wide) in paragraph at lines 83--84
+\OT1/cmtt/m/n/12 SignSpeak Universal demonstrates that high-performance assisti
+ve technology
+ []
+
+
+Overfull \hbox (51.10617pt too wide) in paragraph at lines 83--84
+\OT1/cmtt/m/n/12 can be achieved on consumer laptop hardware at zero operationa
+l cost. By coupling
+ []
+
+
+Overfull \hbox (1.70615pt too wide) in paragraph at lines 83--84
+\OT1/cmtt/m/n/12 126-dimensional spatial coordinate normalization with a Deep R
+esidual MLP,
+ []
+
+
+Overfull \hbox (38.75616pt too wide) in paragraph at lines 83--84
+\OT1/cmtt/m/n/12 asynchronous multi-threading, an ergonomic dwell stabilizer, a
+nd a bidirectional
+ []
+
+
+Overfull \hbox (1.70615pt too wide) in paragraph at lines 83--84
+\OT1/cmtt/m/n/12 Whisper conversational loop, this project delivers a practical
+, dignifying
+ []
+
+)
+Overfull \hbox (39.88951pt too wide) in paragraph at lines 85--50
+[]\OT1/cmtt/m/n/12 Future work includes porting the ONNX inference engine to We
+bAssembly (Wasm)
+ []
+
+
+Overfull \hbox (1.70615pt too wide) in paragraph at lines 85--50
+\OT1/cmtt/m/n/12 for browser execution, developing an Android/iOS mobile compan
+ion app, and
+ []
+
+
+Overfull \hbox (14.05615pt too wide) in paragraph at lines 85--50
+\OT1/cmtt/m/n/12 broadcasting synthesized speech directly to smart hearing aids
+ via Bluetooth
+ []
+
+[21] (bibliography.tex
+Underfull \hbox (badness 10000) in paragraph at lines 4--7
+[]\OT1/cmtt/m/n/12 G. Casiez, N. Roussel, and D. Vogel,  ``1\TS1/cmtt/m/n/12 � 
+\OT1/cmtt/m/n/12 filter: A simple
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4--7
+\OT1/cmtt/m/it/12 of the SIGCHI Conference on Human Factors in Computing System
+s (CHI
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--12
+[]\OT1/cmtt/m/n/12 C. Lugaresi, J. Tang, H. Nash, C. McClanahan, E. Uboweja, M.
+ Hays,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--12
+\OT1/cmtt/m/n/12 F. Zhang, C.-L. Chang, M. G. Yong, J. Lee, et al.,  ``MediaPip
+e:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--12
+\OT1/cmtt/m/n/12 A framework for building perception pipelines,''  \OT1/cmtt/m/
+it/12 arXiv preprint
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 14--17
+[]\OT1/cmtt/m/n/12 D. Li, C. Rodriguez, X. Yu, and H. Li,  ``Word-level deep si
+gn
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 14--17
+\OT1/cmtt/m/n/12 language recognition from video: A new large-scale dataset and
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 14--17
+\OT1/cmtt/m/n/12 methods comparison,''  in \OT1/cmtt/m/it/12 Proceedings of the
+ IEEE/CVF Winter
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 14--17
+\OT1/cmtt/m/it/12 Conference on Applications of Computer Vision (WACV '20)\OT1/
+cmtt/m/n/12 , pp.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--22
+[]\OT1/cmtt/m/n/12 A. Sridhar, R. G. Ganesan, P. Kumar, and M. Khapra,  ``INCLU
+DE: A
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--22
+\OT1/cmtt/m/n/12 large scale dataset for Indian Sign Language recognition,''  i
+n
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--22
+\OT1/cmtt/m/it/12 Proceedings of the 28th ACM International Conference on Multi
+media
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 24--27
+\OT1/cmtt/m/it/12 the AAAI Conference on Artificial Intelligence (AAAI '18)\OT1
+/cmtt/m/n/12 , vol. 32,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--32
+[]\OT1/cmtt/m/n/12 K. He, X. Zhang, S. Ren, and J. Sun,  ``Deep residual learni
+ng for
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--32
+\OT1/cmtt/m/n/12 image recognition,''  in \OT1/cmtt/m/it/12 Proceedings of the 
+IEEE Conference on
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--32
+\OT1/cmtt/m/it/12 Computer Vision and Pattern Recognition (CVPR '16)\OT1/cmtt/m
+/n/12 , pp. 770--778,
+ []
+
+[22
+
+
+
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 34--37
+[]\OT1/cmtt/m/n/12 S. Elfwing, E. Uchibe, and K. Doya,  ``Sigmoid-weighted line
+ar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 34--37
+\OT1/cmtt/m/n/12 units for neural network function approximation in reinforceme
+nt
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 39--42
+[]\OT1/cmtt/m/n/12 R. M^^?uller, S. Kornblith, and G. E. Hinton,  ``When does l
+abel
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 39--42
+\OT1/cmtt/m/n/12 smoothing help?''  in \OT1/cmtt/m/it/12 Advances in Neural Inf
+ormation Processing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--47
+[]\OT1/cmtt/m/n/12 I. Loshchilov and F. Hutter,  ``Decoupled weight decay
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--47
+\OT1/cmtt/m/n/12 regularization,''  in \OT1/cmtt/m/it/12 International Conferen
+ce on Learning
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 49--52
+[]\OT1/cmtt/m/n/12 A. Radford, J. W. Kim, T. Xu, G. Brockman, C. McLeavey, and
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 49--52
+\OT1/cmtt/m/n/12 I. Sutskever,  ``Robust speech recognition via large-scale wea
+k
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 49--52
+\OT1/cmtt/m/n/12 supervision,''  in \OT1/cmtt/m/it/12 International Conference 
+on Machine Learning
+ []
+
+) [23] (final_disseratation.aux (final_disser_prelude.aux) (chapter_1.aux)
+(chapter_2.aux) (chapter_3.aux) (chapter_4.aux) (chapter_5.aux) (chapter_6.aux)
+)
+ ***********
+LaTeX2e <2026-06-01>
+L3 programming layer <2026-06-18>
+ ***********
+Package rerunfilecheck Info: File `final_disseratation.out' has not changed.
+(rerunfilecheck)             Checksum: 9C8C7B25273176E04A1B9ADE1CD759B4;13768.
+ )
+(\end occurred inside a group at level 1)
+
+### simple group (level 1) entered at line 80 ({)
+### bottom level 
+Here is how much of TeX's memory you used:
+ 10198 strings out of 467510
+ 163927 string characters out of 5402926
+ 594392 words of memory out of 5000000
+ 39138 multiletter control sequences out of 15000+600000
+ 639469 words of font info for 82 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 74i,12n,79p,813b,795s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\Khaja Naseeruddin\AppData\Local\MiKTeX\fonts/pk/ljfo
+ur/jknappen/ec/dpi600\tctt1200.pk> <C:\Users\Khaja Naseeruddin\AppData\Local\Mi
+KTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcbx1200.pk> <C:\Users\Khaja Naseeruddi
+n\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk><C:/Users
+/Khaja Naseeruddin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
+/cmbx12.pfb><C:/Users/Khaja Naseeruddin/AppData/Local/Programs/MiKTeX/fonts/typ
+e1/public/amsfonts/cm/cmex10.pfb><C:/Users/Khaja Naseeruddin/AppData/Local/Prog
+rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmitt10.pfb><C:/Users/Khaja Naseerud
+din/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:
+/Users/Khaja Naseeruddin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmmi8.pfb><C:/Users/Khaja Naseeruddin/AppData/Local/Programs/MiKTeX/font
+s/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/Khaja Naseeruddin/AppData/Local/
+Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/Khaja Naseer
+uddin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:
+/Users/Khaja Naseeruddin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmsy10.pfb><C:/Users/Khaja Naseeruddin/AppData/Local/Programs/MiKTeX/fon
+ts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Khaja Naseeruddin/AppData/Local
+/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/Khaja Nase
+eruddin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb
+>
+Output written on final_disseratation.pdf (35 pages, 380523 bytes).
+PDF statistics:
+ 544 PDF objects out of 1000 (max. 8388607)
+ 130 named destinations out of 1000 (max. 500000)
+ 379 words of extra memory for PDF output out of 10000 (max. 10000000)
+

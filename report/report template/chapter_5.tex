@@ -1,0 +1,59 @@
+\chapter{Phase 5 \& 6: Multi-Threading, Dwell Stabilizer and AI Linguistic Bridge}
+\label{Chapter 5}
+
+\section{Five-Thread Asynchronous Decoupled Engine Architecture}
+To guarantee that compute-intensive operations (such as audio speech synthesis, neural translation, grammar polishing, and audio transcription) never degrade the 30 FPS camera feed or cause user interface freezing, **SignSpeak Universal** is architected across **five isolated asynchronous threads** communicating via thread-safe Qt signals and locks:
+
+\begin{enumerate}
+    \item \textbf{\texttt{CaptureThread}:} Executes DirectShow video capture at 30 FPS, performs MediaPipe 3D landmark tracking, and extracts normalized 126-dimensional geometric coordinate vectors.
+    \item \textbf{\texttt{InferenceThread}:} Performs sub-2ms ONNX letter inference on incoming vectors, passing predictions through a 4-frame consecutive temporal confirmation filter to prevent visual flickering during hand transitions.
+    \item \textbf{\texttt{SignSpeakApp} (Main UI Thread):} Manages the interactive Qt6 workspace, the 0.8s dwell hold progress calculation, autocomplete chip rendering, and keyboard event dispatching.
+    \item \textbf{\texttt{TTSThread}:} Manages non-blocking local Piper neural voice synthesis (\texttt{en\_US-lessac-medium.onnx}, $<12\text{ ms}$) and regional acoustic voice playback via Windows MCI APIs.
+    \item \textbf{\texttt{SpeechToTextThread}:} Streams background microphone audio at 16kHz mono via \texttt{sounddevice}, packaging PCM audio frames for Whisper AI transcription.
+\end{enumerate}
+
+\section{The 0.8s Steady-Hold Dwell Stabilizer with Hysteresis Lock}
+A critical usability flaw in traditional sign recognition software is the requirement for manual mouse clicking or constant spacebar tapping to capture each letter, which causes rapid physical fatigue.
+
+We engineered a **Hands-Free Steady-Hold Dwell Stabilizer**:
+\begin{itemize}
+    \item \textbf{0.80s Hold Threshold:} When a user holds a recognizable sign steady with $\ge 50\%$ confidence, an on-screen green progress bar fills smoothly over **0.80 seconds**.
+    \item \textbf{Audio Feedback Confirmation:} When the dwell reaches 100\%, the letter is automatically committed into the active word builder, accompanied by a soft 35ms audio tick (1250 Hz).
+    \item \textbf{Anti-Duplication Hysteresis Lock:} Following capture, an internal state lock prevents the letter from repeating until the user either changes their handshape or lowers their hand, completely eliminating unintentional letter stutter.
+\end{itemize}
+
+\section{One-Euro Signal Filtering}
+To eliminate high-frequency coordinate jitter caused by webcam sensor noise, we implemented an adaptive **One-Euro Filter** on all 21 keypoints:
+\begin{equation}
+\alpha = \frac{1}{1 + \frac{\tau}{\Delta t}}, \quad \tau = \frac{1}{2\pi f_c}, \quad f_c = f_{c, \min} + \beta |\dot{x}|
+\end{equation}
+During slow, stationary gestures, the cutoff frequency $f_c$ drops to $1.0\text{ Hz}$, eliminating jitter completely. During rapid hand transitions, $f_c$ scales up dynamically, ensuring zero perceptible lag.
+
+\section{Ergonomic Keyboard Mechanics}
+\begin{itemize}
+    \item \textbf{Spacebar Word Commit:} Commits the formed word into the spoken sentence line and resets the word builder.
+    \item \textbf{Smart Backspace:} Deletes the last character; if the active word builder is empty, it intelligently pulls the previous word back from the sentence line for editing.
+    \item \textbf{Escape Buffer Reset:} Instantly clears both word and sentence buffers.
+\end{itemize}
+
+\section{Gboard-Style AI Autocomplete Strip}
+To accelerate communication, we built a **Gboard-Style AI Autocomplete Strip** displaying three clickable suggestion chips (e.g., \texttt{[ 1  HELLO ]}, \texttt{[ 2  HELP ]}, \texttt{[ 3  HEAR ]}).
+\begin{itemize}
+    \item \textbf{Dual-Tier Prediction:} Integrates an instant ($<0.1\text{ ms}$) local offline frequency dictionary with an asynchronous background Groq Cloud LLM worker that predicts words based on active prefix and sentence context.
+    \item \textbf{One-Touch Hotkeys (\texttt{1}, \texttt{2}, \texttt{3}):} Pressing standard number keys or numeric keypad keys instantly autocompletes and commits the word.
+\end{itemize}
+
+\section{1-Click AI Sign Grammar Polish and Non-Destructive Revert}
+To bridge the gap between telegraphic sign glosses (e.g., \textit{``ME WATER DRINK WANT''}) and natural conversational speech:
+\begin{itemize}
+    \item Pressing \textbf{\texttt{Ctrl + P}} (or clicking \texttt{Polish}) automatically commits any active word and sends the full sentence to our background AI worker, converting the gloss into a fluent sentence (\textit{``I want to drink water.''}) in $\sim 150\text{ ms}$.
+    \item \textbf{\texttt{Ctrl + Z} Revert:} Non-destructively restores the exact original raw signed glosses at any time.
+    \item \textbf{Auto-Polish on Speak:} Automatically converts sign syntax right before voice synthesis when enabled.
+\end{itemize}
+
+\section{Multilingual Indian Regional Speech Engine (8 Languages)}
+To empower signers across India, we built a multilingual regional speech engine supporting **8 languages**: English, Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, and Gujarati.
+\begin{itemize}
+    \item \textbf{1-Click Translate (\texttt{Ctrl + T}):} Translates the signed sentence into the selected Indian script with instant visual and audio feedback.
+    \item \textbf{Dynamic Regional Speak (\texttt{Enter}):} The Speak button dynamically updates (e.g., \texttt{[ 🔊 Speak in Hindi  Enter ]}) and automatically translates and vocalizes in the target native voice with one click.
+\end{itemize}

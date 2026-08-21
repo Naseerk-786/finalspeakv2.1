@@ -1,0 +1,174 @@
+%============================================================================
+% prelude.tex  -  Title, Certificate, Declaration, Acknowledgment, Abstract
+%============================================================================
+\clearpage
+\pagenumbering{roman}
+
+%--------------------------------------------------------------------%
+% TITLE PAGE
+%--------------------------------------------------------------------%
+\title{\LARGE SignSpeak Universal: A Real-Time Assistive Communication Cockpit for Indian Sign Language}
+\author{Khaja Naseeruddin (Roll No.~24MT7021) \\ Khan Amaan (Roll No.~24MT7022)}
+\department{Computer Science and Engineering}
+\setguide{Dr. Pallavi Vasant Sapkale}
+\date{August 2026}
+
+\hypersetup{pageanchor=false}
+\maketitle
+\hypersetup{pageanchor=true}
+
+%--------------------------------------------------------------------%
+% CERTIFICATE PAGE
+%--------------------------------------------------------------------%
+\clearpage
+\begin{center}
+\includegraphics[width=7cm]{logo.pdf}\\[4pt]
+{\large\textbf{Ramrao Adik Institute of Technology}}\\[2pt]
+{\small (Under the ambit of D.~Y.~Patil Deemed to be University)}\\[2pt]
+{\small Dr. D.~Y.~Patil Vidyanagar, Sector~7, Nerul, Navi Mumbai~400~706.}\\[10pt]
+{\LARGE\textbf{Certificate}}
+\end{center}
+\vspace{4pt}
+\begin{center}
+{\large This is to certify that the Mini Project Mock 2 titled}\\[6pt]
+\textbf{\lq\lq SignSpeak Universal: A Real-Time Assistive Communication Cockpit for Indian Sign Language\rq\rq}\\[6pt]
+{\large is a bonafide work done by}\\[6pt]
+\textbf{Khaja Naseeruddin (Roll No.~24MT7021)\\[2pt]
+Khan Amaan (Roll No.~24MT7022)}\\[6pt]
+{\large and is submitted in partial fulfillment of the requirements for the degree evaluation of}\\[6pt]
+\textbf{Mini Project Mock 2}\\[2pt]
+{\large to the}\\[2pt]
+\textbf{D.~Y.~Patil Deemed to be University.}\\[14pt]
+\begin{tabular}{ccc}
+  \rule{4.0cm}{0.4pt} & \hspace{0.5in} & \rule{4.0cm}{0.4pt} \\[2pt]
+  Guide / Supervisor   &                & Co-Guide \\[14pt]
+  \rule{4.0cm}{0.4pt} & \hspace{0.5in}\rule{4.0cm}{0.4pt} & \hspace{0.4in}\rule{4.0cm}{0.4pt} \\[2pt]
+  Project Coordinator & Head of Department & Principal \\
+\end{tabular}
+\end{center}
+
+%--------------------------------------------------------------------%
+% PROJECT APPROVAL SHEET
+%--------------------------------------------------------------------%
+\clearpage
+\begin{center}
+{\Large\textbf{Mini Project Mock 2 Approval Sheet}}\\[8pt]
+\end{center}
+This is to certify that the Mini Project Mock 2 entitled \textbf{``SignSpeak Universal: A Real-Time Assistive Communication Cockpit for Indian Sign Language''} is a bonafide work done by \textbf{Khaja Naseeruddin (Roll No.~24MT7021)} and \textbf{Khan Amaan (Roll No.~24MT7022)} under the supervision of \textbf{Dr.~Pallavi Vasant Sapkale.} This project has been approved for the evaluation of Mini Project Mock 2, D.~Y.~Patil Deemed to be University.
+
+\vspace{0.4in}
+\begin{table}[h]
+\begin{tabular}{llll}
+ &  & \textbf{Examiners:} & \\[10pt]
+ & \hspace{1.2in} & \multicolumn{2}{l}{1:\enspace\rule{5cm}{0.4pt}} \\[8pt]
+ &  & \multicolumn{2}{l}{2:\enspace\rule{5cm}{0.4pt}} \\[10pt]
+ &  & \textbf{Supervisor / Guide:} & \\[8pt]
+ &  & \multicolumn{2}{l}{1:\enspace\rule{5cm}{0.4pt}} \\[8pt]
+ &  & \textbf{Principal:} & \\[8pt]
+ &  & \rule{4.5cm}{0.4pt} & \\[14pt]
+Date\,:\enspace\rule{5cm}{0.4pt} &  & & \\[4pt]
+Place\,:\enspace\rule{5cm}{0.4pt} &  & &
+\end{tabular}
+\end{table}
+
+%--------------------------------------------------------------------%
+% DECLARATION
+%--------------------------------------------------------------------%
+\newpage
+\begin{center}
+{\Large\textbf{Declaration}}\\[10pt]
+\end{center}
+We declare that this written submission represents our ideas in our own words and, where others' ideas or words have been included, we have adequately cited and referenced the original sources. We also declare that we have adhered to all principles of academic honesty and integrity and have not misrepresented, fabricated, or falsified any idea, data, fact, or source in our submission. We understand that any violation of the above will be cause for disciplinary action by the institute and can also evoke penal action from the sources which have thus not been properly cited or from whom proper permission has not been taken when needed.
+
+\vspace{0.4in}
+\begin{table}[h]
+\centering
+\begin{tabular}{llll}
+   &  & \rule{7cm}{0.4pt} & \\[8pt]
+   &  & \multicolumn{2}{l}{\rule{7cm}{0.4pt}} \\[8pt]
+   &  & \textbf{Khaja Naseeruddin (24MT7021)} & \\[2pt]
+   &  & \textbf{Khan Amaan (24MT7022)} & \\[14pt]
+Date\,:\enspace\rule{5cm}{0.4pt} &  & &
+\end{tabular}
+\end{table}
+
+%--------------------------------------------------------------------%
+% ACKNOWLEDGMENT
+%--------------------------------------------------------------------%
+\newpage
+\begin{center}
+{\Large\textbf{Acknowledgment}}\\[10pt]
+\end{center}
+We express our deepest and most sincere gratitude to our project guide, \textbf{Dr.~Pallavi Vasant Sapkale}, whose insightful suggestions, continuous encouragement, and high academic standards guided us through every phase of this project. Her emphasis on building practical, human-centric assistive technology rather than purely theoretical models challenged us to address latency, dialect collisions, and user fatigue head-on.
+
+We also extend our heartfelt appreciation to the Principal, Head of the Department, and the faculty members of the Department of Computer Science and Engineering for providing the laboratory infrastructure and computational environment necessary to conduct our experiments. We thank the open-source machine learning and accessibility communities whose foundational tools made this research possible. Finally, we thank our families and peers for their continuous moral support throughout this journey.
+
+%--------------------------------------------------------------------%
+% ABSTRACT
+%--------------------------------------------------------------------%
+\begin{abstract}
+Over 18 million individuals in India live with severe hearing and speech impairments, relying on Indian Sign Language (ISL) as their primary means of expression. Despite rapid advances in machine learning, most existing automated sign language recognition systems remain confined to academic papers due to three compounding flaws: high latency, closed-dictionary constraints, and a one-way communication architecture that assumes only the Deaf individual needs to communicate.
+
+This report documents our engineering journey in conceiving, prototyping, diagnosing, pivoting, and deploying \textbf{SignSpeak Universal}---a real-time, camera-first assistive communication workspace. We begin by detailing our initial \textbf{Low-Fidelity Baseline Prototype}, which attempted to recognize 364 dynamic word-level glosses using Spatial-Temporal Graph Convolutional Networks (ST-GCN) over 30-frame sliding windows. We analyze why this baseline suffered from severe dialect collisions when combining international datasets (resulting in a dismal 42.8\% accuracy), unbearable temporal buffering lag ($>500\text{ ms}$), and single-threaded GUI freezing.
+
+We then present our \textbf{Strategic Architectural Pivot} to a single-frame 35-class ISL/ASL fingerspelling and digit paradigm (A--Z, 1--9) with a 126-dimensional scale- and translation-invariant landmark geometry. To eliminate user variation, we built a multi-core harvesting pipeline that filtered 129,773 raw images into 107,517 clean 3D hand vectors, paired with a custom \textbf{Sign Recorder Studio} and 3D geometric augmentation pipeline (246,104 samples). Our Deep Residual MLP achieves \textbf{99.84\%--99.96\% accuracy} and is exported into an ultra-compact \textbf{556 KB ONNX runtime binary} executing in \textbf{$<1.8\text{ ms}$}.
+
+Finally, we trace how this engine evolved into a complete \textbf{Two-Way Assistive Communication Workspace} running across five asynchronous threads. The system features a continuous 0.8s steady-hold dwell stabilizer with hysteresis locking, a Gboard-style AI predictive autocomplete bar, 1-click AI sign grammar polishing, non-destructive syntax reversion, an 8-language regional Indian voice engine (Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, Gujarati, English), and a reverse speech-to-sign loop powered by Whisper AI. We conclude by detailing our standalone compilation strategy and providing comprehensive empirical benchmarks verifying real-time performance on standard consumer laptops at zero cloud cost.\\[6pt]
+\textbf{Keywords:} Indian Sign Language, Assistive Technology, Deep Residual MLP, ONNX Runtime, MediaPipe, Dwell Stabilizer, Multilingual Speech Synthesis, Whisper STT, Two-Way Conversational Loop.
+\end{abstract}
+
+%--------------------------------------------------------------------%
+% CONTENTS, TABLES, FIGURES
+%--------------------------------------------------------------------%
+\tableofcontents
+\listoffigures
+\listoftables
+
+%--------------------------------------------------------------------%
+% ABBREVIATIONS
+%--------------------------------------------------------------------%
+\clearpage
+\begin{center}
+{\Large\textbf{List of Abbreviations}}\\[10pt]
+\end{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Abbreviation} & & \textbf{Full Form} \\
+\midrule
+ADF      & & Augmented Dickey-Fuller \\
+AdamW    & & Adaptive Moment Estimation with Decoupled Weight Decay \\
+ASL      & & American Sign Language \\
+BLE      & & Bluetooth Low Energy \\
+CUDA     & & Compute Unified Device Architecture \\
+FP32     & & 32-Bit Single-Precision Floating Point \\
+GUI      & & Graphical User Interface \\
+IQR      & & Interquartile Range \\
+ISL      & & Indian Sign Language \\
+LLM      & & Large Language Model \\
+MCI      & & Media Control Interface (Windows Multimedia API) \\
+MCP      & & Metacarpophalangeal Joint \\
+MLP      & & Multi-Layer Perceptron \\
+MoRTH    & & Ministry of Road Transport and Highways \\
+ONNX     & & Open Neural Network Exchange \\
+PCM      & & Pulse Code Modulation \\
+QC       & & Quality Control \\
+RMS      & & Root Mean Square \\
+RNN      & & Recurrent Neural Network \\
+SiLU     & & Sigmoid Linear Unit \\
+SOV      & & Subject-Object-Verb Word Order \\
+ST-GCN   & & Spatial-Temporal Graph Convolutional Network \\
+STT      & & Speech-to-Text Transcription \\
+TSOV     & & Time-Subject-Object-Verb Word Order \\
+TTS      & & Text-to-Speech Synthesis \\
+UI/UX    & & User Interface / User Experience \\
+VRAM     & & Video Random Access Memory \\
+WLASL    & & World-Level American Sign Language Dataset \\
+\bottomrule
+\end{tabular}
+
+%--------------------------------------------------------------------%
+% Reset Page Numbering to Arabic
+%--------------------------------------------------------------------%
+\clearpage
+\pagenumbering{arabic}
+

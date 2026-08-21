@@ -1,0 +1,60 @@
+\chapter{Phase 2: The Strategic Architectural Pivot and Coordinate Geometry}
+\label{Chapter 3}
+
+\section{The Core Paradigm Shift: From Word Glosses to Fingerspelling}
+Confronted with the insurmountable latency and closed-vocabulary bottlenecks of dynamic word-level modeling, we executed a foundational architectural pivot:
+
+\begin{quote}
+\textit{Rather than attempting to train a sequence classifier on a closed dictionary of 364 complex dynamic word gestures, we pivoted to a high-speed, single-frame 35-class fingerspelling and digit recognition engine (representing English alphabet characters `A' through `Z' and digits `1' through `9').}
+\end{quote}
+
+This strategic shift resolved all three fundamental failure modes of the baseline:
+\begin{enumerate}
+    \item \textbf{Latency Vanished ($<1.8\text{ ms}$):} Evaluating individual static frames completely eliminated the 30-frame temporal buffer, slashing inference latency from over 500ms down to sub-2 milliseconds.
+    \item \textbf{Infinite Vocabulary Unlocked:} Fingerspelling allows users to spell any word, proper noun, medication name, or regional location character-by-character, which a downstream software layer can assemble into full sentences.
+    \item \textbf{Elimination of Dialect Clashes:} Standard ISL/ASL fingerspelling hand postures exhibit consistent geometric structures, eliminating the dialect ambiguity that collapsed baseline accuracy.
+\end{enumerate}
+
+\section{Mathematical Formulation of 126-Dimensional Invariant Features}
+Raw pixel coordinates $(x_i, y_i, z_i)$ extracted from camera frames vary substantially depending on camera resolution, user hand size, and distance from the lens. To guarantee generalization across diverse webcams and lighting conditions, we designed a two-stage spatial normalization transform.
+
+Let $\mathbf{P}_i = (x_i, y_i, z_i) \in \mathbb{R}^3$ denote the 3D spatial coordinates of the $i$-th hand keypoint for $i \in \{0, 1, \dots, 20\}$, where $\mathbf{P}_0$ represents the wrist landmark.
+
+\subsection{Stage 1: Wrist-Centered Origin Translation}
+To render the representation invariant to the physical location of the hand within the camera viewport, all 21 keypoints are translated relative to the wrist origin:
+\begin{equation}
+\mathbf{P}'_i = \mathbf{P}_i - \mathbf{P}_0 \quad \forall i \in \{0, 1, \dots, 20\}
+\end{equation}
+Under this transformation, the wrist coordinate $\mathbf{P}'_0$ is mapped identically to $(0, 0, 0)$.
+
+\subsection{Stage 2: Hand Span Euclidean Scale Normalization}
+To achieve scale invariance (so that distance from the camera does not alter the geometric vector), we compute the Euclidean distance between the wrist ($\mathbf{P}_0$) and the middle finger Metacarpophalangeal (MCP) joint ($\mathbf{P}_9$), defining the characteristic hand scale $S$:
+\begin{equation}
+S = \|\mathbf{P}_9 - \mathbf{P}_0\|_2 + \epsilon
+\end{equation}
+where $\epsilon = 10^{-6}$ is a regularization constant preventing division by zero. Each translated point is then scaled:
+\begin{equation}
+\mathbf{P}_{\text{norm}, i} = \frac{\mathbf{P}'_i}{S} \quad \forall i \in \{0, 1, \dots, 20\}
+\end{equation}
+
+Concatenating the 21 normalized 3D points for a single hand yields a 63-dimensional feature vector:
+\begin{equation}
+\mathbf{X}_{\text{hand}} = \left[ \mathbf{P}_{\text{norm}, 0}^T, \mathbf{P}_{\text{norm}, 1}^T, \dots, \mathbf{P}_{\text{norm}, 20}^T \right]^T \in \mathbb{R}^{63}
+\end{equation}
+
+\section{Active Hand Mirroring for Left/Right Hand Invariance}
+To support both left-handed and right-handed signers seamlessly, the feature extraction pipeline extracts vectors for both Left ($\mathbf{X}_{\text{LH}} \in \mathbb{R}^{63}$) and Right ($\mathbf{X}_{\text{RH}} \in \mathbb{R}^{63}$) hands, forming a combined 126-dimensional feature vector:
+\begin{equation}
+\mathbf{X}_{\text{frame}} = \begin{bmatrix} \mathbf{X}_{\text{LH}} \\ \mathbf{X}_{\text{RH}} \end{bmatrix} \in \mathbb{R}^{126}
+\end{equation}
+
+When only one hand is visible in the frame (the standard case during single-handed fingerspelling), the active hand's 63-dimensional normalized vector is duplicated across both slots:
+\begin{equation}
+\mathbf{X}_{\text{frame}} = \begin{bmatrix} \mathbf{X}_{\text{active}} \\ \mathbf{X}_{\text{active}} \end{bmatrix}
+\end{equation}
+This mathematical symmetry guarantees that the neural network receives an identical feature representation regardless of whether the user signs with their left or right hand.
+
+\section{Multi-Core Dataset Harvesting and Automated QC Filtering}
+To train our classifier on a comprehensive baseline, we developed an automated multi-threaded harvesting pipeline (\texttt{download\_and\_extract\_isl\_letters.py}) that harvested and merged 129,773 raw sign alphabet images across three public repositories: Kaggle ISL, Kaggle ASL, and GitHub ISL.
+
+Because public image datasets contain blurred photos, occluded fingers, and empty backgrounds, we deployed \textbf{12 parallel CPU worker processes} running MediaPipe Hands with an automated quality threshold ($\ge 0.40$ detection confidence). The pipeline discarded 22,256 defective images, outputting \textbf{107,517 clean, validated 126-dimensional hand landmark vectors} stored in structured JSON format.

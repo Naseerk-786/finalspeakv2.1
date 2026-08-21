@@ -1,0 +1,58 @@
+%=====================================================================
+% SignSpeak Universal Project Report - Master Document
+%=====================================================================
+\documentclass{final_raitdisser}
+
+% ── Core Packages ──────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+
+% ── Spacing ────────────────────────────────────────────────────────
+\renewcommand{\baselinestretch}{1.5}  % 1.5 line spacing throughout
+
+% ── Layout & Float Control ────────────────────────────────────────
+\usepackage[section]{placeins}  % keep figures within their sections
+\raggedbottom                   % prevent LaTeX stretching white space
+
+% ── Headers & Footers ─────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}                      % clear all header/footer fields
+\fancyfoot[C]{\thepage}         % centred page number
+\renewcommand{\headrulewidth}{0pt}
+
+% ── Hyperlinks & PDF Bookmarks (load last) ─────────────────────────
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  pdftitle  = {SignSpeak Universal: A Real-Time Assistive Communication Cockpit for Indian Sign Language},
+  pdfauthor = {Khaja Naseeruddin M, Khan Amaan},
+}
+
+%=======================================================================
+% Document Body
+%=======================================================================
+\begin{document}
+
+\bibliographystyle{plain}
+
+% Prelude (Title, Certificate, Declaration, Acknowledgments, Abstract,
+%          Abbreviations, Table of Contents)
+\include{final_disser_prelude}
+
+% Chapters
+\include{chapter_1} % Chapter 1: Introduction and Problem Formulation
+\include{chapter_2} % Chapter 2: Phase 1 - Low-Fidelity Prototype & Baseline Failure Analysis
+\include{chapter_3} % Chapter 3: Phase 2 - Strategic Architectural Pivot & Coordinate Geometry
+\include{chapter_4} % Chapter 4: Phase 3 & 4 - Deep Residual MLP, Studio & 3D Augmentations
+\include{chapter_5} % Chapter 5: Phase 5 & 6 - Multi-Threading, Dwell Stabilizer & AI Linguistic Bridge
+\include{chapter_6} % Chapter 6: Phase 7 & 8 - Two-Way Loop, UI/UX Overhaul, Evaluation & Standalone Deployment
+
+% References
+\clearpage
+\addcontentsline{toc}{chapter}{References}
+\input{bibliography}
+
+\end{document}
+
