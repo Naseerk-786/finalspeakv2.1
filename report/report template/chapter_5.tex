@@ -2,7 +2,7 @@
 \label{Chapter 5}
 
 \section{Five-Thread Asynchronous Decoupled Engine Architecture}
-To ensure that compute-heavy tasks (neural voice synthesis, translation, grammar polishing, and audio transcription) never cause the 30 FPS camera feed to drop frames, **SignSpeak Universal** runs across **five isolated parallel threads** (diagrammed in Figure~\ref{fig:concurrency_threads}):
+To ensure that compute-heavy tasks (neural voice synthesis, translation, grammar polishing, and audio transcription) never cause the 30 FPS camera feed to drop frames, \textbf{SignSpeak Universal} runs across \textbf{five isolated parallel threads} (diagrammed in Figure~\ref{fig:concurrency_threads}):
 
 \begin{figure}[htbp]
     \centering
@@ -29,9 +29,9 @@ To ensure that compute-heavy tasks (neural voice synthesis, translation, grammar
 \section{The 0.8s Steady-Hold Dwell Stabilizer with Hysteresis Lock}
 A major ergonomic flaw in conventional sign recognition tools is the requirement for manual mouse clicks or continuous spacebar tapping to capture each letter. This causes severe physical fatigue.
 
-We engineered a **Hands-Free Steady-Hold Dwell Stabilizer** (modeled as a Finite State Machine in Figure~\ref{fig:dwell_fsm}):
+We engineered a \textbf{Hands-Free Steady-Hold Dwell Stabilizer} (modeled as a Finite State Machine in Figure~\ref{fig:dwell_fsm}):
 \begin{itemize}
-    \item \textbf{0.80s Hold Threshold:} When a user holds a recognizable sign steady with $\ge 50\%$ confidence, an on-screen green progress bar fills smoothly over **0.80 seconds**.
+    \item \textbf{0.80s Hold Threshold:} When a user holds a recognizable sign steady with $\ge 50\%$ confidence, an on-screen green progress bar fills smoothly over \textbf{0.80 seconds}.
     \item \textbf{Audio Feedback Confirmation:} When the dwell reaches 100\%, the letter is automatically committed into the active word builder, accompanied by a soft 35ms audio tick (1250 Hz).
     \item \textbf{Anti-Duplication Hysteresis Lock:} Following capture, an internal state lock prevents the letter from repeating until the user either changes their handshape or lowers their hand, completely eliminating unintentional letter stutter.
 \end{itemize}
@@ -44,7 +44,7 @@ We engineered a **Hands-Free Steady-Hold Dwell Stabilizer** (modeled as a Finite
 \end{figure}
 
 \section{One-Euro Signal Filtering}
-To eliminate high-frequency coordinate jitter caused by webcam sensor noise, we implemented an adaptive **One-Euro Filter** on all 21 keypoints:
+To eliminate high-frequency coordinate jitter caused by webcam sensor noise, we implemented an adaptive \textbf{One-Euro Filter} on all 21 keypoints:
 \begin{equation}
 \alpha = \frac{1}{1 + \frac{\tau}{\Delta t}}, \quad \tau = \frac{1}{2\pi f_c}, \quad f_c = f_{c, \min} + \beta |\dot{x}|
 \end{equation}
@@ -58,7 +58,7 @@ During slow, stationary gestures, the cutoff frequency $f_c$ drops to $1.0\text{
 \end{itemize}
 
 \section{Gboard-Style AI Autocomplete Strip}
-To accelerate communication, we built a **Gboard-Style AI Autocomplete Strip** displaying three clickable suggestion chips (e.g., \texttt{[ 1  HELLO ]}, \texttt{[ 2  HELP ]}, \texttt{[ 3  HEAR ]}).
+To accelerate communication, we built a \textbf{Gboard-Style AI Autocomplete Strip} displaying three clickable suggestion chips (e.g., \texttt{[ 1  HELLO ]}, \texttt{[ 2  HELP ]}, \texttt{[ 3  HEAR ]}).
 \begin{itemize}
     \item \textbf{Dual-Tier Prediction:} Integrates an instant ($<0.1\text{ ms}$) local offline frequency dictionary with an asynchronous background Groq Cloud LLM worker that predicts words based on active prefix and sentence context.
     \item \textbf{One-Touch Hotkeys (\texttt{1}, \texttt{2}, \texttt{3}):} Pressing standard number keys or numeric keypad keys instantly autocompletes and commits the word.
@@ -80,7 +80,7 @@ To bridge the gap between telegraphic sign glosses (e.g., \textit{``ME WATER DRI
 \end{figure}
 
 \section{Multilingual Indian Regional Speech Engine (8 Languages)}
-To empower signers across India, we built a multilingual regional speech engine (diagrammed in Figure~\ref{fig:multilingual_pipeline}) supporting **8 languages**: English, Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, and Gujarati.
+To empower signers across India, we built a multilingual regional speech engine (diagrammed in Figure~\ref{fig:multilingual_pipeline}) supporting \textbf{8 languages}: English, Hindi, Telugu, Tamil, Marathi, Kannada, Bengali, and Gujarati.
 \begin{itemize}
     \item \textbf{1-Click Translate (\texttt{Ctrl + T}):} Translates the signed sentence into the selected Indian script with instant visual and audio feedback.
     \item \textbf{Dynamic Regional Speak (\texttt{Enter}):} The Speak button dynamically updates (e.g., \texttt{[ 🔊 Speak in Hindi  Enter ]}) and automatically translates and vocalizes in the target native voice with one click.

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.10)  21 AUG 2026 10:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.10)  21 AUG 2026 10:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -759,9 +759,9 @@ era feed to drop
  []
 
 
-Overfull \hbox (26.40616pt too wide) in paragraph at lines 5--6
-\OT1/cmtt/m/n/12 frames, **SignSpeak Universal** runs across **five isolated pa
-rallel threads**
+Overfull \hbox (51.10617pt too wide) in paragraph at lines 5--6
+\OT1/cmtt/m/n/12 frames, SignSpeak Universal runs across five isolated parallel
+ threads (diagrammed
  []
 
 <figures/fig_05_concurrency_threads.png, id=464, 525.6438pt x 268.8444pt>
@@ -842,9 +842,9 @@ ure each letter.
  []
 
 
-Overfull \hbox (9.0145pt too wide) in paragraph at lines 32--33
-[]\OT1/cmtt/m/n/12 We engineered a **Hands-Free Steady-Hold Dwell Stabilizer** 
-(modeled as
+Overfull \hbox (39.88951pt too wide) in paragraph at lines 32--33
+[]\OT1/cmtt/m/n/12 We engineered a Hands-Free Steady-Hold Dwell Stabilizer (mod
+eled as a Finite
  []
 
 
@@ -940,9 +940,9 @@ Overfull \hbox (6.38083pt too wide) in paragraph at lines 57--58
  []
 
 
-Overfull \hbox (26.40616pt too wide) in paragraph at lines 61--62
-\OT1/cmtt/m/n/12 To accelerate communication, we built a **Gboard-Style AI Auto
-complete Strip**
+Overfull \hbox (1.70615pt too wide) in paragraph at lines 61--62
+\OT1/cmtt/m/n/12 To accelerate communication, we built a Gboard-Style AI Autoco
+mplete Strip
  []
 
 
@@ -1019,9 +1019,9 @@ nal speech engine
  []
 
 
-Overfull \hbox (32.58116pt too wide) in paragraph at lines 83--84
-\OT1/cmtt/m/n/12 (diagrammed in Figure []5.4[]) supporting **8 languages**: Eng
-lish, Hindi, Telugu,
+Overfull \hbox (7.88115pt too wide) in paragraph at lines 83--84
+\OT1/cmtt/m/n/12 (diagrammed in Figure []5.4[]) supporting 8 languages: English
+, Hindi, Telugu,
  []
 
 
@@ -1086,9 +1086,9 @@ t apps on a phone.
  []
 
 
-Overfull \hbox (76.93953pt too wide) in paragraph at lines 7--8
-[]\OT1/cmtt/m/n/12 We engineered a **Bidirectional Conversational Loop** (illus
-trated in Figure []6.1[]): 
+Overfull \hbox (52.23952pt too wide) in paragraph at lines 7--8
+[]\OT1/cmtt/m/n/12 We engineered a Bidirectional Conversational Loop (illustrat
+ed in Figure []6.1[]): 
  []
 
 <figures/fig_07_twoway_loop.png, id=506, 545.1567pt x 255.8358pt>
@@ -1260,10 +1260,10 @@ from camera acquisition
  []
 
 
-Overfull \hbox (34.94482pt too wide) in paragraph at lines 55--56
-\OT1/cmtt/m/n/12 to speech playback is **$\OT1/cmr/m/n/12 23\OML/cmm/m/it/12 :\
-OT1/cmr/m/n/12 4[]$\OT1/cmtt/m/n/12 **, well below the 50ms human perception ce
-iling. 
+Overfull \hbox (10.24481pt too wide) in paragraph at lines 55--56
+\OT1/cmtt/m/n/12 to speech playback is $\OT1/cmr/m/n/12 23\OML/cmm/m/it/12 :\OT
+1/cmr/m/n/12 4[]$\OT1/cmtt/m/n/12 , well below the 50ms human perception ceilin
+g. 
  []
 
 
@@ -1517,7 +1517,7 @@ Here is how much of TeX's memory you used:
  39238 multiletter control sequences out of 15000+600000
  638630 words of font info for 79 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 74i,12n,79p,813b,801s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 74i,12n,79p,813b,799s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\Khaja Naseeruddin\AppData\Local\MiKTeX\fonts/pk/ljfo
 ur/jknappen/ec/dpi600\tctt1200.pk> <C:\Users\Khaja Naseeruddin\AppData\Local\Mi
 KTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcbx1200.pk> <C:\Users\Khaja Naseeruddi
@@ -1538,7 +1538,7 @@ ts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Khaja Naseeruddin/AppData/Local
 /Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/Khaja Nase
 eruddin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb
 >
-Output written on final_disseratation.pdf (43 pages, 3391012 bytes).
+Output written on final_disseratation.pdf (43 pages, 3390539 bytes).
 PDF statistics:
  660 PDF objects out of 1000 (max. 8388607)
  148 named destinations out of 1000 (max. 500000)
